@@ -1,0 +1,174 @@
+/**
+ * 血糖Tab组件
+ */
+
+import { BloodSugarData, HealthStatus, MeasurementType } from '../model/HealthDataModel';
+import { HealthDataServiceImpl } from '../model/HealthDataServiceImpl';
+import { evaluateBloodSugarStatus, formatDate } from '../utils/HealthUtils';
+import { HealthStatusIndicator } from './HealthStatusIndicator';
+import { promptAction } from '@kit.ArkUI';
+
+@Component
+export struct BloodSugarTab {
+  @State latestData: BloodSugarData | null = null;
+  @State healthStatus: HealthStatus = HealthStatus.EXCELLENT;
+  @State bloodSugarValue: number = 5.0;
+  @State measurementType: MeasurementType = MeasurementType.FASTING;
+  @State historyData: BloodSugarData[] = [];
+
+  private dataService: HealthDataServiceImpl = new HealthDataServiceImpl(this.getUIContext().getHostContext());
+
+  async loadLatestData() {
+    const data = await this.dataService.getDataByType('bloodSugar');
+    const list = data as BloodSugarData[];
+    if (list.length > 0) {
+      const latest = list[0];
+      this.latestData = latest;
+      this.bloodSugarValue = latest.value;
+      this.measurementType = latest.measurementType;
+      this.healthStatus = evaluateBloodSugarStatus(latest.value, latest.measurementType);
+    }
+  }
+
+  async loadHistoryData() {
+    const data = await this.dataService.getDataByType('bloodSugar');
+    this.historyData = data as BloodSugarData[];
+  }
+
+  async saveBloodSugarData() {
+    if (this.bloodSugarValue <= 0) {
+      promptAction.showToast({ message: '请输入有效的血糖值' });
+      return;
+    }
+    const now = Date.now();
+    const record: BloodSugarData = {
+      id: `bloodSugar_${now}`,
+      timestamp: now,
+      value: this.bloodSugarValue,
+      measurementType: this.measurementType,
+      note: ''
+    };
+    const ok = await this.dataService.saveData(record);
+    if (ok) {
+      this.latestData = record;
+      this.healthStatus = evaluateBloodSugarStatus(this.bloodSugarValue, this.measurementType);
+      await this.loadHistoryData();
+      promptAction.showToast({ message: '保存成功' });
+    } else {
+      promptAction.showToast({ message: '保存失败' });
+    }
+  }
+
+  build() {
+    Column() {
+      Column() {
+        Row({ space: 12 }) {
+          Text('血糖(mmol/L)')
+            .fontSize(14)
+            .fontColor('#666666')
+            .maxLines(1)
+          TextInput({ text: this.bloodSugarValue.toString() })
+            .type(InputType.Number)
+            .onChange((v: string) => { this.bloodSugarValue = parseFloat(v); })
+            .layoutWeight(1)
+        }
+        .width('100%')
+        .margin({ top: 12 })
+
+        Column() {
+          Text('测量类型')
+            .fontSize(14)
+            .fontColor('#666666')
+            .maxLines(1)
+          Row({ space: 8 }) {
+            Radio({ value: 'FASTING', group: 'bsType' })
+              .checked(this.measurementType === MeasurementType.FASTING)
+              .onChange((c: boolean) => { if (c) this.measurementType = MeasurementType.FASTING; })
+            Text('空腹')
+            Radio({ value: 'AFTER_MEAL', group: 'bsType' })
+              .checked(this.measurementType === MeasurementType.AFTER_MEAL)
+              .onChange((c: boolean) => { if (c) this.measurementType = MeasurementType.AFTER_MEAL; })
+            Text('餐后')
+            Radio({ value: 'RANDOM', group: 'bsType' })
+              .checked(this.measurementType === MeasurementType.RANDOM)
+              .onChange((c: boolean) => { if (c) this.measurementType = MeasurementType.RANDOM; })
+            Text('随机')
+          }
+          .width('100%')
+        }
+        .width('100%')
+        .margin({ top: 8 })
+      }
+      .width('100%')
+
+      Row({ space: 12 }) {
+        Button('保存记录')
+          .onClick(() => { this.saveBloodSugarData(); })
+          .backgroundColor('#4CAF50')
+          .width('45%')
+        Button('刷新历史')
+          .onClick(() => { this.loadHistoryData(); })
+          .backgroundColor('#2196F3')
+          .width('45%')
+      }
+      .width('100%')
+      .margin({ top: 12, bottom: 12 })
+
+      if (this.latestData) {
+        Row() {
+          Text('当前血糖:')
+            .fontSize(16)
+            .fontColor('#666666')
+          Text(`${this.latestData.value} mmol/L`)
+            .fontSize(22)
+            .fontWeight(FontWeight.Bold)
+        }
+        .width('100%')
+        .justifyContent(FlexAlign.SpaceBetween)
+        .margin({ bottom: 8 })
+
+        Row() {
+          Text('健康状态:')
+            .fontSize(16)
+            .fontColor('#666666')
+          HealthStatusIndicator({ status: this.healthStatus })
+        }
+        .width('100%')
+        .justifyContent(FlexAlign.SpaceBetween)
+        .margin({ bottom: 12 })
+      } else {
+        Text('暂无血糖记录，先输入并保存')
+          .fontSize(14)
+          .fontColor('#999999')
+          .margin({ bottom: 12 })
+      }
+
+      List() {
+        ForEach(this.historyData, (item: BloodSugarData) => {
+          ListItem() {
+            Row() {
+              Text(formatDate(item.timestamp, 'YYYY-MM-DD HH:mm'))
+                .fontSize(13)
+                .fontColor('#666666')
+              Text(`${item.value} mmol/L`)
+                .fontSize(16)
+                .fontWeight(FontWeight.Bold)
+            }
+            .width('100%')
+            .justifyContent(FlexAlign.SpaceBetween)
+            .padding({ top: 6, bottom: 6 })
+          }
+        })
+      }
+      .width('100%')
+      .height(220)
+    }
+    .width('100%')
+    .height('100%')
+    .padding(16)
+    .onAppear(() => {
+      this.loadLatestData();
+      this.loadHistoryData();
+    })
+  }
+}

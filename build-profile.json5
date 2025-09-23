@@ -1,0 +1,56 @@
+{
+  "app": {
+    "signingConfigs": [
+      {
+        "name": "default",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "/Users/gemini/.ohos/config/default_FitnessTracker_c4MV3RMX_PXXgOSLzthGisLPeqnnO2rpOEjTEyljkw0=.cer",
+          "keyAlias": "debugKey",
+          "keyPassword": "0000001BBAA570E1C0B5459BC18183CF05580243BE84E132DC65CAE44F65B974ABD70159257004A0A7EC7D",
+          "profile": "/Users/gemini/.ohos/config/default_FitnessTracker_c4MV3RMX_PXXgOSLzthGisLPeqnnO2rpOEjTEyljkw0=.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "/Users/gemini/.ohos/config/default_FitnessTracker_c4MV3RMX_PXXgOSLzthGisLPeqnnO2rpOEjTEyljkw0=.p12",
+          "storePassword": "0000001B077204FEF952B82B078DB9F84B9DF4C2F1857D2ACB604B28BD5D0A532F1B08BFDE54270FBB32F0"
+        }
+      }
+    ],
+    "products": [
+      {
+        "name": "default",
+        "signingConfig": "default",
+        "targetSdkVersion": "5.1.1(19)",
+        "compatibleSdkVersion": "5.1.1(19)",
+        "runtimeOS": "HarmonyOS",
+        "buildOption": {
+          "strictMode": {
+            "caseSensitiveCheck": true,
+            "useNormalizedOHMUrl": false
+          }
+        }
+      }
+    ],
+    "buildModeSet": [
+      {
+        "name": "debug",
+      },
+      {
+        "name": "release"
+      }
+    ]
+  },
+  "modules": [
+    {
+      "name": "entry",
+      "srcPath": "./entry",
+      "targets": [
+        {
+          "name": "default",
+          "applyToProducts": [
+            "default"
+          ]
+        }
+      ]
+    }
+  ]
+}
