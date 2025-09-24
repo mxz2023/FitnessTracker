@@ -7,7 +7,6 @@ import { BloodPressureTab } from './BloodPressureTab';
 import { BloodSugarTab } from './BloodSugarTab';
 import { UricAcidTab } from './UricAcidTab';
 import { BloodLipidTab } from './BloodLipidTab';
-// 在ArkUI中，TabsController不需要从外部导入，它是内置的
 
 @Component
 export struct TabsComponent {
@@ -16,15 +15,15 @@ export struct TabsComponent {
   
   // 定义Tab标题
   private tabTitles: string[] = ['体重', '血压', '血糖', '尿酸', '血脂'];
-  
+  // 定义每个Tab对应的系统符号名称（请根据需要替换为合适的sys.symbol名称）
+  private tabSymbolNames: string[] = ['weight_unit', 'blood_pressure', 'drop', 'blood_oxygen_meter', 'leaf'];
+
   @Builder
   TabBuilder(title: string, index: number) {
     Column() {
-      Image($rawfile(`tab_icon_${index}.png`))
-        .width(24)
-        .height(24)
-        .objectFit(ImageFit.Contain)
-        .fillColor(this.currentIndex === index ? '#2196F3' : '#666666')
+      SymbolGlyph($r(`sys.symbol.${this.tabSymbolNames[index]}`))
+        .fontSize(24)
+        .fontColor(this.currentIndex === index ? [$r('app.color.icon_primary')] : [$r('app.color.icon_secondary')])
       
       Text(title)
         .fontSize(12)
@@ -48,7 +47,7 @@ export struct TabsComponent {
         .width('100%')
         .padding({ left: 16, top: 16, bottom: 16 })
       
-      Tabs({ barPosition: BarPosition.Start, controller: this.tabsController }) {
+      Tabs({ barPosition: BarPosition.End, controller: this.tabsController }) {
         TabContent() {
           WeightTab()
         }

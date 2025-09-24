@@ -6,16 +6,18 @@ import { WeightData, HealthStatus } from '../model/HealthDataModel';
 import { HealthDataServiceImpl } from '../model/HealthDataServiceImpl';
 import { evaluateWeightStatus, formatDate } from '../utils/HealthUtils';
 import { HealthStatusIndicator } from './HealthStatusIndicator';
-import { promptAction } from '@kit.ArkUI';
+import { promptAction, router } from '@kit.ArkUI';
+import { MTextInput } from '../common/MTextInput';
+import { MButton } from '../common/MButton';
 
-@Component
+@ComponentV2
 export struct WeightTab {
-  @State weightValue: number = 0;
-  @State nHeight: number = 1.70; // 默认身高，单位m
-  @State historyData: WeightData[] = [];
-  @State isLoading: boolean = false;
-  @State latestData: WeightData | null = null;
-  @State healthStatus: HealthStatus = HealthStatus.EXCELLENT;
+  @Local weightInputText: string = '80';
+  @Local heightInputText: string = '1.85';
+  @Local historyData: WeightData[] = [];
+  @Local isLoading: boolean = false;
+  @Local latestData: WeightData | null = null;
+  @Local healthStatus: HealthStatus = HealthStatus.EXCELLENT;
 
   private dataService: HealthDataServiceImpl = new HealthDataServiceImpl(this.getUIContext().getHostContext());
 
@@ -27,8 +29,8 @@ export struct WeightTab {
       if (list.length > 0) {
         const latest = list[0];
         this.latestData = latest;
-        this.weightValue = latest.value;
-        this.healthStatus = evaluateWeightStatus(latest.value, this.nHeight);
+        this.weightInputText = latest.value.toFixed(2);
+        this.healthStatus = evaluateWeightStatus(latest.value, Number(this.weightInputText));
       }
     } finally {
       this.isLoading = false;
@@ -37,25 +39,18 @@ export struct WeightTab {
 
   async loadHistoryData() {
     const data = await this.dataService.getDataByType('weight');
-    this.historyData = data as WeightData[];
+    // 时间升序，便于渲染与滚动定位
+    this.historyData = (data as WeightData[]).sort((a, b) => a.timestamp - b.timestamp);
   }
 
   async saveWeightData() {
-    if (this.weightValue <= 0) {
+    if (Number(this.weightInputText) <= 0) {
       promptAction.showToast({ message: '请输入有效的体重值' });
       return;
     }
-    const now = Date.now();
-    const record = new WeightData();
-    record.id = `weight_${now}`;
-    record.timestamp = now;
-    record.value = this.weightValue;
-    record.note = '';
-
-    const ok = await this.dataService.saveData(record);
+    const ok = await this.saveAveragedToday();
     if (ok) {
-      this.latestData = record;
-      this.healthStatus = evaluateWeightStatus(this.weightValue, this.nHeight);
+      this.healthStatus = evaluateWeightStatus(Number(this.weightInputText), Number(this.heightInputText));
       await this.loadHistoryData();
       promptAction.showToast({ message: '保存成功' });
     } else {
@@ -63,48 +58,115 @@ export struct WeightTab {
     }
   }
 
+  // 当天多次记录时，做平均并只保留一条记录
+  private async saveAveragedToday(): Promise<boolean> {
+    const now = Date.now();
+    // 计算本地当天起止时间戳
+    const d = new Date(now);
+    const dayStart = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0, 0).getTime();
+    const dayEnd = dayStart + 24 * 60 * 60 * 1000 - 1;
+
+    const all = await this.dataService.getDataByType('weight');
+    const todayList = (all as WeightData[]).filter(item => item.timestamp >= dayStart && item.timestamp <= dayEnd);
+
+    let sum = Number(this.weightInputText);
+    let count = 1;
+    for (const it of todayList) {
+      sum += it.value;
+      count += 1;
+    }
+    const avg = sum / count;
+
+    // 删除当天已有记录
+    for (const it of todayList) {
+      await this.dataService.deleteData(it.id);
+    }
+
+    // 保存一条平均值记录
+    const record = new WeightData();
+    record.id = `weight_${now}`;
+    record.timestamp = now;
+    record.value = avg;
+    record.note = '';
+
+    const ok = await this.dataService.saveData(record);
+    if (ok) {
+      this.latestData = record;
+    }
+    return ok;
+  }
+
   build() {
     Column() {
       // 输入区
       Column() {
         Row({ space: 12 }) {
-          Text('体重(kg)')
+          Text('身高')
             .fontSize(14)
             .fontColor('#666666')
             .maxLines(1)
-          TextInput({ text: this.weightValue.toString() })
-            .type(InputType.Number)
-            .onChange((v: string) => { this.weightValue = parseFloat(v); })
+          MTextInput({
+            text: this.heightInputText,
+            type: InputType.NUMBER_DECIMAL,
+            onChangeBlock: (v: string) => {
+              this.heightInputText = v
+            }
+          })
             .layoutWeight(1)
+          Text('m')
+            .fontSize(14)
+            .fontColor('#666666')
         }
         .width('100%')
         .margin({ top: 12 })
 
         Row({ space: 12 }) {
-          Text('身高(m)')
+          Text('体重')
             .fontSize(14)
             .fontColor('#666666')
             .maxLines(1)
-          TextInput({ text: this.nHeight.toString() })
-            .type(InputType.Number)
-            .onChange((v: string) => { this.nHeight = parseFloat(v); })
+          MTextInput({
+            text: this.weightInputText,
+            type: InputType.NUMBER_DECIMAL,
+            onChangeBlock: (v: string) => {
+              this.weightInputText = v
+            }
+          })
             .layoutWeight(1)
+          Text('kg')
+            .fontSize(14)
+            .fontColor('#666666')
         }
         .width('100%')
         .margin({ top: 8 })
       }
       .width('100%')
 
-      Row({ space: 12 }) {
-        Button('保存记录')
-          .onClick(() => { this.saveWeightData(); })
-          .backgroundColor('#4CAF50')
-          .width('45%')
-        Button('刷新历史')
-          .onClick(() => { this.loadHistoryData(); })
-          .backgroundColor('#2196F3')
-          .width('45%')
+      Row() {
+        MButton({
+          text: '保存记录',
+          bgColor: '#4CAF50',
+          onClickBlock: () => {
+            this.saveWeightData();
+          }
+        })
+          .layoutWeight(1)
+          .margin({ right: 6 })
+        MButton({
+          text: '查看历史',
+          bgColor: '#2196F3',
+          onClickBlock: () => {
+            router.pushUrl({
+              url: 'pages/HealthHistoryPage',
+              params: { type: 'weight' }
+            });
+          }
+        })
+          .layoutWeight(1)
+          .margin({ left: 6 })
       }
+      .width('100%')
+      .justifyContent(FlexAlign.SpaceBetween)
       .width('100%')
       .margin({ top: 12, bottom: 12 })
 
@@ -126,7 +188,7 @@ export struct WeightTab {
           Text('BMI指数:')
             .fontSize(16)
             .fontColor('#666666')
-          Text(`${(this.latestData.value / (this.nHeight * this.nHeight)).toFixed(1)}`)
+          Text(`${(this.latestData.value / (Number(this.heightInputText) * Number(this.heightInputText))).toFixed(1)}`)
             .fontSize(22)
             .fontWeight(FontWeight.Bold)
         }
@@ -149,27 +211,6 @@ export struct WeightTab {
           .fontColor('#999999')
           .margin({ bottom: 12 })
       }
-
-      // 历史列表
-      List() {
-        ForEach(this.historyData, (item: WeightData) => {
-          ListItem() {
-            Row() {
-              Text(formatDate(item.timestamp, 'YYYY-MM-DD HH:mm'))
-                .fontSize(13)
-                .fontColor('#666666')
-              Text(`${item.value} kg`)
-                .fontSize(16)
-                .fontWeight(FontWeight.Bold)
-            }
-            .width('100%')
-            .justifyContent(FlexAlign.SpaceBetween)
-            .padding({ top: 6, bottom: 6 })
-          }
-        })
-      }
-      .width('100%')
-      .height(220)
     }
     .width('100%')
     .height('100%')

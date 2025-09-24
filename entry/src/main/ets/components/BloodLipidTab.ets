@@ -6,17 +6,19 @@ import { BloodLipidData, HealthStatus } from '../model/HealthDataModel';
 import { HealthDataServiceImpl } from '../model/HealthDataServiceImpl';
 import { evaluateBloodLipidStatus, formatDate } from '../utils/HealthUtils';
 import { HealthStatusIndicator } from './HealthStatusIndicator';
-import { promptAction } from '@kit.ArkUI';
+import { promptAction, router, Router } from '@kit.ArkUI';
+import { MTextInput } from '../common/MTextInput';
+import { MButton } from '../common/MButton';
 
-@Component
+@ComponentV2
 export struct BloodLipidTab {
-  @State private totalCholesterol: number = 0
-  @State private triglycerides: number = 0
-  @State private hdlCholesterol: number = 0
-  @State private ldlCholesterol: number = 0
-  @State private historyData: BloodLipidData[] = []
-  @State private latestData: BloodLipidData | null = null
-  @State private healthStatus: HealthStatus = HealthStatus.EXCELLENT
+  @Local private totalCholesterolText: string = ''
+  @Local private triglyceridesText: string = ''
+  @Local private hdlCholesterolText: string = ''
+  @Local private ldlCholesterolText: string = ''
+  @Local private historyData: BloodLipidData[] = []
+  @Local private latestData: BloodLipidData | null = null
+  @Local private healthStatus: HealthStatus = HealthStatus.EXCELLENT
 
   private dataService: HealthDataServiceImpl = new HealthDataServiceImpl(this.getUIContext().getHostContext())
 
@@ -26,10 +28,6 @@ export struct BloodLipidTab {
     if (list.length > 0) {
       const latest = list[0]
       this.latestData = latest
-      this.totalCholesterol = latest.totalCholesterol
-      this.triglycerides = latest.triglycerides
-      this.hdlCholesterol = latest.hdlCholesterol
-      this.ldlCholesterol = latest.ldlCholesterol
       this.healthStatus = evaluateBloodLipidStatus(latest)
     }
   }
@@ -41,10 +39,10 @@ export struct BloodLipidTab {
 
   async saveBloodLipidData() {
     if (
-      this.totalCholesterol <= 0 ||
-      this.triglycerides <= 0 ||
-      this.hdlCholesterol <= 0 ||
-      this.ldlCholesterol <= 0
+      this.totalCholesterolText.length <= 0 ||
+      this.triglyceridesText.length <= 0 ||
+      this.hdlCholesterolText.length <= 0 ||
+      this.ldlCholesterolText.length <= 0
     ) {
       promptAction.showToast({ message: '请输入有效的血脂值' })
       return
@@ -53,10 +51,10 @@ export struct BloodLipidTab {
     const record: BloodLipidData = {
       id: `bloodLipid_${now}`,
       timestamp: now,
-      totalCholesterol: this.totalCholesterol,
-      triglycerides: this.triglycerides,
-      hdlCholesterol: this.hdlCholesterol,
-      ldlCholesterol: this.ldlCholesterol,
+      totalCholesterol: Number(this.totalCholesterolText),
+      triglycerides: Number(this.triglyceridesText),
+      hdlCholesterol: Number(this.hdlCholesterolText),
+      ldlCholesterol: Number(this.ldlCholesterolText),
       note: ''
     }
     const ok = await this.dataService.saveData(record)
@@ -79,10 +77,17 @@ export struct BloodLipidTab {
             .fontSize(14)
             .fontColor('#666666')
             .maxLines(1)
-          TextInput({ text: this.totalCholesterol.toString() })
-            .type(InputType.Number)
-            .onChange((v: string) => { this.totalCholesterol = parseFloat(v) })
+          MTextInput({
+            text: this.totalCholesterolText,
+            type: InputType.NUMBER_DECIMAL,
+            onChangeBlock: (v: string) => {
+              this.totalCholesterolText = v;
+            }
+          })
             .layoutWeight(1)
+          Text('mmol/L')
+            .fontSize(14)
+            .fontColor('#666666')
         }
         .width('100%')
         .margin({ top: 12 })
@@ -92,10 +97,17 @@ export struct BloodLipidTab {
             .fontSize(14)
             .fontColor('#666666')
             .maxLines(1)
-          TextInput({ text: this.triglycerides.toString() })
-            .type(InputType.Number)
-            .onChange((v: string) => { this.triglycerides = parseFloat(v) })
+          MTextInput({
+            text: this.triglyceridesText,
+            type: InputType.NUMBER_DECIMAL,
+            onChangeBlock: (v: string) => {
+              this.triglyceridesText = v;
+            }
+          })
             .layoutWeight(1)
+          Text('mmol/L')
+            .fontSize(14)
+            .fontColor('#666666')
         }
         .width('100%')
         .margin({ top: 8 })
@@ -105,10 +117,17 @@ export struct BloodLipidTab {
             .fontSize(14)
             .fontColor('#666666')
             .maxLines(1)
-          TextInput({ text: this.hdlCholesterol.toString() })
-            .type(InputType.Number)
-            .onChange((v: string) => { this.hdlCholesterol = parseFloat(v) })
+          MTextInput({
+            text: this.hdlCholesterolText,
+            type: InputType.NUMBER_DECIMAL,
+            onChangeBlock: (v: string) => {
+              this.hdlCholesterolText = v;
+            }
+          })
             .layoutWeight(1)
+          Text('mmol/L')
+            .fontSize(14)
+            .fontColor('#666666')
         }
         .width('100%')
         .margin({ top: 8 })
@@ -118,26 +137,46 @@ export struct BloodLipidTab {
             .fontSize(14)
             .fontColor('#666666')
             .maxLines(1)
-          TextInput({ text: this.ldlCholesterol.toString() })
-            .type(InputType.Number)
-            .onChange((v: string) => { this.ldlCholesterol = parseFloat(v) })
+          MTextInput({
+            text: this.ldlCholesterolText,
+            type: InputType.NUMBER_DECIMAL,
+            onChangeBlock: (v: string) => {
+              this.ldlCholesterolText = v;
+            }
+          })
             .layoutWeight(1)
+          Text('mmol/L')
+            .fontSize(14)
+            .fontColor('#666666')
         }
         .width('100%')
         .margin({ top: 8 })
       }
       .width('100%')
 
-      Row({ space: 12 }) {
-        Button('保存记录')
-          .onClick(() => { this.saveBloodLipidData() })
-          .backgroundColor('#4CAF50')
-          .width('45%')
-        Button('刷新历史')
-          .onClick(() => { this.loadHistoryData() })
-          .backgroundColor('#2196F3')
-          .width('45%')
+      Row() {
+        MButton({
+          text: '保存记录',
+          bgColor: '#4CAF50',
+          onClickBlock: () => { this.saveBloodLipidData(); }
+        })
+          .layoutWeight(1)
+          .margin({ right: 6 })
+        MButton({
+          text: '查看历史',
+          bgColor: '#2196F3',
+          onClickBlock: () => {
+            router.pushUrl({
+              url: 'pages/HealthHistoryPage',
+              params: { type: 'bloodLipid' }
+            });
+          }
+        })
+          .layoutWeight(1)
+          .margin({ left: 6 })
       }
+      .width('100%')
+      .justifyContent(FlexAlign.SpaceBetween)
       .width('100%')
       .margin({ top: 12, bottom: 12 })
 

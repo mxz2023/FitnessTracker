@@ -6,15 +6,17 @@ import { BloodSugarData, HealthStatus, MeasurementType } from '../model/HealthDa
 import { HealthDataServiceImpl } from '../model/HealthDataServiceImpl';
 import { evaluateBloodSugarStatus, formatDate } from '../utils/HealthUtils';
 import { HealthStatusIndicator } from './HealthStatusIndicator';
-import { promptAction } from '@kit.ArkUI';
+import { promptAction, router, Router } from '@kit.ArkUI';
+import { MTextInput } from '../common/MTextInput';
+import { MButton } from '../common/MButton';
 
-@Component
+@ComponentV2
 export struct BloodSugarTab {
-  @State latestData: BloodSugarData | null = null;
-  @State healthStatus: HealthStatus = HealthStatus.EXCELLENT;
-  @State bloodSugarValue: number = 5.0;
-  @State measurementType: MeasurementType = MeasurementType.FASTING;
-  @State historyData: BloodSugarData[] = [];
+  @Local latestData: BloodSugarData | null = null;
+  @Local healthStatus: HealthStatus = HealthStatus.EXCELLENT;
+  @Local bloodSugarValue: number = 5.0;
+  @Local measurementType: MeasurementType = MeasurementType.FASTING;
+  @Local historyData: BloodSugarData[] = [];
 
   private dataService: HealthDataServiceImpl = new HealthDataServiceImpl(this.getUIContext().getHostContext());
 
@@ -63,14 +65,21 @@ export struct BloodSugarTab {
     Column() {
       Column() {
         Row({ space: 12 }) {
-          Text('血糖(mmol/L)')
+          Text('血糖')
             .fontSize(14)
             .fontColor('#666666')
             .maxLines(1)
-          TextInput({ text: this.bloodSugarValue.toString() })
-            .type(InputType.Number)
-            .onChange((v: string) => { this.bloodSugarValue = parseFloat(v); })
+          MTextInput({
+            text: this.bloodSugarValue.toString(),
+            type: InputType.NUMBER_DECIMAL,
+            onChangeBlock: (v: string) => {
+              this.bloodSugarValue = parseFloat(v || '0');
+            }
+          })
             .layoutWeight(1)
+          Text('mmol/L')
+            .fontSize(14)
+            .fontColor('#666666')
         }
         .width('100%')
         .margin({ top: 12 })
@@ -101,16 +110,29 @@ export struct BloodSugarTab {
       }
       .width('100%')
 
-      Row({ space: 12 }) {
-        Button('保存记录')
-          .onClick(() => { this.saveBloodSugarData(); })
-          .backgroundColor('#4CAF50')
-          .width('45%')
-        Button('刷新历史')
-          .onClick(() => { this.loadHistoryData(); })
-          .backgroundColor('#2196F3')
-          .width('45%')
+      Row() {
+        MButton({
+          text: '保存记录',
+          bgColor: '#4CAF50',
+          onClickBlock: () => { this.saveBloodSugarData(); }
+        })
+          .layoutWeight(1)
+          .margin({ right: 6 })
+        MButton({
+          text: '查看历史',
+          bgColor: '#2196F3',
+          onClickBlock: () => {
+            router.pushUrl({
+              url: 'pages/HealthHistoryPage',
+              params: { type: 'bloodSugar' }
+            });
+          }
+        })
+          .layoutWeight(1)
+          .margin({ left: 6 })
       }
+      .width('100%')
+      .justifyContent(FlexAlign.SpaceBetween)
       .width('100%')
       .margin({ top: 12, bottom: 12 })
 

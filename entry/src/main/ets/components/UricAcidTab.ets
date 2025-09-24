@@ -4,19 +4,19 @@
 
 import { UricAcidData, HealthStatus, Gender } from '../model/HealthDataModel';
 import { HealthDataServiceImpl } from '../model/HealthDataServiceImpl';
-import { evaluateUricAcidStatus, formatDate } from '../utils/HealthUtils';
+import { evaluateUricAcidStatus } from '../utils/HealthUtils';
 import { HealthStatusIndicator } from './HealthStatusIndicator';
-import { promptAction } from '@kit.ArkUI';
-// 移除不存在的 LineChart 依赖与重复类型声明
+import { promptAction, router } from '@kit.ArkUI';
+import { MTextInput } from '../common/MTextInput';
+import { MButton } from '../common/MButton';
 
-@Component
+@ComponentV2
 export struct UricAcidTab {
-  @State private records: UricAcidData[] = []
-  @State private latestRecord: UricAcidData | null = null
-  @State private healthStatus: HealthStatus = HealthStatus.EXCELLENT
-  @State private inputValue: string = ''
-  @State private inputNote: string = ''
-
+  @Local records: UricAcidData[] = []
+  @Local latestRecord: UricAcidData | null = null
+  @Local healthStatus: HealthStatus = HealthStatus.EXCELLENT
+  @Local inputValue: number = 3
+  @Local inputNote: string = ''
   private dataService: HealthDataServiceImpl = new HealthDataServiceImpl(this.getUIContext().getHostContext())
 
   async loadData() {
@@ -29,7 +29,7 @@ export struct UricAcidTab {
   }
 
   async saveData() {
-    const value = parseFloat(this.inputValue)
+    const value = this.inputValue
     if (isNaN(value) || value <= 0) {
       promptAction.showToast({ message: '请输入有效的尿酸值' })
       return
@@ -43,7 +43,6 @@ export struct UricAcidTab {
     }
     const ok = await this.dataService.saveData(record)
     if (ok) {
-      this.inputValue = ''
       this.inputNote = ''
       await this.loadData()
       promptAction.showToast({ message: '保存成功' })
@@ -56,14 +55,21 @@ export struct UricAcidTab {
     Column() {
       Column() {
         Row({ space: 12 }) {
-          Text('尿酸(μmol/L)')
+          Text('尿酸')
             .fontSize(14)
             .fontColor('#666666')
             .maxLines(1)
-          TextInput({ text: this.inputValue })
-            .type(InputType.Number)
-            .onChange((v: string) => { this.inputValue = v })
+          MTextInput({
+            text: this.inputValue.toString(),
+            type: InputType.NUMBER_DECIMAL,
+            onChangeBlock: (v: string) => {
+              this.inputValue = parseFloat(v || '0');
+            }
+          })
             .layoutWeight(1)
+          Text('μmol/L')
+            .fontSize(14)
+            .fontColor('#666666')
         }
         .width('100%')
         .margin({ top: 12 })
@@ -73,8 +79,13 @@ export struct UricAcidTab {
             .fontSize(14)
             .fontColor('#666666')
             .maxLines(1)
-          TextInput({ text: this.inputNote })
-            .onChange((v: string) => { this.inputNote = v })
+          MTextInput({
+            text: this.inputNote,
+            type: InputType.Normal,
+            onChangeBlock: (v: string) => {
+              this.inputNote = v;
+            }
+          })
             .layoutWeight(1)
         }
         .width('100%')
@@ -82,16 +93,31 @@ export struct UricAcidTab {
       }
       .width('100%')
 
-      Row({ space: 12 }) {
-        Button('保存记录')
-          .onClick(() => { this.saveData() })
-          .backgroundColor('#4CAF50')
-          .width('45%')
-        Button('刷新历史')
-          .onClick(() => { this.loadData() })
-          .backgroundColor('#2196F3')
-          .width('45%')
+      Row() {
+        MButton({
+          text: '保存记录',
+          bgColor: '#4CAF50',
+          onClickBlock: () => {
+            this.saveData();
+          }
+        })
+          .layoutWeight(1)
+          .margin({ right: 6 })
+        MButton({
+          text: '查看历史',
+          bgColor: '#2196F3',
+          onClickBlock: () => {
+            router.pushUrl({
+              url: 'pages/HealthHistoryPage',
+              params: { type: 'uricAcid' }
+            });
+          }
+        })
+          .layoutWeight(1)
+          .margin({ left: 6 })
       }
+      .width('100%')
+      .justifyContent(FlexAlign.SpaceBetween)
       .width('100%')
       .margin({ top: 12, bottom: 12 })
 
@@ -123,26 +149,6 @@ export struct UricAcidTab {
           .fontColor('#999999')
           .margin({ bottom: 12 })
       }
-
-      List() {
-        ForEach(this.records, (item: UricAcidData) => {
-          ListItem() {
-            Row() {
-              Text(formatDate(item.timestamp, 'YYYY-MM-DD HH:mm'))
-                .fontSize(13)
-                .fontColor('#666666')
-              Text(`${item.value} μmol/L`)
-                .fontSize(16)
-                .fontWeight(FontWeight.Bold)
-            }
-            .width('100%')
-            .justifyContent(FlexAlign.SpaceBetween)
-            .padding({ top: 6, bottom: 6 })
-          }
-        })
-      }
-      .width('100%')
-      .height(220)
     }
     .width('100%')
     .height('100%')

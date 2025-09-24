@@ -6,15 +6,17 @@ import { BloodPressureData, HealthStatus } from '../model/HealthDataModel';
 import { HealthDataServiceImpl } from '../model/HealthDataServiceImpl';
 import { evaluateBloodPressureStatus, formatDate } from '../utils/HealthUtils';
 import { HealthStatusIndicator } from './HealthStatusIndicator';
-import { promptAction } from '@kit.ArkUI';
+import { promptAction, router } from '@kit.ArkUI';
+import { MTextInput } from '../common/MTextInput';
+import { MButton } from '../common/MButton';
 
-@Component
+@ComponentV2
 export struct BloodPressureTab {
-  @State systolicValue: number = 120;
-  @State diastolicValue: number = 80;
-  @State historyData: BloodPressureData[] = [];
-  @State latestData: BloodPressureData | null = null;
-  @State healthStatus: HealthStatus = HealthStatus.EXCELLENT;
+  @Local systolicValue: number = 120;
+  @Local diastolicValue: number = 80;
+  @Local historyData: BloodPressureData[] = [];
+  @Local latestData: BloodPressureData | null = null;
+  @Local healthStatus: HealthStatus = HealthStatus.EXCELLENT;
 
   private dataService: HealthDataServiceImpl = new HealthDataServiceImpl(this.getUIContext().getHostContext());
 
@@ -62,43 +64,70 @@ export struct BloodPressureTab {
     Column() {
       Column() {
         Row({ space: 12 }) {
-          Text('收缩压(mmHg)')
+          Text('收缩压')
             .fontSize(14)
             .fontColor('#666666')
             .maxLines(1)
-          TextInput({ text: this.systolicValue.toString() })
-            .type(InputType.Number)
-            .onChange((v: string) => { this.systolicValue = parseFloat(v); })
+          MTextInput({ 
+            text: this.systolicValue.toString(),
+            type: InputType.NUMBER_DECIMAL,
+            onChangeBlock: (v: string) => {
+              this.systolicValue = parseFloat(v || '0');
+            }
+          })
             .layoutWeight(1)
+          Text('mmHg')
+            .fontSize(14)
+            .fontColor('#666666')
         }
         .width('100%')
         .margin({ top: 12 })
 
         Row({ space: 12 }) {
-          Text('舒张压(mmHg)')
+          Text('舒张压')
             .fontSize(14)
             .fontColor('#666666')
             .maxLines(1)
-          TextInput({ text: this.diastolicValue.toString() })
-            .type(InputType.Number)
-            .onChange((v: string) => { this.diastolicValue = parseFloat(v); })
+          MTextInput({ 
+            text: this.diastolicValue.toString(),
+            type: InputType.NUMBER_DECIMAL,
+            onChangeBlock: (v: string) => {
+              this.diastolicValue = parseFloat(v || '0');
+            }
+          })
             .layoutWeight(1)
+          Text('mmHg')
+            .fontSize(14)
+            .fontColor('#666666')
         }
         .width('100%')
         .margin({ top: 8 })
       }
       .width('100%')
 
-      Row({ space: 12 }) {
-        Button('保存记录')
-          .onClick(() => { this.saveBloodPressureData(); })
-          .backgroundColor('#4CAF50')
-          .width('45%')
-        Button('刷新历史')
-          .onClick(() => { this.loadHistoryData(); })
-          .backgroundColor('#2196F3')
-          .width('45%')
+      Row() {
+        MButton({
+          text: '保存记录',
+          bgColor: '#4CAF50',
+          onClickBlock: () => { this.saveBloodPressureData(); }
+        })
+          .layoutWeight(1)
+          .margin({ right: 6 })
+        MButton({
+          text: '查看历史',
+          bgColor: '#2196F3',
+          onClickBlock: () => {
+            router.pushUrl({
+              url: 'pages/HealthHistoryPage',
+              params: { type: 'bloodPressure' }
+            });
+          }
+        })
+          .layoutWeight(1)
+          .margin({ left: 6 })
       }
+      .width('100%')
+      .justifyContent(FlexAlign.SpaceBetween)
       .width('100%')
       .margin({ top: 12, bottom: 12 })
 
@@ -130,26 +159,6 @@ export struct BloodPressureTab {
           .fontColor('#999999')
           .margin({ bottom: 12 })
       }
-
-      List() {
-        ForEach(this.historyData, (item: BloodPressureData) => {
-          ListItem() {
-            Row() {
-              Text(formatDate(item.timestamp, 'YYYY-MM-DD HH:mm'))
-                .fontSize(13)
-                .fontColor('#666666')
-              Text(`${item.systolic}/${item.diastolic} mmHg`)
-                .fontSize(16)
-                .fontWeight(FontWeight.Bold)
-            }
-            .width('100%')
-            .justifyContent(FlexAlign.SpaceBetween)
-            .padding({ top: 6, bottom: 6 })
-          }
-        })
-      }
-      .width('100%')
-      .height(220)
     }
     .width('100%')
     .height('100%')
