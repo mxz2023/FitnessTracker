@@ -2,18 +2,27 @@
  * 健康监测应用主页面
  */
 
-import { TabsComponent } from '../components/TabsComponent';
-import { HealthDataServiceImpl } from '../model/HealthDataServiceImpl';
+import { CommonDefine } from '../common/CommonDefine';
+import { TabsComponent } from '../tabs/TabsComponent';
+
 
 @Entry
 @Component
 struct Index {
-  private dataService: HealthDataServiceImpl = new HealthDataServiceImpl();
+  private pathStack: NavPathStack = new NavPathStack()
+
+  aboutToAppear(): void {
+    AppStorage.setOrCreate(CommonDefine.globalPathStackName, this.pathStack);
+  }
 
   build() {
-    Column() {
+    Navigation(this.pathStack) {
       TabsComponent()
     }
+    .title('健康监测')
+    .titleMode(NavigationTitleMode.Mini)
+    .mode(NavigationMode.Stack)
+    .hideBackButton(true)
     .width('100%')
     .height('100%')
   }

@@ -1,14 +1,15 @@
 /**
  * 血脂Tab组件（简化版）
  */
+import { promptAction } from '@kit.ArkUI';
 
-import { BloodLipidData, HealthStatus } from '../model/HealthDataModel';
-import { HealthDataServiceImpl } from '../model/HealthDataServiceImpl';
-import { evaluateBloodLipidStatus, formatDate } from '../utils/HealthUtils';
-import { HealthStatusIndicator } from './HealthStatusIndicator';
-import { promptAction, router, Router } from '@kit.ArkUI';
-import { MTextInput } from '../common/MTextInput';
-import { MButton } from '../common/MButton';
+import { BloodLipidData, HealthStatus } from '../../model/HealthDataModel';
+import { HealthDataServiceImpl } from '../../model/HealthDataServiceImpl';
+import { evaluateBloodLipidStatus, formatDate } from '../../utils/HealthUtils';
+import { HealthStatusIndicator } from '../../commonents/HealthStatusIndicator';
+import { MTextInput } from '../../commonui/MTextInput';
+import { MButton } from '../../commonui/MButton';
+import { getAppPathStack } from '../../utils/PathStackUtils';
 
 @ComponentV2
 export struct BloodLipidTab {
@@ -19,8 +20,12 @@ export struct BloodLipidTab {
   @Local private historyData: BloodLipidData[] = []
   @Local private latestData: BloodLipidData | null = null
   @Local private healthStatus: HealthStatus = HealthStatus.EXCELLENT
-
   private dataService: HealthDataServiceImpl = new HealthDataServiceImpl(this.getUIContext().getHostContext())
+  private navPathStack: NavPathStack = new NavPathStack()
+
+  aboutToAppear(): void {
+    this.navPathStack = getAppPathStack()
+  }
 
   async loadLatestData() {
     const data = await this.dataService.getDataByType('bloodLipid')
@@ -40,9 +45,9 @@ export struct BloodLipidTab {
   async saveBloodLipidData() {
     if (
       this.totalCholesterolText.length <= 0 ||
-      this.triglyceridesText.length <= 0 ||
-      this.hdlCholesterolText.length <= 0 ||
-      this.ldlCholesterolText.length <= 0
+        this.triglyceridesText.length <= 0 ||
+        this.hdlCholesterolText.length <= 0 ||
+        this.ldlCholesterolText.length <= 0
     ) {
       promptAction.showToast({ message: '请输入有效的血脂值' })
       return
@@ -158,7 +163,9 @@ export struct BloodLipidTab {
         MButton({
           text: '保存记录',
           bgColor: '#4CAF50',
-          onClickBlock: () => { this.saveBloodLipidData(); }
+          onClickBlock: () => {
+            this.saveBloodLipidData();
+          }
         })
           .layoutWeight(1)
           .margin({ right: 6 })
@@ -166,10 +173,10 @@ export struct BloodLipidTab {
           text: '查看历史',
           bgColor: '#2196F3',
           onClickBlock: () => {
-            router.pushUrl({
-              url: 'pages/HealthHistoryPage',
-              params: { type: 'bloodLipid' }
-            });
+            const data: Record<string, string> = {
+              "data": "bloodLipid"
+            }
+            this.navPathStack.pushPathByName("history", data)
           }
         })
           .layoutWeight(1)

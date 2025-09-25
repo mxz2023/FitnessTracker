@@ -8,6 +8,7 @@
       "phone",
       "tablet"
     ],
+    "routerMap": "$profile:router_map",
     "deliveryWithInstall": true,
     "installationFree": true,
     "pages": "$profile:main_pages",

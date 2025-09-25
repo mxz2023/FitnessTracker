@@ -1,14 +1,15 @@
 /**
  * 尿酸指标Tab组件
  */
+import { promptAction } from '@kit.ArkUI';
 
-import { UricAcidData, HealthStatus, Gender } from '../model/HealthDataModel';
-import { HealthDataServiceImpl } from '../model/HealthDataServiceImpl';
-import { evaluateUricAcidStatus } from '../utils/HealthUtils';
-import { HealthStatusIndicator } from './HealthStatusIndicator';
-import { promptAction, router } from '@kit.ArkUI';
-import { MTextInput } from '../common/MTextInput';
-import { MButton } from '../common/MButton';
+import { UricAcidData, HealthStatus, Gender } from '../../model/HealthDataModel';
+import { HealthDataServiceImpl } from '../../model/HealthDataServiceImpl';
+import { evaluateUricAcidStatus } from '../../utils/HealthUtils';
+import { HealthStatusIndicator } from '../../commonents/HealthStatusIndicator';
+import { MTextInput } from '../../commonui/MTextInput';
+import { MButton } from '../../commonui/MButton';
+import { getAppPathStack } from '../../utils/PathStackUtils';
 
 @ComponentV2
 export struct UricAcidTab {
@@ -18,6 +19,11 @@ export struct UricAcidTab {
   @Local inputValue: number = 3
   @Local inputNote: string = ''
   private dataService: HealthDataServiceImpl = new HealthDataServiceImpl(this.getUIContext().getHostContext())
+  private navPathStack: NavPathStack = new NavPathStack()
+
+  aboutToAppear(): void {
+    this.navPathStack = getAppPathStack()
+  }
 
   async loadData() {
     const data = await this.dataService.getDataByType('uricAcid')
@@ -107,10 +113,10 @@ export struct UricAcidTab {
           text: '查看历史',
           bgColor: '#2196F3',
           onClickBlock: () => {
-            router.pushUrl({
-              url: 'pages/HealthHistoryPage',
-              params: { type: 'uricAcid' }
-            });
+            const data: Record<string, string> = {
+              "data": "uricAcid"
+            }
+            this.navPathStack.pushPathByName("history", data)
           }
         })
           .layoutWeight(1)

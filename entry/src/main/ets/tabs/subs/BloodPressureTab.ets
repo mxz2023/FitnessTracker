@@ -1,14 +1,15 @@
 /**
  * 血压Tab组件
  */
+import { promptAction } from '@kit.ArkUI';
 
-import { BloodPressureData, HealthStatus } from '../model/HealthDataModel';
-import { HealthDataServiceImpl } from '../model/HealthDataServiceImpl';
-import { evaluateBloodPressureStatus, formatDate } from '../utils/HealthUtils';
-import { HealthStatusIndicator } from './HealthStatusIndicator';
-import { promptAction, router } from '@kit.ArkUI';
-import { MTextInput } from '../common/MTextInput';
-import { MButton } from '../common/MButton';
+import { BloodPressureData, HealthStatus } from '../../model/HealthDataModel';
+import { HealthDataServiceImpl } from '../../model/HealthDataServiceImpl';
+import { evaluateBloodPressureStatus } from '../../utils/HealthUtils';
+import { HealthStatusIndicator } from '../../commonents/HealthStatusIndicator';
+import { MTextInput } from '../../commonui/MTextInput';
+import { MButton } from '../../commonui/MButton';
+import { getAppPathStack } from '../../utils/PathStackUtils';
 
 @ComponentV2
 export struct BloodPressureTab {
@@ -19,6 +20,11 @@ export struct BloodPressureTab {
   @Local healthStatus: HealthStatus = HealthStatus.EXCELLENT;
 
   private dataService: HealthDataServiceImpl = new HealthDataServiceImpl(this.getUIContext().getHostContext());
+  private navPathStack: NavPathStack = new NavPathStack()
+
+  aboutToAppear(): void {
+    this.navPathStack = getAppPathStack()
+  }
 
   async loadLatestData() {
     const data = await this.dataService.getDataByType('bloodPressure');
@@ -117,10 +123,10 @@ export struct BloodPressureTab {
           text: '查看历史',
           bgColor: '#2196F3',
           onClickBlock: () => {
-            router.pushUrl({
-              url: 'pages/HealthHistoryPage',
-              params: { type: 'bloodPressure' }
-            });
+            const data: Record<string, string> = {
+              "data": "bloodPressure"
+            }
+            this.navPathStack.pushPathByName("history", data)
           }
         })
           .layoutWeight(1)

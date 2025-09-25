@@ -2,24 +2,28 @@
  * 通用健康历史记录页面
  */
 
-import { WeightData, BloodLipidData, BloodSugarData, UricAcidData, HealthData,
-  BloodPressureData } from '../model/HealthDataModel';
+import {
+  WeightData,
+  BloodLipidData,
+  BloodSugarData,
+  UricAcidData,
+  HealthData,
+  BloodPressureData
+} from '../model/HealthDataModel';
 import { formatDate } from '../utils/HealthUtils';
-import { router, Router } from '@kit.ArkUI';
 
 type HealthDataType = 'weight' | 'bloodPressure' | 'bloodLipid' | 'bloodSugar' | 'uricAcid';
 
-@Entry
+
 @ComponentV2
 struct HealthHistoryPage {
+  @Param @Require dataType: HealthDataType
   @Local private historyData: Array<WeightData | BloodLipidData | BloodSugarData | UricAcidData> = []
-  @Local private dataType: HealthDataType = 'weight'
+
+  private pathInfos?: NavPathStack
 
   aboutToAppear() {
-    const params = router.getParams() as Record<'type', HealthDataType>;
-    if (params?.type) {
-      this.dataType = params.type;
-    }
+
   }
 
   @Builder
@@ -165,27 +169,22 @@ struct HealthHistoryPage {
   private getTitle(): string {
     switch (this.dataType) {
       case 'weight':
-        return '体重历史记录';
+        return '体重';
       case 'bloodLipid':
-        return '血脂历史记录';
+        return '血脂';
       case 'bloodSugar':
-        return '血糖历史记录';
+        return '血糖';
       case 'bloodPressure':
-        return '血压历史记录';
+        return '血压';
       case 'uricAcid':
-        return '尿酸历史记录';
+        return '尿酸';
       default:
-        return '健康历史记录';
+        return '健康';
     }
   }
 
   build() {
-    Column() {
-      Text(this.getTitle())
-        .fontSize(18)
-        .fontWeight(FontWeight.Bold)
-        .margin({ bottom: 16 })
-
+    NavDestination() {
       List() {
         ForEach(this.historyData, (item: HealthData) => {
           ListItem() {
@@ -207,11 +206,24 @@ struct HealthHistoryPage {
         })
       }
       .width('100%')
-      .layoutWeight(1)
+      .height('100%')
     }
+    .title({
+      main: "历史记录",
+      sub: this.getTitle()
+    })
     .width('100%')
     .height('100%')
-    .padding(16)
-    .backgroundColor('#F5F5F5')
+    .onReady((ctx: NavDestinationContext) => {
+      // NavDestinationContext获取当前所在的导航控制器
+      this.pathInfos = ctx.pathStack;
+    })
   }
+}
+
+@Builder
+export function PageBuilder(_: string, param: Record<string, Object>) {
+  HealthHistoryPage({
+    dataType: param.data as HealthDataType
+  });
 }

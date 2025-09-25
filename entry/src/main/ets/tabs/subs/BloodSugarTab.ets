@@ -1,14 +1,15 @@
 /**
  * 血糖Tab组件
  */
+import { promptAction } from '@kit.ArkUI';
 
-import { BloodSugarData, HealthStatus, MeasurementType } from '../model/HealthDataModel';
-import { HealthDataServiceImpl } from '../model/HealthDataServiceImpl';
-import { evaluateBloodSugarStatus, formatDate } from '../utils/HealthUtils';
-import { HealthStatusIndicator } from './HealthStatusIndicator';
-import { promptAction, router, Router } from '@kit.ArkUI';
-import { MTextInput } from '../common/MTextInput';
-import { MButton } from '../common/MButton';
+import { BloodSugarData, HealthStatus, MeasurementType } from '../../model/HealthDataModel';
+import { HealthDataServiceImpl } from '../../model/HealthDataServiceImpl';
+import { evaluateBloodSugarStatus, formatDate } from '../../utils/HealthUtils';
+import { HealthStatusIndicator } from '../../commonents/HealthStatusIndicator';
+import { MTextInput } from '../../commonui/MTextInput';
+import { MButton } from '../../commonui/MButton';
+import { getAppPathStack } from '../../utils/PathStackUtils';
 
 @ComponentV2
 export struct BloodSugarTab {
@@ -17,8 +18,12 @@ export struct BloodSugarTab {
   @Local bloodSugarValue: number = 5.0;
   @Local measurementType: MeasurementType = MeasurementType.FASTING;
   @Local historyData: BloodSugarData[] = [];
-
   private dataService: HealthDataServiceImpl = new HealthDataServiceImpl(this.getUIContext().getHostContext());
+  private navPathStack: NavPathStack = new NavPathStack()
+
+  aboutToAppear(): void {
+    this.navPathStack = getAppPathStack()
+  }
 
   async loadLatestData() {
     const data = await this.dataService.getDataByType('bloodSugar');
@@ -92,15 +97,27 @@ export struct BloodSugarTab {
           Row({ space: 8 }) {
             Radio({ value: 'FASTING', group: 'bsType' })
               .checked(this.measurementType === MeasurementType.FASTING)
-              .onChange((c: boolean) => { if (c) this.measurementType = MeasurementType.FASTING; })
+              .onChange((c: boolean) => {
+                if (c) {
+                  this.measurementType = MeasurementType.FASTING;
+                }
+              })
             Text('空腹')
             Radio({ value: 'AFTER_MEAL', group: 'bsType' })
               .checked(this.measurementType === MeasurementType.AFTER_MEAL)
-              .onChange((c: boolean) => { if (c) this.measurementType = MeasurementType.AFTER_MEAL; })
+              .onChange((c: boolean) => {
+                if (c) {
+                  this.measurementType = MeasurementType.AFTER_MEAL;
+                }
+              })
             Text('餐后')
             Radio({ value: 'RANDOM', group: 'bsType' })
               .checked(this.measurementType === MeasurementType.RANDOM)
-              .onChange((c: boolean) => { if (c) this.measurementType = MeasurementType.RANDOM; })
+              .onChange((c: boolean) => {
+                if (c) {
+                  this.measurementType = MeasurementType.RANDOM;
+                }
+              })
             Text('随机')
           }
           .width('100%')
@@ -114,7 +131,9 @@ export struct BloodSugarTab {
         MButton({
           text: '保存记录',
           bgColor: '#4CAF50',
-          onClickBlock: () => { this.saveBloodSugarData(); }
+          onClickBlock: () => {
+            this.saveBloodSugarData();
+          }
         })
           .layoutWeight(1)
           .margin({ right: 6 })
@@ -122,10 +141,10 @@ export struct BloodSugarTab {
           text: '查看历史',
           bgColor: '#2196F3',
           onClickBlock: () => {
-            router.pushUrl({
-              url: 'pages/HealthHistoryPage',
-              params: { type: 'bloodSugar' }
-            });
+            const data: Record<string, string> = {
+              "data": "bloodSugar"
+            }
+            this.navPathStack.pushPathByName("history", data)
           }
         })
           .layoutWeight(1)

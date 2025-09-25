@@ -1,0 +1,9 @@
+{
+  "routerMap": [
+    {
+      "name" : "history",
+      "pageSourceFile"  : "src/main/ets/pages/HealthHistoryPage.ets",
+      "buildFunction" : "PageBuilder"
+    }
+  ]
+}
