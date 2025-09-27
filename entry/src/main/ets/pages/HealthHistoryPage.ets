@@ -11,6 +11,7 @@ import {
   BloodPressureData
 } from '../model/HealthDataModel';
 import { formatDate } from '../utils/HealthUtils';
+import { StorageUtils } from '../utils/StorageUtils';
 
 type HealthDataType = 'weight' | 'bloodPressure' | 'bloodLipid' | 'bloodSugar' | 'uricAcid';
 
@@ -18,12 +19,49 @@ type HealthDataType = 'weight' | 'bloodPressure' | 'bloodLipid' | 'bloodSugar' |
 @ComponentV2
 struct HealthHistoryPage {
   @Param @Require dataType: HealthDataType
-  @Local private historyData: Array<WeightData | BloodLipidData | BloodSugarData | UricAcidData> = []
-
+  @Local private historyData: Array<WeightData | BloodLipidData | BloodSugarData | UricAcidData | BloodPressureData> = []
+  @Local private isLoading: boolean = true;
+  private storageUtils: StorageUtils = StorageUtils.getInstance(this.getUIContext().getHostContext());
   private pathInfos?: NavPathStack
 
   aboutToAppear() {
+    this.loadHistoryData();
+  }
 
+  /**
+   * 加载历史数据
+   */
+  async loadHistoryData() {
+    this.isLoading = true;
+    try {
+      const data = await this.storageUtils.getHealthDataByType(this.dataType);
+      
+      // 根据数据类型进行类型转换
+      switch (this.dataType) {
+        case 'weight':
+          this.historyData = data as WeightData[];
+          break;
+        case 'bloodPressure':
+          this.historyData = data as BloodPressureData[];
+          break;
+        case 'bloodSugar':
+          this.historyData = data as BloodSugarData[];
+          break;
+        case 'uricAcid':
+          this.historyData = data as UricAcidData[];
+          break;
+        case 'bloodLipid':
+          this.historyData = data as BloodLipidData[];
+          break;
+      }
+      
+      // 按时间降序排序，最新的记录显示在前面
+      this.historyData.sort((a, b) => b.timestamp - a.timestamp);
+    } catch (error) {
+      console.error(`加载${this.getTitle()}历史数据失败: ${error}`);
+    } finally {
+      this.isLoading = false;
+    }
   }
 
   @Builder
@@ -39,6 +77,14 @@ struct HealthHistoryPage {
         Text(`${item.value} kg`)
           .fontSize(16)
           .fontWeight(FontWeight.Bold)
+      }
+      
+      if (item.note && item.note !== '') {
+        Row() {
+          Text(`备注: ${item.note}`)
+            .fontSize(12)
+            .fontColor('#999999')
+        }
       }
     }
     .width('100%')
@@ -71,6 +117,14 @@ struct HealthHistoryPage {
       Text('单位: mmol/L')
         .fontSize(12)
         .fontColor('#999999')
+        
+      if (item.note && item.note !== '') {
+        Row() {
+          Text(`备注: ${item.note}`)
+            .fontSize(12)
+            .fontColor('#999999')
+        }
+      }
     }
     .width('100%')
     .padding(8)
@@ -94,6 +148,14 @@ struct HealthHistoryPage {
           .fontColor('#666666')
           .margin({ left: 8 })
       }
+      
+      if (item.note && item.note !== '') {
+        Row() {
+          Text(`备注: ${item.note}`)
+            .fontSize(12)
+            .fontColor('#999999')
+        }
+      }
     }
     .width('100%')
     .padding(8)
@@ -114,11 +176,11 @@ struct HealthHistoryPage {
           .fontWeight(FontWeight.Bold)
       }
 
-      if (item.note) {
+      if (item.note && item.note !== '') {
         Row() {
           Text(`备注: ${item.note}`)
-            .fontSize(14)
-            .fontColor('#666666')
+            .fontSize(12)
+            .fontColor('#999999')
         }
       }
     }
@@ -128,29 +190,29 @@ struct HealthHistoryPage {
 
   @Builder
   renderBloodPressureItem(item: BloodPressureData) {
-    Row() {
-      Column() {
+    Column() {
+      Row() {
         Text(formatDate(item.timestamp, 'YYYY-MM-DD HH:mm'))
           .fontSize(14)
           .fontColor('#666666')
-        Text(`血压: ${item.systolic}/${item.diastolic} mmHg`)
-          .fontSize(16)
-          .fontWeight(FontWeight.Medium)
-          .margin({ top: 4 })
       }
-      .layoutWeight(1)
+      
+      Row() {
+        Text(`${item.systolic}/${item.diastolic} mmHg`)
+          .fontSize(16)
+          .fontWeight(FontWeight.Bold)
+      }
 
       if (item.note && item.note !== '') {
-        Text(item.note)
-          .fontSize(12)
-          .fontColor('#999999')
+        Row() {
+          Text(`备注: ${item.note}`)
+            .fontSize(12)
+            .fontColor('#999999')
+        }
       }
     }
     .width('100%')
-    .padding(12)
-    .borderRadius(4)
-    .backgroundColor('#FFFFFF')
-    .margin({ bottom: 8 })
+    .padding(8)
   }
 
   private getMeasurementTypeText(type: string): string {
@@ -185,28 +247,50 @@ struct HealthHistoryPage {
 
   build() {
     NavDestination() {
-      List() {
-        ForEach(this.historyData, (item: HealthData) => {
-          ListItem() {
-            if (this.dataType == 'weight') {
-              this.renderWeightItem(item as WeightData);
-            } else if (this.dataType == 'bloodLipid') {
-              this.renderBloodLipidItem(item as BloodLipidData);
-            } else if (this.dataType == 'bloodSugar') {
-              this.renderBloodSugarItem(item as BloodSugarData);
-            } else if (this.dataType == 'uricAcid') {
-              this.renderUricAcidItem(item as UricAcidData);
-            } else if (this.dataType == 'bloodPressure') {
-              this.renderBloodPressureItem(item as BloodPressureData);
-            }
+      Column() {
+        if (this.isLoading) {
+          LoadingProgress()
+            .width(50)
+            .height(50)
+            .color('#2196F3')
+        } else if (this.historyData.length === 0) {
+          Column() {
+            Text(`暂无${this.getTitle()}历史记录`)
+              .fontSize(16)
+              .fontColor('#999999')
           }
-          .borderRadius(4)
-          .backgroundColor('#FFFFFF')
-          .margin({ bottom: 8 })
-        })
+          .width('100%')
+          .height('100%')
+          .justifyContent(FlexAlign.Center)
+        } else {
+          List() {
+            ForEach(this.historyData, (item: HealthData) => {
+              ListItem() {
+                if (this.dataType === 'weight') {
+                  this.renderWeightItem(item as WeightData);
+                } else if (this.dataType === 'bloodLipid') {
+                  this.renderBloodLipidItem(item as BloodLipidData);
+                } else if (this.dataType === 'bloodSugar') {
+                  this.renderBloodSugarItem(item as BloodSugarData);
+                } else if (this.dataType === 'uricAcid') {
+                  this.renderUricAcidItem(item as UricAcidData);
+                } else if (this.dataType === 'bloodPressure') {
+                  this.renderBloodPressureItem(item as BloodPressureData);
+                }
+              }
+              .borderRadius(4)
+              .backgroundColor('#FFFFFF')
+              .margin({ bottom: 8 })
+            })
+          }
+          .width('100%')
+          .height('100%')
+          .padding({ left: 16, right: 16, top: 8, bottom: 8 })
+        }
       }
       .width('100%')
       .height('100%')
+      .backgroundColor('#F5F5F5')
     }
     .title({
       main: "历史记录",

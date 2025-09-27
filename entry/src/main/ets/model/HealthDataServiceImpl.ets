@@ -4,8 +4,8 @@
 
 import { preferences } from '@kit.ArkData';
 import { Context } from '@ohos.abilityAccessCtrl';
-import { 
-  HealthData, 
+import {
+  HealthData,
   WeightData,
   BloodPressureData,
   BloodSugarData,
@@ -19,7 +19,7 @@ const HEALTH_DATA_PREFERENCE = 'health_data_preference';
 export class HealthDataServiceImpl {
   private dataStore: preferences.Preferences | null = null;
   private initialized: boolean = false;
-  private context?:Context
+  private context?: Context
 
   constructor(context?: Context) {
     this.context = context;
@@ -33,8 +33,8 @@ export class HealthDataServiceImpl {
     if (!this.initialized) {
       try {
         await preferences.getPreferences(this.context, {
-          name:HEALTH_DATA_PREFERENCE
-        }).then((store)=>{
+          name: HEALTH_DATA_PREFERENCE
+        }).then((store) => {
           this.dataStore = store;
           this.initialized = true;
         });
@@ -82,19 +82,21 @@ export class HealthDataServiceImpl {
    * @param data 健康数据
    */
   private async updateIndex(data: HealthData): Promise<void> {
-    if (!this.dataStore) return;
+    if (!this.dataStore) {
+      return;
+    }
 
     try {
       const dataType = data.id.split('_')[0];
       const indexKey = `index_${dataType}`;
-      
+
       let index: string[] = [];
       const indexValue = await this.dataStore.get(indexKey, '[]');
-      
+
       if (indexValue && typeof indexValue === 'string') {
         index = JSON.parse(indexValue);
       }
-      
+
       if (!index.includes(data.id)) {
         index.push(data.id);
         index.sort((a, b) => {
@@ -102,7 +104,7 @@ export class HealthDataServiceImpl {
           const timestampB = parseInt(b.split('_')[1]);
           return timestampB - timestampA;
         });
-        
+
         await this.dataStore.put(indexKey, JSON.stringify(index));
         await this.dataStore.flush();
       }
@@ -123,10 +125,14 @@ export class HealthDataServiceImpl {
 
     try {
       const dataStr = await this.dataStore.get(id, '');
-      if (!dataStr || typeof dataStr !== 'string') return null;
-      
+      if (!dataStr || typeof dataStr !== 'string') {
+        return null;
+      }
+
       const data = JSON.parse(dataStr) as HealthData;
-      if (!data.id || !data.timestamp) return null;
+      if (!data.id || !data.timestamp) {
+        return null;
+      }
       switch (data.id.split('_')[0]) {
         case 'weight':
           return data as WeightData;
@@ -161,14 +167,14 @@ export class HealthDataServiceImpl {
     try {
       const dataTypes = ['weight', 'bloodPressure', 'bloodSugar', 'uricAcid', 'bloodLipid'];
       const result: HealthData[] = [];
-      
+
       for (const dataType of dataTypes) {
         const indexKey = `index_${dataType}`;
         const indexValue = await this.dataStore.get(indexKey, '[]');
-        
+
         if (indexValue) {
           const index: string[] = JSON.parse(indexValue as string);
-          
+
           for (const id of index) {
             const data = await this.getDataById(id);
             if (data && data.timestamp >= startDate && data.timestamp <= endDate) {
@@ -177,7 +183,7 @@ export class HealthDataServiceImpl {
           }
         }
       }
-      
+
       result.sort((a, b) => a.timestamp - b.timestamp);
       return result;
     } catch (error) {
@@ -199,17 +205,21 @@ export class HealthDataServiceImpl {
     try {
       const indexKey = `index_${dataType}`;
       const indexValue = await this.dataStore.get(indexKey, '[]');
-      
-      if (!indexValue) return [];
-      
+
+      if (!indexValue) {
+        return [];
+      }
+
       const index: string[] = JSON.parse(indexValue as string);
       const result: HealthData[] = [];
-      
+
       for (const id of index) {
         const data = await this.getDataById(id);
-        if (data) result.push(data);
+        if (data) {
+          result.push(data);
+        }
       }
-      
+
       return result;
     } catch (error) {
       console.error(`获取类型数据失败: ${error}`);
@@ -231,13 +241,13 @@ export class HealthDataServiceImpl {
       const dataType = id.split('_')[0];
       const indexKey = `index_${dataType}`;
       const indexValue = await this.dataStore.get(indexKey, '[]');
-      
+
       if (indexValue) {
         const index: string[] = JSON.parse(indexValue as string);
         const newIndex: string[] = index.filter((item: string) => item !== id);
         await this.dataStore.put(indexKey, JSON.stringify(newIndex));
       }
-      
+
       await this.dataStore.delete(id);
       await this.dataStore.flush();
       return true;

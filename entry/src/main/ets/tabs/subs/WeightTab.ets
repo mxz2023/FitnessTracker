@@ -10,6 +10,7 @@ import { HealthStatusIndicator } from '../../commonents/HealthStatusIndicator';
 import { MTextInput } from '../../commonui/MTextInput';
 import { MButton } from '../../commonui/MButton';
 import { getAppPathStack } from '../../utils/PathStackUtils';
+import { showToast } from '../../utils/ToastUtils';
 
 @ComponentV2
 export struct WeightTab {
@@ -57,9 +58,9 @@ export struct WeightTab {
     if (ok) {
       this.healthStatus = evaluateWeightStatus(Number(this.weightInputText), Number(this.heightInputText));
       await this.loadHistoryData();
-      promptAction.showToast({ message: '保存成功' });
+      showToast(this.getUIContext(), "保存成功")
     } else {
-      promptAction.showToast({ message: '保存失败' });
+      showToast(this.getUIContext(), "保存失败")
     }
   }
 
