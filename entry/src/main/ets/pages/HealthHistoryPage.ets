@@ -10,8 +10,17 @@ import {
   HealthData,
   BloodPressureData
 } from '../model/HealthDataModel';
+import { ChartOptions, XAxis, YAxis } from '../thirds/EChart/EChartOption';
+import { MChart } from '../thirds/MChart';
 import { formatDate } from '../utils/HealthUtils';
 import { StorageUtils } from '../utils/StorageUtils';
+
+interface ChartDataItem {
+  x: string;
+  y: number;
+  y2?: number;
+  y3?: number;
+}
 
 type HealthDataType = 'weight' | 'bloodPressure' | 'bloodLipid' | 'bloodSugar' | 'uricAcid';
 
@@ -19,10 +28,12 @@ type HealthDataType = 'weight' | 'bloodPressure' | 'bloodLipid' | 'bloodSugar' |
 @ComponentV2
 struct HealthHistoryPage {
   @Param @Require dataType: HealthDataType
-  @Local private historyData: Array<WeightData | BloodLipidData | BloodSugarData | UricAcidData | BloodPressureData> = []
+  @Local private historyData: Array<WeightData | BloodLipidData | BloodSugarData | UricAcidData | BloodPressureData> =
+    []
   @Local private isLoading: boolean = true;
   private storageUtils: StorageUtils = StorageUtils.getInstance(this.getUIContext().getHostContext());
   private pathInfos?: NavPathStack
+  @Local options: ChartOptions = {};
 
   aboutToAppear() {
     this.loadHistoryData();
@@ -35,7 +46,7 @@ struct HealthHistoryPage {
     this.isLoading = true;
     try {
       const data = await this.storageUtils.getHealthDataByType(this.dataType);
-      
+
       // 根据数据类型进行类型转换
       switch (this.dataType) {
         case 'weight':
@@ -54,13 +65,85 @@ struct HealthHistoryPage {
           this.historyData = data as BloodLipidData[];
           break;
       }
-      
+
       // 按时间降序排序，最新的记录显示在前面
       this.historyData.sort((a, b) => b.timestamp - a.timestamp);
+
+      // 生成图表数据
+      this.generateChartData();
     } catch (error) {
       console.error(`加载${this.getTitle()}历史数据失败: ${error}`);
     } finally {
       this.isLoading = false;
+    }
+  }
+
+  /**
+   * 生成图表数据
+   */
+  generateChartData() {
+    if (this.dataType === 'weight' || this.dataType === 'bloodSugar' || this.dataType === 'uricAcid') {
+      this.options = {
+        xAxis: {
+          data: ['A', 'B', 'C', 'D', 'E']
+        } as XAxis,
+        yAxis: {} as YAxis,
+        series: [
+          {
+            data: this.historyData.map(item => (item as WeightData | BloodSugarData | UricAcidData).value),
+            type: 'line',
+            smooth: true
+          }
+        ]
+      };
+    } else if (this.dataType === 'bloodLipid') {
+      this.options = {
+        xAxis: {
+          data: ['A', 'B', 'C', 'D', 'E']
+        } as XAxis,
+        yAxis: {} as YAxis,
+        series: [
+          {
+            data: this.historyData.map(item => (item as BloodLipidData).totalCholesterol),
+            type: 'line',
+            smooth: true,
+            stack: 'x'
+          },
+          {
+            data: this.historyData.map(item => (item as BloodLipidData).hdlCholesterol),
+            type: 'line',
+            smooth: true,
+            stack: 'x'
+          },
+          {
+            data: this.historyData.map(item => (item as BloodLipidData).ldlCholesterol),
+            type: 'line',
+            smooth: true,
+            stack: 'x'
+          }
+        ]
+      };
+    } else if (this.dataType === 'bloodPressure') {
+      this.options = {
+        xAxis: {
+          data: ['A', 'B', 'C', 'D', 'E']
+        } as XAxis,
+        yAxis: {} as YAxis,
+        series: [
+          {
+            data: this.historyData.map(item => (item as BloodPressureData).systolic),
+            type: 'line',
+            smooth: true,
+            stack: 'x'
+          },
+          {
+            data: this.historyData.map(item => (item as BloodPressureData).diastolic),
+            type: 'line',
+            smooth: true,
+            stack: 'x'
+          }
+        ]
+      };
     }
   }
 
@@ -78,7 +161,7 @@ struct HealthHistoryPage {
           .fontSize(16)
           .fontWeight(FontWeight.Bold)
       }
-      
+
       if (item.note && item.note !== '') {
         Row() {
           Text(`备注: ${item.note}`)
@@ -117,7 +200,7 @@ struct HealthHistoryPage {
       Text('单位: mmol/L')
         .fontSize(12)
         .fontColor('#999999')
-        
+
       if (item.note && item.note !== '') {
         Row() {
           Text(`备注: ${item.note}`)
@@ -148,7 +231,7 @@ struct HealthHistoryPage {
           .fontColor('#666666')
           .margin({ left: 8 })
       }
-      
+
       if (item.note && item.note !== '') {
         Row() {
           Text(`备注: ${item.note}`)
@@ -196,7 +279,7 @@ struct HealthHistoryPage {
           .fontSize(14)
           .fontColor('#666666')
       }
-      
+
       Row() {
         Text(`${item.systolic}/${item.diastolic} mmHg`)
           .fontSize(16)
@@ -249,10 +332,15 @@ struct HealthHistoryPage {
     NavDestination() {
       Column() {
         if (this.isLoading) {
-          LoadingProgress()
-            .width(50)
-            .height(50)
-            .color('#2196F3')
+          Column() {
+            LoadingProgress()
+              .width(50)
+              .height(50)
+              .color('#2196F3')
+          }
+          .width('100%')
+          .height('100%')
+          .justifyContent(FlexAlign.Center)
         } else if (this.historyData.length === 0) {
           Column() {
             Text(`暂无${this.getTitle()}历史记录`)
@@ -263,6 +351,14 @@ struct HealthHistoryPage {
           .height('100%')
           .justifyContent(FlexAlign.Center)
         } else {
+          Column() {
+            MChart({
+              options: this.options
+            })
+          }
+          .width('100%')
+          .height('200')
+
           List() {
             ForEach(this.historyData, (item: HealthData) => {
               ListItem() {
@@ -284,8 +380,13 @@ struct HealthHistoryPage {
             })
           }
           .width('100%')
-          .height('100%')
-          .padding({ left: 16, right: 16, top: 8, bottom: 8 })
+          .layoutWeight(1)
+          .padding({
+            left: 16,
+            right: 16,
+            top: 8,
+            bottom: 8
+          })
         }
       }
       .width('100%')

@@ -1,7 +1,6 @@
 /**
  * 血压Tab组件
  */
-import { promptAction } from '@kit.ArkUI';
 
 import { BloodPressureData, HealthStatus } from '../../model/HealthDataModel';
 import { HealthDataServiceImpl } from '../../model/HealthDataServiceImpl';
@@ -10,6 +9,7 @@ import { HealthStatusIndicator } from '../../commonents/HealthStatusIndicator';
 import { MTextInput } from '../../commonui/MTextInput';
 import { MButton } from '../../commonui/MButton';
 import { getAppPathStack } from '../../utils/PathStackUtils';
+import { showToast } from '../../utils/ToastUtils';
 
 @ComponentV2
 export struct BloodPressureTab {
@@ -45,7 +45,7 @@ export struct BloodPressureTab {
 
   async saveBloodPressureData() {
     if (this.systolicValue <= 0 || this.diastolicValue <= 0) {
-      promptAction.showToast({ message: '请输入有效的血压值' });
+      showToast(this.getUIContext(), "请输入有效的血压值");
       return;
     }
     const now = Date.now();
@@ -60,9 +60,9 @@ export struct BloodPressureTab {
       this.latestData = record;
       this.healthStatus = evaluateBloodPressureStatus(record);
       await this.loadHistoryData();
-      promptAction.showToast({ message: '保存成功' });
+      showToast(this.getUIContext(), "保存成功");
     } else {
-      promptAction.showToast({ message: '保存失败' });
+      showToast(this.getUIContext(), "保存失败");
     }
   }
 

@@ -10,6 +10,7 @@ import { HealthStatusIndicator } from '../../commonents/HealthStatusIndicator';
 import { MTextInput } from '../../commonui/MTextInput';
 import { MButton } from '../../commonui/MButton';
 import { getAppPathStack } from '../../utils/PathStackUtils';
+import { showToast } from '../../utils/ToastUtils';
 
 @ComponentV2
 export struct BloodSugarTab {
@@ -44,7 +45,7 @@ export struct BloodSugarTab {
 
   async saveBloodSugarData() {
     if (this.bloodSugarValue <= 0) {
-      promptAction.showToast({ message: '请输入有效的血糖值' });
+      showToast(this.getUIContext(), "请输入有效的血糖值");
       return;
     }
     const now = Date.now();
@@ -60,9 +61,9 @@ export struct BloodSugarTab {
       this.latestData = record;
       this.healthStatus = evaluateBloodSugarStatus(this.bloodSugarValue, this.measurementType);
       await this.loadHistoryData();
-      promptAction.showToast({ message: '保存成功' });
+      showToast(this.getUIContext(), "保存成功");
     } else {
-      promptAction.showToast({ message: '保存失败' });
+      showToast(this.getUIContext(), "保存失败");
     }
   }
 

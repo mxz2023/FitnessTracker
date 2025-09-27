@@ -1,7 +1,6 @@
 /**
  * 体重Tab组件
  */
-import { promptAction } from '@kit.ArkUI';
 
 import { WeightData, HealthStatus } from '../../model/HealthDataModel';
 import { HealthDataServiceImpl } from '../../model/HealthDataServiceImpl';
@@ -51,16 +50,16 @@ export struct WeightTab {
 
   async saveWeightData() {
     if (Number(this.weightInputText) <= 0) {
-      promptAction.showToast({ message: '请输入有效的体重值' });
+      showToast(this.getUIContext(), "请输入有效的体重值");
       return;
     }
     const ok = await this.saveAveragedToday();
     if (ok) {
       this.healthStatus = evaluateWeightStatus(Number(this.weightInputText), Number(this.heightInputText));
       await this.loadHistoryData();
-      showToast(this.getUIContext(), "保存成功")
+      showToast(this.getUIContext(), "保存成功");
     } else {
-      showToast(this.getUIContext(), "保存失败")
+      showToast(this.getUIContext(), "保存失败");
     }
   }
 

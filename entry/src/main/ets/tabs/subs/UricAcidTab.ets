@@ -1,7 +1,6 @@
 /**
  * 尿酸指标Tab组件
  */
-import { promptAction } from '@kit.ArkUI';
 
 import { UricAcidData, HealthStatus, Gender } from '../../model/HealthDataModel';
 import { HealthDataServiceImpl } from '../../model/HealthDataServiceImpl';
@@ -10,6 +9,7 @@ import { HealthStatusIndicator } from '../../commonents/HealthStatusIndicator';
 import { MTextInput } from '../../commonui/MTextInput';
 import { MButton } from '../../commonui/MButton';
 import { getAppPathStack } from '../../utils/PathStackUtils';
+import { showToast } from '../../utils/ToastUtils';
 
 @ComponentV2
 export struct UricAcidTab {
@@ -37,7 +37,7 @@ export struct UricAcidTab {
   async saveData() {
     const value = this.inputValue
     if (isNaN(value) || value <= 0) {
-      promptAction.showToast({ message: '请输入有效的尿酸值' })
+      showToast(this.getUIContext(), "请输入有效的尿酸值");
       return
     }
     const record: UricAcidData = {
@@ -51,9 +51,9 @@ export struct UricAcidTab {
     if (ok) {
       this.inputNote = ''
       await this.loadData()
-      promptAction.showToast({ message: '保存成功' })
+      showToast(this.getUIContext(), "保存成功");
     } else {
-      promptAction.showToast({ message: '保存失败' })
+      showToast(this.getUIContext(), "保存失败");
     }
   }
 
