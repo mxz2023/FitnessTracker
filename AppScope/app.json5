@@ -2,7 +2,7 @@
   "app": {
     "bundleName": "com.atomicservice.6917584727725297756",
     "bundleType": "atomicService",
-    "vendor": "example",
+    "vendor": "zhongyafeng",
     "versionCode": 1000000,
     "versionName": "1.0.0",
     "icon": "$media:app_icon",
