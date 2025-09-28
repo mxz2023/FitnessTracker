@@ -13,21 +13,47 @@
           "storeFile": "/Users/gemini/.ohos/config/default_FitnessTracker_c4MV3RMX_PXXgOSLzthGisLPeqnnO2rpOEjTEyljkw0=.p12",
           "storePassword": "0000001B077204FEF952B82B078DB9F84B9DF4C2F1857D2ACB604B28BD5D0A532F1B08BFDE54270FBB32F0"
         }
+      },
+      {
+        "name": "prod",
+        "type": "HarmonyOS",
+        "material": {
+          "storeFile": "/Users/gemini/Documents/开发者/鸿蒙开发者证书/叶记时光/timeimprint.p12",
+          "storePassword": "000000188716312E49FA96799A799984145022E23DB8765CA2D4DF5E851247199B95BAB55C0B4886",
+          "keyAlias": "timeimprint",
+          "keyPassword": "00000018B5FB1037B65A31E6993FE23035B7A88AED09CDB7291B2ADE281566EBD32522D7B0545C2E",
+          "signAlg": "SHA256withECDSA",
+          "profile": "/Users/gemini/Documents/开发者/鸿蒙开发者证书/叶记时光/release_ato_fitness_tracker.p7b",
+          "certpath": "/Users/gemini/Documents/开发者/鸿蒙开发者证书/叶记时光/prod.cer"
+        }
       }
     ],
     "products": [
       {
         "name": "default",
         "signingConfig": "default",
-        "targetSdkVersion": "5.1.1(19)",
-        "compatibleSdkVersion": "5.1.1(19)",
+        "compatibleSdkVersion": "5.0.0(12)",
         "runtimeOS": "HarmonyOS",
         "buildOption": {
           "strictMode": {
             "caseSensitiveCheck": true,
-            "useNormalizedOHMUrl": false
+            "useNormalizedOHMUrl": true
           }
-        }
+        },
+        "targetSdkVersion": "5.0.0(12)"
+      },
+      {
+        "name": "prod",
+        "signingConfig": "prod",
+        "compatibleSdkVersion": "5.0.0(12)",
+        "runtimeOS": "HarmonyOS",
+        "buildOption": {
+          "strictMode": {
+            "caseSensitiveCheck": true,
+            "useNormalizedOHMUrl": true
+          }
+        },
+        "targetSdkVersion": "5.0.0(12)"
       }
     ],
     "buildModeSet": [
@@ -47,7 +73,8 @@
         {
           "name": "default",
           "applyToProducts": [
-            "default"
+            "default",
+            "prod"
           ]
         }
       ]
