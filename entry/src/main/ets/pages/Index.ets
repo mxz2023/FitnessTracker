@@ -3,7 +3,7 @@
  */
 
 import { CommonDefine } from '../common/CommonDefine';
-import { TabsComponent } from '../tabs/TabsComponent';
+import { HealthOverviewView } from '../views/HealthOverviewView';
 
 
 @Entry
@@ -17,7 +17,7 @@ struct Index {
 
   build() {
     Navigation(this.pathStack) {
-      TabsComponent()
+      HealthOverviewView()
     }
     .title('健康监测')
     .titleMode(NavigationTitleMode.Mini)

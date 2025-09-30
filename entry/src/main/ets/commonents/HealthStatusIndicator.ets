@@ -13,16 +13,14 @@ export struct HealthStatusIndicator {
 
   build() {
     Row({ space: 4 }) {
-      Circle()
-        .width(this.indicatorSize)
-        .height(this.indicatorSize)
-        .fill(getHealthStatusColor(this.status))
-
       if (this.showText) {
         Text(getHealthStatusText(this.status))
           .fontSize(Math.floor(this.indicatorSize * 0.7))
           .fontColor(getHealthStatusColor(this.status))
       }
+      SymbolGlyph($r('sys.symbol.circle_inset_filled'))
+        .fontSize(18)
+        .fontColor([getHealthStatusColor(this.status)])
     }
   }
 }

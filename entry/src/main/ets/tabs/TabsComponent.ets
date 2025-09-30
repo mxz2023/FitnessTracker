@@ -2,11 +2,11 @@
  * 健康监测应用Tab组件
  */
 
-import { WeightTab } from './subs/WeightTab';
-import { BloodPressureTab } from './subs/BloodPressureTab';
-import { BloodSugarTab } from './subs/BloodSugarTab';
-import { UricAcidTab } from './subs/UricAcidTab';
-import { BloodLipidTab } from './subs/BloodLipidTab';
+import { WeightTab } from '../views/subs/WeightTab';
+import { BloodPressureTab } from '../views/subs/BloodPressureTab';
+import { BloodSugarTab } from '../views/subs/BloodSugarTab';
+import { UricAcidTab } from '../views/subs/UricAcidTab';
+import { BloodLipidTab } from '../views/subs/BloodLipidTab';
 
 // 定义Tab项的接口
 interface TabItem {
