@@ -49,24 +49,24 @@
       "value": "#c6c6c6"
     },
     {
-      "name": "gray1",
-      "value": "#f3f3f3"
-    },
-    {
-      "name": "gray5",
-      "value": "#c6c6c6"
-    },
-    {
-      "name": "gray10",
-      "value": "#4b4b4b"
-    },
-    {
       "name": "view_background_color",
       "value": "#f4f2f8"
     },
     {
       "name": "line_color",
       "value": "#c6c6c6"
+    },
+    {
+      "name": "text_333",
+      "value": "#333333"
+    },
+    {
+      "name": "text_666",
+      "value": "#666666"
+    },
+    {
+      "name": "text_999",
+      "value": "#999999"
     }
   ]
 }

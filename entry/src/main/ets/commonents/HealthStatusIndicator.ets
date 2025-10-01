@@ -9,17 +9,16 @@ import { getHealthStatusColor, getHealthStatusText } from '../utils/HealthUtils'
 export struct HealthStatusIndicator {
   @Prop status: HealthStatus = HealthStatus.EXCELLENT;
   @Prop showText: boolean = true;
-  @Prop indicatorSize: number = 24;
 
   build() {
     Row({ space: 4 }) {
       if (this.showText) {
         Text(getHealthStatusText(this.status))
-          .fontSize(Math.floor(this.indicatorSize * 0.7))
+          .fontSize($r('app.float.font_size_small'))
           .fontColor(getHealthStatusColor(this.status))
       }
       SymbolGlyph($r('sys.symbol.circle_inset_filled'))
-        .fontSize(18)
+        .fontSize($r('app.float.font_size_normal'))
         .fontColor([getHealthStatusColor(this.status)])
     }
   }

@@ -7,6 +7,18 @@
     {
       "name": "font_weight_bold",
       "value": 600
+    },
+    {
+      "name": "view_margin",
+      "value": 12
+    },
+    {
+      "name": "view_padding",
+      "value": 16
+    },
+    {
+      "name": "view_space",
+      "value": 8
     }
   ]
 }

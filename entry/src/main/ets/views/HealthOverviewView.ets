@@ -36,7 +36,6 @@ interface HealthCardData {
 export struct HealthOverviewView {
   @Local private nAge: number = 0; // 年龄
   @Local private nGender: Gender = Gender.UNKNOWN;
-
   @Local private nHeight: number = 0; // 身高，单位:cm
   @Local private nWeight: number = 0; // 体重，单位:g
   @Local private nBloodSugar: number = 0; // 血糖，单位:mmol/L
@@ -128,72 +127,76 @@ export struct HealthOverviewView {
       // 卡片头部 - 标题和状态指示器
       Row() {
         Text(cardData.title)
-          .fontSize(16)
+          .fontSize($r('app.float.font_size_medium'))
           .fontWeight(FontWeight.Medium)
-          .fontColor('#333333')
+          .fontColor($r('app.color.text_333'))
 
         Blank()
 
         HealthStatusIndicator({
           status: cardData.status,
           showText: true,
-          indicatorSize: 16
         })
       }
       .width('100%')
-      .margin({ bottom: 12 })
+      .margin({ bottom: $r('app.integer.view_margin') })
 
       // 数值显示
       Row({ space: 4 }) {
         Text(cardData.value)
           .lineHeight(30)
-          .fontSize(28)
+          .fontSize($r('app.float.font_size_nav_title'))
           .fontWeight(FontWeight.Bold)
-          .fontColor('#1a1a1a')
+          .fontColor($r('app.color.text_333'))
           .alignSelf(ItemAlign.End)
 
         if (cardData.unit) {
           Text(cardData.unit)
             .lineHeight(30)
-            .fontSize(14)
-            .fontColor('#666666')
+            .fontSize($r('app.float.font_size_normal'))
+            .fontColor($r('app.color.text_666'))
             .alignSelf(ItemAlign.End)
-            .margin({ bottom: 2 })
         }
       }
       .width('100%')
       .justifyContent(FlexAlign.Start)
       .alignItems(VerticalAlign.Center)
-      .margin({ bottom: 8 })
+      .margin({ bottom: $r('app.integer.view_margin') })
 
       Row() {
         // 日期信息
         if (cardData.date) {
           Row({ space: 4 }) {
             SymbolGlyph($r('sys.symbol.time_inerval'))
-              .fontSize(12)
-              .fontColor(['#999999'])
+              .fontSize($r('app.float.font_size_normal'))
+              .fontColor([$r('app.color.text_999')])
 
             Text(`${cardData.date}`)
-              .fontSize(12)
-              .fontColor('#999999')
+              .fontSize($r('app.float.font_size_normal'))
+              .fontColor($r('app.color.text_999'))
               .alignSelf(ItemAlign.Start)
           }
         }
 
-        SymbolGlyph($r('sys.symbol.plus_circle_fill'))
-          .fontSize(18)
-          .fontColor(['#f6685d'])
+        Column() {
+          SymbolGlyph($r('sys.symbol.plus_circle_fill'))
+            .fontSize(18)
+            .fontColor([$r('app.color.red')])
+        }
+        // .backgroundColor("#00FF00")
+        .width(30)
+        .height(30)
+        .justifyContent(FlexAlign.Center)
+        .alignItems(HorizontalAlign.End)
       }
       .width('100%')
       .justifyContent(FlexAlign.SpaceBetween)
-
     }
     .width('100%')
     .height(120)
     .alignItems(HorizontalAlign.Start)
-    .padding(16)
-    .backgroundColor('#FFFFFF')
+    .padding($r('app.integer.view_padding'))
+    .backgroundColor($r('app.color.white'))
     .borderRadius(8)
     .shadow({
       radius: 4,
@@ -209,45 +212,44 @@ export struct HealthOverviewView {
     Column() {
       Row() {
         Text('叶记健康')
-          .fontSize(24)
+          .fontSize($r('app.float.font_size_large_title'))
           .fontWeight(FontWeight.Medium)
-          .fontColor('#333333')
+          .fontColor($r('app.color.text_333'))
 
         SymbolGlyph($r('sys.symbol.doc_plaintext_and_pencil'))
           .fontSize(24)
-          .fontColor([$r('app.color.gray')])
+          .fontColor([$r('app.color.text_666')])
       }
       .width('100%')
-      .margin({ bottom: 16 })
+      .margin({ bottom: $r('app.integer.view_margin')  })
       .alignItems(VerticalAlign.Bottom)
       .justifyContent(FlexAlign.SpaceBetween)
 
       Row() {
         Row() {
-          Row({ space: 12 }) {
+          Row({ space: $r('app.integer.view_space') }) {
             Text(this.nGender)
-              .fontSize(18)
+              .fontSize($r('app.float.font_size_large'))
               .fontWeight(FontWeight.Medium)
-              .fontColor('#333333')
+              .fontColor($r('app.color.text_333'))
 
             Text(this.isValid(this.nAge) ? `${this.nAge}` : 'N/A')
-              .fontSize(18)
+              .fontSize($r('app.float.font_size_large'))
               .fontWeight(FontWeight.Medium)
-              .fontColor('#333333')
+              .fontColor($r('app.color.text_333'))
           }
           .layoutWeight(2)
 
-          Row({ space: 4 }) {
+          Row({ space: $r('app.integer.view_space') }) {
             Text(this.isValid(this.nHeight) ? `${this.nHeight}` : 'N/A')
-              .fontSize(20)
-              .fontWeight(FontWeight.Bold)
-              .fontColor('#1a1a1a')
+              .fontSize($r('app.float.font_size_large'))
+              .fontWeight(FontWeight.Medium)
+              .fontColor($r('app.color.text_333'))
 
             Text('cm')
-              .fontSize(12)
-              .fontColor('#666666')
+              .fontSize($r('app.float.font_size_normal'))
+              .fontColor($r('app.color.text_666'))
               .alignSelf(ItemAlign.End)
-              .margin({ bottom: 2 })
           }
           .layoutWeight(1)
           .alignItems(VerticalAlign.Bottom)
@@ -260,8 +262,8 @@ export struct HealthOverviewView {
       .width('100%')
     }
     .width('100%')
-    .padding(16)
-    .backgroundColor('#FFFFFF')
+    .padding($r('app.integer.view_padding'))
+    .backgroundColor($r('app.color.white'))
     .borderRadius(8)
     .shadow({
       radius: 4,
@@ -275,7 +277,7 @@ export struct HealthOverviewView {
     Column() {
       // 滚动容器
       Scroll() {
-        Column({ space: 16 }) {
+        Column({ space: $r('app.integer.view_space') }) {
           // 基本信息卡片
           this.BasicInfoCard()
 
@@ -288,18 +290,18 @@ export struct HealthOverviewView {
             })
           }
           .columnsTemplate('1fr 1fr')
-          .rowsGap(16)
-          .columnsGap(16)
+          .rowsGap($r('app.integer.view_space'))
+          .columnsGap($r('app.integer.view_space'))
           .width('100%')
         }
         .height('100%')
-        .padding(16)
+        .padding($r('app.integer.view_padding'))
       }
       .layoutWeight(1)
       .scrollBar(BarState.Off)
     }
     .width('100%')
     .height('100%')
-    .backgroundColor('#F5F5F5')
+    .backgroundColor($r('app.color.view_background_color'))
   }
 }
