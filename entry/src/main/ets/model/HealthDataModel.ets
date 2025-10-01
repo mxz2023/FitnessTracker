@@ -4,16 +4,18 @@
 
 // 健康状态枚举
 export enum HealthStatus {
+  UNKNOWN = 'unknown',  // 未知/不参与计算
   EXCELLENT = 'excellent', // 优
   GOOD = 'good',          // 良
   MODERATE = 'moderate',  // 中
-  POOR = 'poor'           // 差
+  POOR = 'poor',          // 差
 }
 
 // 性别枚举
 export enum Gender {
-  MALE = 'male',
-  FEMALE = 'female'
+  UNKNOWN = 'N/A',  // 未知/不参与计算
+  MALE = '男',
+  FEMALE = '女'
 }
 
 // 测量类型枚举

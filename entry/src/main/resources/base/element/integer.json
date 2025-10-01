@@ -1,0 +1,12 @@
+{
+  "integer": [
+    {
+      "name": "font_weight_normal",
+      "value": 400
+    },
+    {
+      "name": "font_weight_bold",
+      "value": 600
+    }
+  ]
+}

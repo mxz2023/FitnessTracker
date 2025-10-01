@@ -20,7 +20,7 @@ import {
   evaluateBloodPressureStatus,
   evaluateBloodSugarStatus,
   evaluateUricAcidStatus,
-  evaluateBloodLipidStatus
+  evaluateBloodLipidStatus,
 } from '../utils/HealthUtils';
 
 // 健康指标卡片数据接口
@@ -34,13 +34,40 @@ interface HealthCardData {
 
 @ComponentV2
 export struct HealthOverviewView {
-  @Local private nHeight: number = 175; // 身高，单位cm
-  @Local private weight: number = 70; // 体重，单位kg
-  @Local private bloodSugar: number = 5.2; // 血糖，单位mmol/L
-  @Local private bloodPressureSystolic: number = 120; // 收缩压
-  @Local private bloodPressureDiastolic: number = 80; // 舒张压
-  @Local private uricAcid: number = 350; // 尿酸，单位μmol/L
-  @Local private totalCholesterol: number = 4.5; // 总胆固醇，单位mmol/L
+  @Local private nAge: number = 0; // 年龄
+  @Local private nGender: Gender = Gender.UNKNOWN;
+
+  @Local private nHeight: number = 0; // 身高，单位:cm
+  @Local private nWeight: number = 0; // 体重，单位:g
+  @Local private nBloodSugar: number = 0; // 血糖，单位:mmol/L
+  @Local private nBloodPressureSystolic: number = 0; // 收缩压
+  @Local private nBloodPressureDiastolic: number = 0; // 舒张压
+  @Local private nUricAcid: number = 0; // 尿酸，单位:μmol/L
+  @Local private nTotalCholesterol: number = 0; // 总胆固醇，单位:mmol/L
+
+  aboutToAppear(): void {
+
+
+  }
+
+  // 将数值转换为显示字符串，0 则显示 N/A
+  private toDisplay(value: number): string {
+    return value !== 0 ? `${value}` : 'N/A';
+  }
+
+  // 判断数值是否有效（非 0）
+  private isValid(value: number): boolean {
+    return value !== 0;
+  }
+
+  // 血压专用显示与校验
+  private isValidBP(systolic: number, diastolic: number): boolean {
+    return systolic !== 0 && diastolic !== 0;
+  }
+
+  private toDisplayBP(systolic: number, diastolic: number): string {
+    return this.isValidBP(systolic, diastolic) ? `${systolic}/${diastolic}` : 'N/A';
+  }
 
   // 获取健康卡片数据
   private getHealthCardData(): HealthCardData[] {
@@ -49,42 +76,46 @@ export struct HealthOverviewView {
     return [
       {
         title: '体重',
-        value: this.weight.toString(),
+        value: this.toDisplay(this.nWeight),
         unit: 'kg',
-        status: evaluateWeightStatus(this.weight, this.nHeight / 100),
+        status: this.isValid(this.nWeight) ? evaluateWeightStatus(this.nWeight, this.nHeight / 100) :
+          HealthStatus.UNKNOWN,
         date: currentDate
       },
       {
         title: '血糖',
-        value: this.bloodSugar.toString(),
+        value: this.toDisplay(this.nBloodSugar),
         unit: 'mmol/L',
-        status: evaluateBloodSugarStatus(this.bloodSugar, MeasurementType.FASTING), // 0 表示空腹
+        status: this.isValid(this.nBloodSugar) ? evaluateBloodSugarStatus(this.nBloodSugar, MeasurementType.FASTING) :
+          HealthStatus.UNKNOWN,
         date: currentDate
       },
       {
         title: '血脂',
-        value: this.totalCholesterol.toString(),
+        value: this.toDisplay(this.nTotalCholesterol),
         unit: 'mmol/L',
-        status: this.totalCholesterol <= 5.2 ? HealthStatus.EXCELLENT :
-          this.totalCholesterol <= 5.7 ? HealthStatus.GOOD :
-            this.totalCholesterol <= 6.5 ? HealthStatus.MODERATE : HealthStatus.POOR,
+        status: this.isValid(this.nTotalCholesterol) ? this.nTotalCholesterol <= 5.2 ? HealthStatus.EXCELLENT :
+          this.nTotalCholesterol <= 5.7 ? HealthStatus.GOOD :
+            this.nTotalCholesterol <= 6.5 ? HealthStatus.MODERATE : HealthStatus.POOR : HealthStatus.UNKNOWN,
         date: currentDate
       },
       {
         title: '尿酸',
-        value: this.uricAcid.toString(),
+        value: this.toDisplay(this.nUricAcid),
         unit: 'μmol/L',
-        status: evaluateUricAcidStatus(this.uricAcid, Gender.MALE), // 0 表示男性
+        status: this.isValid(this.nUricAcid) ? evaluateUricAcidStatus(this.nUricAcid, Gender.MALE) :
+          HealthStatus.UNKNOWN,
         date: currentDate
       },
       {
         title: '血压',
-        value: `${this.bloodPressureSystolic}/${this.bloodPressureDiastolic}`,
+        value: this.toDisplayBP(this.nBloodPressureSystolic, this.nBloodPressureDiastolic),
         unit: 'mmHg',
-        status: this.bloodPressureSystolic <= 120 && this.bloodPressureDiastolic <= 80 ? HealthStatus.EXCELLENT :
-          this.bloodPressureSystolic <= 130 && this.bloodPressureDiastolic <= 85 ? HealthStatus.GOOD :
-            this.bloodPressureSystolic <= 140 && this.bloodPressureDiastolic <= 90 ? HealthStatus.MODERATE :
-              HealthStatus.POOR,
+        status: this.isValidBP(this.nBloodPressureSystolic, this.nBloodPressureDiastolic) ?
+          this.nBloodPressureSystolic <= 120 && this.nBloodPressureDiastolic <= 80 ? HealthStatus.EXCELLENT :
+            this.nBloodPressureSystolic <= 130 && this.nBloodPressureDiastolic <= 85 ? HealthStatus.GOOD :
+              this.nBloodPressureSystolic <= 140 && this.nBloodPressureDiastolic <= 90 ? HealthStatus.MODERATE :
+                HealthStatus.POOR : HealthStatus.UNKNOWN,
         date: currentDate
       }
     ];
@@ -184,7 +215,7 @@ export struct HealthOverviewView {
 
         SymbolGlyph($r('sys.symbol.doc_plaintext_and_pencil'))
           .fontSize(24)
-          .fontColor([$r('app.color.icon_secondary')])
+          .fontColor([$r('app.color.gray')])
       }
       .width('100%')
       .margin({ bottom: 16 })
@@ -194,12 +225,12 @@ export struct HealthOverviewView {
       Row() {
         Row() {
           Row({ space: 12 }) {
-            Text('男')
+            Text(this.nGender)
               .fontSize(18)
               .fontWeight(FontWeight.Medium)
               .fontColor('#333333')
 
-            Text('40岁')
+            Text(this.isValid(this.nAge) ? `${this.nAge}` : 'N/A')
               .fontSize(18)
               .fontWeight(FontWeight.Medium)
               .fontColor('#333333')
@@ -207,7 +238,7 @@ export struct HealthOverviewView {
           .layoutWeight(2)
 
           Row({ space: 4 }) {
-            Text(this.nHeight.toString())
+            Text(this.isValid(this.nHeight) ? `${this.nHeight}` : 'N/A')
               .fontSize(20)
               .fontWeight(FontWeight.Bold)
               .fontColor('#1a1a1a')

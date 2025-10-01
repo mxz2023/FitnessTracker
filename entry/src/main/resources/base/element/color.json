@@ -2,15 +2,71 @@
   "color": [
     {
       "name": "start_window_background",
-      "value": "#F5BA18"
+      "value": "#FFFFFF"
     },
     {
-      "name": "icon_primary",
-      "value": "#2196F3"
+      "name": "white",
+      "value": "#ffffff"
     },
     {
-      "name": "icon_secondary",
-      "value": "#666666"
+      "name": "black",
+      "value": "#3E4248"
+    },
+    {
+      "name": "blue",
+      "value": "#618dff"
+    },
+    {
+      "name": "red",
+      "value": "#f6685d"
+    },
+    {
+      "name": "orange",
+      "value": "#e37318"
+    },
+    {
+      "name": "green",
+      "value": "#2ba471"
+    },
+    {
+      "name": "cyan",
+      "value": "#41b8f2"
+    },
+    {
+      "name": "purple",
+      "value": "#c69cff"
+    },
+    {
+      "name": "yellow",
+      "value": "#f5ba18"
+    },
+    {
+      "name": "pink",
+      "value": "#ff79cd"
+    },
+    {
+      "name": "gray",
+      "value": "#c6c6c6"
+    },
+    {
+      "name": "gray1",
+      "value": "#f3f3f3"
+    },
+    {
+      "name": "gray5",
+      "value": "#c6c6c6"
+    },
+    {
+      "name": "gray10",
+      "value": "#4b4b4b"
+    },
+    {
+      "name": "view_background_color",
+      "value": "#f4f2f8"
+    },
+    {
+      "name": "line_color",
+      "value": "#c6c6c6"
     }
   ]
 }
