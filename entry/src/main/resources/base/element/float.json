@@ -2,19 +2,19 @@
   "float": [
     {
       "name": "font_size_small",
-      "value": "12fp"
-    },
-    {
-      "name": "font_size_normal",
       "value": "14fp"
     },
     {
-      "name": "font_size_medium",
+      "name": "font_size_normal",
       "value": "16fp"
     },
     {
-      "name": "font_size_large",
+      "name": "font_size_medium",
       "value": "18fp"
+    },
+    {
+      "name": "font_size_large",
+      "value": "20fp"
     },
     {
       "name": "font_size_nav_title",

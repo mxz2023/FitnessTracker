@@ -19,9 +19,9 @@ export struct MTextInput {
       placeholder: this.placeholder
     })
       .type(this.type)
-      .borderRadius(3) // 设置圆角为3
+      .borderRadius($r('app.integer.view_radius')) // 设置圆角为3
       .backgroundColor('#F5F5F5')
-      .height(40)
+      .height($r('app.integer.view_row_height'))
       .padding({ left: 8, right: 8 })
       .onChange((value: string) => {
         let res = value

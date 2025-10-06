@@ -49,8 +49,20 @@
       "value": "#c6c6c6"
     },
     {
+      "name": "primary",
+      "value": "#f6685d"
+    },
+    {
+      "name": "second",
+      "value": "#c6c6c6"
+    },
+    {
       "name": "view_background_color",
       "value": "#f4f2f8"
+    },
+    {
+      "name": "view_mask",
+      "value": "#66000000"
     },
     {
       "name": "line_color",

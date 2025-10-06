@@ -2,27 +2,49 @@
  * 健康数据模型
  */
 
+// 健康指标卡片数据接口
+export interface HealthCardData {
+  title: string;
+  type: HealthCardDataType;
+  value: string;
+  status: HealthStatus;
+  unit?: string;
+  date?: string;
+}
+
+// 健康指标卡片数据类型
+export enum HealthCardDataType {
+  Unknown,
+  BaseInfo, // 基本信息
+  WeightInfo, // 体重
+  BloodPressureInfo, // 血压
+  BloodSugarInfo, // 血糖
+  UricAcidInfo, // 尿酸
+  BloodLipidInfo, // 血脂
+}
+
+
 // 健康状态枚举
 export enum HealthStatus {
-  UNKNOWN = 'unknown',  // 未知/不参与计算
+  UNKNOWN = 'unknown', // 未知/不参与计算
   EXCELLENT = 'excellent', // 优
-  GOOD = 'good',          // 良
-  MODERATE = 'moderate',  // 中
-  POOR = 'poor',          // 差
+  GOOD = 'good', // 良
+  MODERATE = 'moderate', // 中
+  POOR = 'poor', // 差
 }
 
 // 性别枚举
 export enum Gender {
-  UNKNOWN = 'N/A',  // 未知/不参与计算
+  UNKNOWN = 'N/A', // 未知/不参与计算
   MALE = '男',
   FEMALE = '女'
 }
 
 // 测量类型枚举
 export enum MeasurementType {
-  FASTING = 'FASTING',     // 空腹
+  FASTING = 'FASTING', // 空腹
   AFTER_MEAL = 'AFTER_MEAL', // 餐后
-  RANDOM = 'RANDOM'        // 随机
+  RANDOM = 'RANDOM' // 随机
 }
 
 // 健康数据基础类
@@ -67,7 +89,7 @@ export class BloodLipidData extends HealthData {
 export class Range {
   min: number = 0;
   max: number = 0;
-  
+
   constructor(min: number = 0, max: number = 0) {
     this.min = min;
     this.max = max;
@@ -78,9 +100,9 @@ export class Range {
 export class BloodPressureRangeType {
   systolic: Range = new Range();
   diastolic: Range = new Range();
-  
-  constructor(systolicMin: number = 0, systolicMax: number = 0, 
-              diastolicMin: number = 0, diastolicMax: number = 0) {
+
+  constructor(systolicMin: number = 0, systolicMax: number = 0,
+    diastolicMin: number = 0, diastolicMax: number = 0) {
     this.systolic = new Range(systolicMin, systolicMax);
     this.diastolic = new Range(diastolicMin, diastolicMax);
   }
@@ -90,9 +112,9 @@ export class BloodPressureRangeType {
 export class GenderSpecificRange {
   male: Range = new Range();
   female: Range = new Range();
-  
-  constructor(maleMin: number = 0, maleMax: number = 0, 
-              femaleMin: number = 0, femaleMax: number = 0) {
+
+  constructor(maleMin: number = 0, maleMax: number = 0,
+    femaleMin: number = 0, femaleMax: number = 0) {
     this.male = new Range(maleMin, maleMax);
     this.female = new Range(femaleMin, femaleMax);
   }
@@ -104,11 +126,11 @@ export class BloodLipidRangeType {
   triglycerides: Range = new Range();
   hdlCholesterol: Range = new Range();
   ldlCholesterol: Range = new Range();
-  
+
   constructor(tcMin: number = 0, tcMax: number = 0,
-              tgMin: number = 0, tgMax: number = 0,
-              hdlMin: number = 0, hdlMax: number = 0,
-              ldlMin: number = 0, ldlMax: number = 0) {
+    tgMin: number = 0, tgMax: number = 0,
+    hdlMin: number = 0, hdlMax: number = 0,
+    ldlMin: number = 0, ldlMax: number = 0) {
     this.totalCholesterol = new Range(tcMin, tcMax);
     this.triglycerides = new Range(tgMin, tgMax);
     this.hdlCholesterol = new Range(hdlMin, hdlMax);
@@ -120,33 +142,33 @@ export class BloodLipidRangeType {
 export class HealthRanges {
   // 体重指标范围（基于BMI，需要结合身高计算）
   static readonly WEIGHT_EXCELLENT = new Range(18.5, 23.9); // BMI 正常范围
-  static readonly WEIGHT_GOOD = new Range(17.0, 24.9);      // BMI 轻微偏离正常范围
-  static readonly WEIGHT_MODERATE = new Range(16.0, 29.9);  // BMI 中度偏离正常范围
-  static readonly WEIGHT_POOR = new Range(0, 999);          // BMI 严重偏离正常范围
+  static readonly WEIGHT_GOOD = new Range(17.0, 24.9); // BMI 轻微偏离正常范围
+  static readonly WEIGHT_MODERATE = new Range(16.0, 29.9); // BMI 中度偏离正常范围
+  static readonly WEIGHT_POOR = new Range(0, 999); // BMI 严重偏离正常范围
 
   // 血压指标范围
-  static readonly BP_EXCELLENT = new BloodPressureRangeType(90, 120, 60, 80);  // 理想血压
-  static readonly BP_GOOD = new BloodPressureRangeType(120, 130, 80, 85);      // 正常血压
-  static readonly BP_MODERATE = new BloodPressureRangeType(130, 140, 85, 90);  // 正常高值
-  static readonly BP_POOR = new BloodPressureRangeType(140, 999, 90, 999);     // 高血压
+  static readonly BP_EXCELLENT = new BloodPressureRangeType(90, 120, 60, 80); // 理想血压
+  static readonly BP_GOOD = new BloodPressureRangeType(120, 130, 80, 85); // 正常血压
+  static readonly BP_MODERATE = new BloodPressureRangeType(130, 140, 85, 90); // 正常高值
+  static readonly BP_POOR = new BloodPressureRangeType(140, 999, 90, 999); // 高血压
 
   // 血糖指标范围（空腹）
   static readonly BS_FASTING_EXCELLENT = new Range(3.9, 5.5); // 理想空腹血糖
-  static readonly BS_FASTING_GOOD = new Range(3.9, 6.0);      // 正常空腹血糖
-  static readonly BS_FASTING_MODERATE = new Range(6.1, 6.9);  // 空腹血糖受损
-  static readonly BS_FASTING_POOR = new Range(7.0, 999);      // 糖尿病
+  static readonly BS_FASTING_GOOD = new Range(3.9, 6.0); // 正常空腹血糖
+  static readonly BS_FASTING_MODERATE = new Range(6.1, 6.9); // 空腹血糖受损
+  static readonly BS_FASTING_POOR = new Range(7.0, 999); // 糖尿病
 
   // 血糖指标范围（餐后2小时）
   static readonly BS_AFTER_MEAL_EXCELLENT = new Range(3.9, 7.0); // 理想餐后血糖
-  static readonly BS_AFTER_MEAL_GOOD = new Range(3.9, 7.8);      // 正常餐后血糖
+  static readonly BS_AFTER_MEAL_GOOD = new Range(3.9, 7.8); // 正常餐后血糖
   static readonly BS_AFTER_MEAL_MODERATE = new Range(7.9, 11.0); // 糖耐量受损
-  static readonly BS_AFTER_MEAL_POOR = new Range(11.1, 999);     // 糖尿病
+  static readonly BS_AFTER_MEAL_POOR = new Range(11.1, 999); // 糖尿病
 
   // 尿酸指标范围
   static readonly UA_EXCELLENT = new GenderSpecificRange(149, 416, 89, 357); // 理想尿酸
-  static readonly UA_GOOD = new GenderSpecificRange(149, 450, 89, 380);      // 正常尿酸
+  static readonly UA_GOOD = new GenderSpecificRange(149, 450, 89, 380); // 正常尿酸
   static readonly UA_MODERATE = new GenderSpecificRange(451, 500, 381, 420); // 尿酸偏高
-  static readonly UA_POOR = new GenderSpecificRange(501, 9999, 421, 9999);   // 高尿酸
+  static readonly UA_POOR = new GenderSpecificRange(501, 9999, 421, 9999); // 高尿酸
 
   // 血脂指标范围
   static readonly BL_EXCELLENT = new BloodLipidRangeType(0, 5.2, 0, 1.7, 1.0, 999, 0, 3.4);
