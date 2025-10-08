@@ -3,8 +3,8 @@
  */
 import { promptAction } from '@kit.ArkUI';
 
-import { BloodSugarData, HealthStatus, MeasurementType } from '../../model/HealthDataModel';
-import { HealthDataServiceImpl } from '../../model/HealthDataServiceImpl';
+import { BloodSugarData, HealthStatus, MeasurementType } from '../../models/HealthDataModel';
+import { HealthDataServiceImpl } from '../../models/HealthDataServiceImpl';
 import { evaluateBloodSugarStatus, formatDate } from '../../utils/HealthUtils';
 import { HealthStatusIndicator } from '../../commonents/HealthStatusIndicator';
 import { MTextInput } from '../../commonui/MTextInput';

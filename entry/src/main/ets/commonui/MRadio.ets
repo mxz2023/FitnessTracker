@@ -8,13 +8,6 @@
  * @desc
  */
 
-// system
-
-// module
-
-// inner
-
-const TAG = 'MRadio.ets'
 
 @ComponentV2
 export struct MRadio {

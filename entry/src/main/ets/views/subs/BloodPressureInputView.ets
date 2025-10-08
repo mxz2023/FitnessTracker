@@ -16,8 +16,8 @@
 import { MButton } from "../../commonui/MButton";
 import { MLable } from "../../commonui/MLable";
 import { MTextInput } from "../../commonui/MTextInput";
-import { BloodPressureData } from "../../model/HealthDataModel";
-import { HealthDataServiceImpl } from "../../model/HealthDataServiceImpl";
+import { BloodPressureData } from "../../models/HealthDataModel";
+import { HealthDataServiceImpl } from "../../models/HealthDataServiceImpl";
 import { showToast } from "../../utils/ToastUtils";
 
 

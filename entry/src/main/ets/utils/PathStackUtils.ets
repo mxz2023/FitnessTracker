@@ -7,13 +7,8 @@
  * @crateTime 2025-09-25
  * @desc
  */
+
 import { CommonDefine } from "../common/CommonDefine";
-
-// system
-
-// module
-
-// inner
 
 const TAG = 'PathStackUtils.ets'
 

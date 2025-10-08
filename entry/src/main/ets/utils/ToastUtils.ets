@@ -7,6 +7,7 @@
  * @crateTime 2025-09-25
  * @desc
  */
+import { logger } from "./Logger"
 
 // system
 
@@ -17,7 +18,11 @@
 const TAG = 'ToastUtils.ets'
 
 export function showToast(uiContext: UIContext, message: string) {
-  uiContext.getPromptAction().showToast({
-    message: message
-  })
+  try {
+    uiContext.getPromptAction().showToast({
+      message: message
+    })
+  } catch (error) {
+    logger.exception(TAG, error)
+  }
 }

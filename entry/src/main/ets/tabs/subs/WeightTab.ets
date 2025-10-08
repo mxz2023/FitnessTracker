@@ -2,8 +2,8 @@
  * 体重Tab组件
  */
 
-import { WeightData, HealthStatus } from '../../model/HealthDataModel';
-import { HealthDataServiceImpl } from '../../model/HealthDataServiceImpl';
+import { WeightData, HealthStatus } from '../../models/HealthDataModel';
+import { HealthDataServiceImpl } from '../../models/HealthDataServiceImpl';
 import { evaluateWeightStatus } from '../../utils/HealthUtils';
 import { HealthStatusIndicator } from '../../commonents/HealthStatusIndicator';
 import { MTextInput } from '../../commonui/MTextInput';

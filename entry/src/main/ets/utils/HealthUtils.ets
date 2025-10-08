@@ -12,7 +12,7 @@ import {
   BloodSugarData,
   UricAcidData,
   BloodLipidData
-} from '../model/HealthDataModel';
+} from '../models/HealthDataModel';
 
 /**
  * 格式化日期
@@ -66,23 +66,23 @@ export function evaluateWeightStatus(weightValue: number, height: number): Healt
 export function evaluateBloodPressureStatus(bp: BloodPressureData): HealthStatus {
   if (
     bp.systolic >= HealthRanges.BP_EXCELLENT.systolic.min &&
-    bp.systolic <= HealthRanges.BP_EXCELLENT.systolic.max &&
-    bp.diastolic >= HealthRanges.BP_EXCELLENT.diastolic.min &&
-    bp.diastolic <= HealthRanges.BP_EXCELLENT.diastolic.max
+      bp.systolic <= HealthRanges.BP_EXCELLENT.systolic.max &&
+      bp.diastolic >= HealthRanges.BP_EXCELLENT.diastolic.min &&
+      bp.diastolic <= HealthRanges.BP_EXCELLENT.diastolic.max
   ) {
     return HealthStatus.EXCELLENT;
   } else if (
     bp.systolic >= HealthRanges.BP_GOOD.systolic.min &&
-    bp.systolic <= HealthRanges.BP_GOOD.systolic.max &&
-    bp.diastolic >= HealthRanges.BP_GOOD.diastolic.min &&
-    bp.diastolic <= HealthRanges.BP_GOOD.diastolic.max
+      bp.systolic <= HealthRanges.BP_GOOD.systolic.max &&
+      bp.diastolic >= HealthRanges.BP_GOOD.diastolic.min &&
+      bp.diastolic <= HealthRanges.BP_GOOD.diastolic.max
   ) {
     return HealthStatus.GOOD;
   } else if (
     bp.systolic >= HealthRanges.BP_MODERATE.systolic.min &&
-    bp.systolic <= HealthRanges.BP_MODERATE.systolic.max &&
-    bp.diastolic >= HealthRanges.BP_MODERATE.diastolic.min &&
-    bp.diastolic <= HealthRanges.BP_MODERATE.diastolic.max
+      bp.systolic <= HealthRanges.BP_MODERATE.systolic.max &&
+      bp.diastolic >= HealthRanges.BP_MODERATE.diastolic.min &&
+      bp.diastolic <= HealthRanges.BP_MODERATE.diastolic.max
   ) {
     return HealthStatus.MODERATE;
   } else {
@@ -96,18 +96,18 @@ export function evaluateBloodPressureStatus(bp: BloodPressureData): HealthStatus
  * @returns 健康状态
  */
 export function evaluateBloodSugarStatus(value: number, measurementType: MeasurementType): HealthStatus {
-  const range = measurementType === MeasurementType.FASTING ? 
+  const range = measurementType === MeasurementType.FASTING ?
     HealthRanges.BS_FASTING_EXCELLENT : HealthRanges.BS_AFTER_MEAL_EXCELLENT;
 
   if (value >= range.min && value <= range.max) {
     return HealthStatus.EXCELLENT;
-  } else if (value >= range.min && value <= (range === HealthRanges.BS_FASTING_EXCELLENT ? 
+  } else if (value >= range.min && value <= (range === HealthRanges.BS_FASTING_EXCELLENT ?
     HealthRanges.BS_FASTING_GOOD.max : HealthRanges.BS_AFTER_MEAL_GOOD.max)) {
     return HealthStatus.GOOD;
-  } else if (value >= (range === HealthRanges.BS_FASTING_EXCELLENT ? 
-    HealthRanges.BS_FASTING_MODERATE.min : HealthRanges.BS_AFTER_MEAL_MODERATE.min) && 
-    value <= (range === HealthRanges.BS_FASTING_EXCELLENT ? 
-    HealthRanges.BS_FASTING_MODERATE.max : HealthRanges.BS_AFTER_MEAL_MODERATE.max)) {
+  } else if (value >= (range === HealthRanges.BS_FASTING_EXCELLENT ?
+    HealthRanges.BS_FASTING_MODERATE.min : HealthRanges.BS_AFTER_MEAL_MODERATE.min) &&
+    value <= (range === HealthRanges.BS_FASTING_EXCELLENT ?
+      HealthRanges.BS_FASTING_MODERATE.max : HealthRanges.BS_AFTER_MEAL_MODERATE.max)) {
     return HealthStatus.MODERATE;
   } else {
     return HealthStatus.POOR;
@@ -120,18 +120,18 @@ export function evaluateBloodSugarStatus(value: number, measurementType: Measure
  * @returns 健康状态
  */
 export function evaluateUricAcidStatus(value: number, gender: Gender = Gender.MALE): HealthStatus {
-  const range = gender === Gender.MALE ? 
+  const range = gender === Gender.MALE ?
     HealthRanges.UA_EXCELLENT.male : HealthRanges.UA_EXCELLENT.female;
 
   if (value >= range.min && value <= range.max) {
     return HealthStatus.EXCELLENT;
-  } else if (value >= range.min && value <= (gender === Gender.MALE ? 
+  } else if (value >= range.min && value <= (gender === Gender.MALE ?
     HealthRanges.UA_GOOD.male.max : HealthRanges.UA_GOOD.female.max)) {
     return HealthStatus.GOOD;
-  } else if (value >= (gender === Gender.MALE ? 
-    HealthRanges.UA_MODERATE.male.min : HealthRanges.UA_MODERATE.female.min) && 
-    value <= (gender === Gender.MALE ? 
-    HealthRanges.UA_MODERATE.male.max : HealthRanges.UA_MODERATE.female.max)) {
+  } else if (value >= (gender === Gender.MALE ?
+    HealthRanges.UA_MODERATE.male.min : HealthRanges.UA_MODERATE.female.min) &&
+    value <= (gender === Gender.MALE ?
+      HealthRanges.UA_MODERATE.male.max : HealthRanges.UA_MODERATE.female.max)) {
     return HealthStatus.MODERATE;
   } else {
     return HealthStatus.POOR;
@@ -147,41 +147,40 @@ export function evaluateBloodLipidStatus(bl: BloodLipidData): HealthStatus {
   // 检查是否有任何指标处于较差状态
   if (
     bl.totalCholesterol >= HealthRanges.BL_POOR.totalCholesterol.min ||
-    bl.triglycerides >= HealthRanges.BL_POOR.triglycerides.min ||
-    bl.hdlCholesterol <= HealthRanges.BL_POOR.hdlCholesterol.max ||
-    bl.ldlCholesterol >= HealthRanges.BL_POOR.ldlCholesterol.min
+      bl.triglycerides >= HealthRanges.BL_POOR.triglycerides.min ||
+      bl.hdlCholesterol <= HealthRanges.BL_POOR.hdlCholesterol.max ||
+      bl.ldlCholesterol >= HealthRanges.BL_POOR.ldlCholesterol.min
   ) {
     return HealthStatus.POOR;
   }
-  
+
   // 检查是否有任何指标处于中等状态
   if (
-    (bl.totalCholesterol >= HealthRanges.BL_MODERATE.totalCholesterol.min && 
-     bl.totalCholesterol <= HealthRanges.BL_MODERATE.totalCholesterol.max) ||
-    (bl.triglycerides >= HealthRanges.BL_MODERATE.triglycerides.min && 
-     bl.triglycerides <= HealthRanges.BL_MODERATE.triglycerides.max) ||
-    (bl.hdlCholesterol >= HealthRanges.BL_MODERATE.hdlCholesterol.min && 
-     bl.hdlCholesterol <= HealthRanges.BL_MODERATE.hdlCholesterol.max) ||
-    (bl.ldlCholesterol >= HealthRanges.BL_MODERATE.ldlCholesterol.min && 
-     bl.ldlCholesterol <= HealthRanges.BL_MODERATE.ldlCholesterol.max)
+    (bl.totalCholesterol >= HealthRanges.BL_MODERATE.totalCholesterol.min &&
+      bl.totalCholesterol <= HealthRanges.BL_MODERATE.totalCholesterol.max) ||
+      (bl.triglycerides >= HealthRanges.BL_MODERATE.triglycerides.min &&
+        bl.triglycerides <= HealthRanges.BL_MODERATE.triglycerides.max) ||
+      (bl.hdlCholesterol >= HealthRanges.BL_MODERATE.hdlCholesterol.min &&
+        bl.hdlCholesterol <= HealthRanges.BL_MODERATE.hdlCholesterol.max) ||
+      (bl.ldlCholesterol >= HealthRanges.BL_MODERATE.ldlCholesterol.min &&
+        bl.ldlCholesterol <= HealthRanges.BL_MODERATE.ldlCholesterol.max)
   ) {
     return HealthStatus.MODERATE;
   }
-  
+
   // 检查是否有任何指标处于良好状态
-  if (
-    (bl.totalCholesterol >= HealthRanges.BL_GOOD.totalCholesterol.min && 
-     bl.totalCholesterol <= HealthRanges.BL_GOOD.totalCholesterol.max) ||
-    (bl.triglycerides >= HealthRanges.BL_GOOD.triglycerides.min && 
-     bl.triglycerides <= HealthRanges.BL_GOOD.triglycerides.max) ||
-    (bl.hdlCholesterol >= HealthRanges.BL_GOOD.hdlCholesterol.min && 
-     bl.hdlCholesterol <= HealthRanges.BL_GOOD.hdlCholesterol.max) ||
-    (bl.ldlCholesterol >= HealthRanges.BL_GOOD.ldlCholesterol.min && 
-     bl.ldlCholesterol <= HealthRanges.BL_GOOD.ldlCholesterol.max)
+  if ((bl.totalCholesterol >= HealthRanges.BL_GOOD.totalCholesterol.min &&
+    bl.totalCholesterol <= HealthRanges.BL_GOOD.totalCholesterol.max) ||
+    (bl.triglycerides >= HealthRanges.BL_GOOD.triglycerides.min &&
+      bl.triglycerides <= HealthRanges.BL_GOOD.triglycerides.max) ||
+    (bl.hdlCholesterol >= HealthRanges.BL_GOOD.hdlCholesterol.min &&
+      bl.hdlCholesterol <= HealthRanges.BL_GOOD.hdlCholesterol.max) ||
+    (bl.ldlCholesterol >= HealthRanges.BL_GOOD.ldlCholesterol.min &&
+      bl.ldlCholesterol <= HealthRanges.BL_GOOD.ldlCholesterol.max)
   ) {
     return HealthStatus.GOOD;
   }
-  
+
   // 所有指标都在优秀范围内
   return HealthStatus.EXCELLENT;
 }

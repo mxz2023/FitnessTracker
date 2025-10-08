@@ -20,8 +20,8 @@ import {
   MeasurementType,
   Gender,
   HealthStatus
-} from '../model/HealthDataModel';
-import { HealthDataServiceImpl } from '../model/HealthDataServiceImpl';
+} from '../models/HealthDataModel';
+import { HealthDataServiceImpl } from '../models/HealthDataServiceImpl';
 import { 
   evaluateWeightStatus, 
   evaluateBloodPressureStatus, 

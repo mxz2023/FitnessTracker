@@ -3,15 +3,14 @@
  * 提供统一的样式和行为
  */
 
+
 @ComponentV2
 export struct MTextInput {
   @Require @Param text: string | number;
   @Param type: InputType = InputType.Normal;
   @Param placeholder: string = '';
   @Param maxLength: number = 0;
-  @Event onChangeBlock: (value: string) => void = (value: string) => {
-
-  };
+  @Event onChangeBlock: (value: string) => void
 
   build() {
     TextInput({

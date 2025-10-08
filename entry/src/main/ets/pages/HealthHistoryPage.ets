@@ -9,7 +9,7 @@ import {
   UricAcidData,
   HealthData,
   BloodPressureData
-} from '../model/HealthDataModel';
+} from '../models/HealthDataModel';
 import { ChartOptions, XAxis, YAxis } from '../thirds/EChart/EChartOption';
 import { MChart } from '../thirds/MChart';
 import { formatDate } from '../utils/HealthUtils';

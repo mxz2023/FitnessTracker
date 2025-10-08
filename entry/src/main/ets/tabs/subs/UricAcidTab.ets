@@ -2,8 +2,8 @@
  * 尿酸指标Tab组件
  */
 
-import { UricAcidData, HealthStatus, Gender } from '../../model/HealthDataModel';
-import { HealthDataServiceImpl } from '../../model/HealthDataServiceImpl';
+import { UricAcidData, HealthStatus, Gender } from '../../models/HealthDataModel';
+import { HealthDataServiceImpl } from '../../models/HealthDataServiceImpl';
 import { evaluateUricAcidStatus } from '../../utils/HealthUtils';
 import { HealthStatusIndicator } from '../../commonents/HealthStatusIndicator';
 import { MTextInput } from '../../commonui/MTextInput';

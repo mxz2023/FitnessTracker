@@ -8,14 +8,6 @@
  * @desc
  */
 
-// system
-
-// module
-
-// inner
-
-const TAG = 'MLable.ets'
-
 
 @ComponentV2
 export struct MLable {

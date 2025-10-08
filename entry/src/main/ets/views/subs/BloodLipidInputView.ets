@@ -11,8 +11,8 @@
 import { MButton } from "../../commonui/MButton"
 import { MLable } from "../../commonui/MLable"
 import { MTextInput } from "../../commonui/MTextInput"
-import { BloodLipidData } from "../../model/HealthDataModel"
-import { HealthDataServiceImpl } from "../../model/HealthDataServiceImpl"
+import { BloodLipidData } from "../../models/HealthDataModel"
+import { HealthDataServiceImpl } from "../../models/HealthDataServiceImpl"
 import { showToast } from "../../utils/ToastUtils"
 
 // system

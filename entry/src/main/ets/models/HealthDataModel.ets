@@ -7,9 +7,10 @@ export interface HealthCardData {
   title: string;
   type: HealthCardDataType;
   value: string;
-  status: HealthStatus;
   unit?: string;
+  status: HealthStatus;
   date?: string;
+  other?: string;
 }
 
 // 健康指标卡片数据类型

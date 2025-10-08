@@ -15,6 +15,74 @@
     {
       "name": "text_empty",
       "value": "Na/Na"
+    },
+    {
+      "name": "health_status_excellent",
+      "value": "优"
+    },
+    {
+      "name": "health_status_good",
+      "value": "良"
+    },
+    {
+      "name": "health_status_moderate",
+      "value": "中"
+    },
+    {
+      "name": "health_status_poor",
+      "value": "差"
+    },
+    {
+      "name": "health_status_unknown",
+      "value": "未知"
+    },
+    {
+      "name": "measurement_type_fasting",
+      "value": "空腹"
+    },
+    {
+      "name": "measurement_type_after_meal",
+      "value": "餐后"
+    },
+    {
+      "name": "measurement_type_random",
+      "value": "随机"
+    },
+    {
+      "name": "gender_male",
+      "value": "男"
+    },
+    {
+      "name": "gender_female",
+      "value": "女"
+    },
+    {
+      "name": "gender_unknown",
+      "value": "未知"
+    },
+    {
+      "name": "unit_weight",
+      "value": "kg"
+    },
+    {
+      "name": "unit_height",
+      "value": "cm"
+    },
+    {
+      "name": "unit_blood_pressure",
+      "value": "mmHg"
+    },
+    {
+      "name": "unit_blood_sugar",
+      "value": "mmol/L"
+    },
+    {
+      "name": "unit_uric_acid",
+      "value": "μmol/L"
+    },
+    {
+      "name": "unit_cholesterol",
+      "value": "mmol/L"
     }
   ]
 }

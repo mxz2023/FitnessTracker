@@ -15,8 +15,8 @@
 // inner
 import { MButton } from "../../commonui/MButton";
 import { MTextInput } from "../../commonui/MTextInput";
-import { BloodSugarData, MeasurementType } from "../../model/HealthDataModel";
-import { HealthDataServiceImpl } from "../../model/HealthDataServiceImpl";
+import { BloodSugarData, MeasurementType } from "../../models/HealthDataModel";
+import { HealthDataServiceImpl } from "../../models/HealthDataServiceImpl";
 import { showToast } from "../../utils/ToastUtils";
 
 

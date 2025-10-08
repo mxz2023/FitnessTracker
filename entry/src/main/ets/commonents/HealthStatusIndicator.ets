@@ -2,7 +2,7 @@
  * 健康状态指示器组件
  */
 
-import { HealthStatus } from '../model/HealthDataModel';
+import { HealthStatus } from '../models/HealthDataModel';
 import { getHealthStatusColor, getHealthStatusText } from '../utils/HealthUtils';
 
 @Component

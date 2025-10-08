@@ -16,8 +16,8 @@
 import { MButton } from "../../commonui/MButton"
 import { MLable } from "../../commonui/MLable";
 import { MTextInput } from "../../commonui/MTextInput"
-import { HealthStatus, WeightData } from "../../model/HealthDataModel";
-import { HealthDataServiceImpl } from "../../model/HealthDataServiceImpl";
+import { HealthStatus, WeightData } from "../../models/HealthDataModel";
+import { HealthDataServiceImpl } from "../../models/HealthDataServiceImpl";
 
 import { evaluateWeightStatus } from "../../utils/HealthUtils";
 import { showToast } from "../../utils/ToastUtils";

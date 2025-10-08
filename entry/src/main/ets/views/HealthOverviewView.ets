@@ -14,7 +14,7 @@ import {
   Gender,
   HealthCardData,
   HealthCardDataType
-} from '../model/HealthDataModel';
+} from '../models/HealthDataModel';
 import { HealthStatusIndicator } from '../commonents/HealthStatusIndicator';
 import {
   formatDate,
@@ -23,6 +23,8 @@ import {
   evaluateBloodSugarStatus,
   evaluateUricAcidStatus,
   evaluateBloodLipidStatus,
+  getHealthStatusText,
+  getHealthStatusColor,
 } from '../utils/HealthUtils';
 import { BaseInputView } from './subs/BaseInputView';
 import { WeightInputView } from './subs/WeightInputView';
@@ -30,6 +32,7 @@ import { BloodPressureInputView } from './subs/BloodPressureInputView';
 import { BloodSugarInputView } from './subs/BloodSugarInputView';
 import { UricAcidInputView } from './subs/UricAcidInputView';
 import { BloodLipidInputView } from './subs/BloodLipidInputView';
+import { bmiRanges } from '../utils/WeightUtils';
 
 
 @Preview
@@ -84,47 +87,59 @@ export struct HealthOverviewView {
           HealthStatus.UNKNOWN,
         date: currentDate
       },
-      {
-        title: '血糖',
-        type: HealthCardDataType.BloodSugarInfo,
-        value: this.toDisplay(this.nBloodSugar),
-        unit: 'mmol/L',
-        status: this.isValid(this.nBloodSugar) ? evaluateBloodSugarStatus(this.nBloodSugar, MeasurementType.FASTING) :
-          HealthStatus.UNKNOWN,
-        date: currentDate
-      },
-      {
-        title: '血脂',
-        type: HealthCardDataType.BloodLipidInfo,
-        value: this.toDisplay(this.nTotalCholesterol),
-        unit: 'mmol/L',
-        status: this.isValid(this.nTotalCholesterol) ? this.nTotalCholesterol <= 5.2 ? HealthStatus.EXCELLENT :
-          this.nTotalCholesterol <= 5.7 ? HealthStatus.GOOD :
-            this.nTotalCholesterol <= 6.5 ? HealthStatus.MODERATE : HealthStatus.POOR : HealthStatus.UNKNOWN,
-        date: currentDate
-      },
-      {
-        title: '尿酸',
-        type: HealthCardDataType.UricAcidInfo,
-        value: this.toDisplay(this.nUricAcid),
-        unit: 'μmol/L',
-        status: this.isValid(this.nUricAcid) ? evaluateUricAcidStatus(this.nUricAcid, Gender.MALE) :
-          HealthStatus.UNKNOWN,
-        date: currentDate
-      },
-      {
-        title: '血压',
-        type: HealthCardDataType.BloodPressureInfo,
-        value: this.toDisplayBP(this.nBloodPressureSystolic, this.nBloodPressureDiastolic),
-        unit: 'mmHg',
-        status: this.isValidBP(this.nBloodPressureSystolic, this.nBloodPressureDiastolic) ?
-          this.nBloodPressureSystolic <= 120 && this.nBloodPressureDiastolic <= 80 ? HealthStatus.EXCELLENT :
-            this.nBloodPressureSystolic <= 130 && this.nBloodPressureDiastolic <= 85 ? HealthStatus.GOOD :
-              this.nBloodPressureSystolic <= 140 && this.nBloodPressureDiastolic <= 90 ? HealthStatus.MODERATE :
-                HealthStatus.POOR : HealthStatus.UNKNOWN,
-        date: currentDate
-      }
+      // {
+      //   title: '血糖',
+      //   type: HealthCardDataType.BloodSugarInfo,
+      //   value: this.toDisplay(this.nBloodSugar),
+      //   unit: 'mmol/L',
+      //   status: this.isValid(this.nBloodSugar) ? evaluateBloodSugarStatus(this.nBloodSugar, MeasurementType.FASTING) :
+      //     HealthStatus.UNKNOWN,
+      //   date: currentDate
+      // },
+      // {
+      //   title: '血脂',
+      //   type: HealthCardDataType.BloodLipidInfo,
+      //   value: this.toDisplay(this.nTotalCholesterol),
+      //   unit: 'mmol/L',
+      //   status: this.isValid(this.nTotalCholesterol) ? this.nTotalCholesterol <= 5.2 ? HealthStatus.EXCELLENT :
+      //     this.nTotalCholesterol <= 5.7 ? HealthStatus.GOOD :
+      //       this.nTotalCholesterol <= 6.5 ? HealthStatus.MODERATE : HealthStatus.POOR : HealthStatus.UNKNOWN,
+      //   date: currentDate
+      // },
+      // {
+      //   title: '尿酸',
+      //   type: HealthCardDataType.UricAcidInfo,
+      //   value: this.toDisplay(this.nUricAcid),
+      //   unit: 'μmol/L',
+      //   status: this.isValid(this.nUricAcid) ? evaluateUricAcidStatus(this.nUricAcid, Gender.MALE) :
+      //     HealthStatus.UNKNOWN,
+      //   date: currentDate
+      // },
+      // {
+      //   title: '血压',
+      //   type: HealthCardDataType.BloodPressureInfo,
+      //   value: this.toDisplayBP(this.nBloodPressureSystolic, this.nBloodPressureDiastolic),
+      //   unit: 'mmHg',
+      //   status: this.isValidBP(this.nBloodPressureSystolic, this.nBloodPressureDiastolic) ?
+      //     this.nBloodPressureSystolic <= 120 && this.nBloodPressureDiastolic <= 80 ? HealthStatus.EXCELLENT :
+      //       this.nBloodPressureSystolic <= 130 && this.nBloodPressureDiastolic <= 85 ? HealthStatus.GOOD :
+      //         this.nBloodPressureSystolic <= 140 && this.nBloodPressureDiastolic <= 90 ? HealthStatus.MODERATE :
+      //           HealthStatus.POOR : HealthStatus.UNKNOWN,
+      //   date: currentDate
+      // }
     ];
+  }
+
+  @Builder
+  descriptionBuilder(cardData: HealthCardData) {
+    Text(cardData.other)
+      .maxFontSize(12)
+      .minFontSize(12)
+      .fontColor("#fffa2a2d")
+      .fontWeight(FontWeight.Medium)
+      .width('100%')
+      .height("100%")
+      .textAlign(TextAlign.Center)
   }
 
   // 健康指标卡片组件
@@ -148,27 +163,60 @@ export struct HealthOverviewView {
       .width('100%')
       .margin({ bottom: $r('app.integer.view_margin') })
 
-      // 数值显示
-      Row({ space: 4 }) {
-        Text(cardData.value)
-          .lineHeight(30)
-          .fontSize($r('app.float.font_size_nav_title'))
-          .fontWeight(FontWeight.Bold)
-          .fontColor($r('app.color.text_333'))
-          .alignSelf(ItemAlign.End)
+      if (cardData.type === HealthCardDataType.WeightInfo) {
+        Gauge({ value: 50, min: 1, max: 100 }) {
+          Column() {
+            // 数值显示
+            Row({ space: 4 }) {
+              Text(cardData.value)
+                .lineHeight(30)
+                .fontSize($r('app.float.font_size_nav_title'))
+                .fontWeight(FontWeight.Bold)
+                .fontColor($r('app.color.text_333'))
+                .alignSelf(ItemAlign.End)
 
-        if (cardData.unit) {
-          Text(cardData.unit)
-            .lineHeight(30)
-            .fontSize($r('app.float.font_size_normal'))
-            .fontColor($r('app.color.text_666'))
-            .alignSelf(ItemAlign.End)
+              if (cardData.unit) {
+                Text(cardData.unit)
+                  .lineHeight(30)
+                  .fontSize($r('app.float.font_size_normal'))
+                  .fontColor($r('app.color.text_666'))
+                  .alignSelf(ItemAlign.End)
+              }
+            }
+            .width('100%')
+            .justifyContent(FlexAlign.Center)
+            .alignItems(VerticalAlign.Center)
+            .margin({ top: '35%' })
+
+            Text(getHealthStatusText(cardData.status))
+              .maxFontSize(16)
+              .minFontSize(12)
+              .fontColor(getHealthStatusColor(cardData.status))
+              .fontWeight(FontWeight.Regular)
+              .width('67.4%')
+              .height('9.5%')
+              .textAlign(TextAlign.Center)
+          }.width('100%').height('100%')
         }
+        .width('100%')
+        .strokeWidth(18)
+        .trackShadow({
+          radius: 7,
+          offsetX: 7,
+          offsetY: 7
+        })
+        .value(10)
+        .startAngle(240)
+        .endAngle(120)
+        .colors([
+          [new LinearGradient([{ color: "#0978ab", offset: 0 }, { color: "#439b9b", offset: 1 }]), 1],
+          [new LinearGradient([{ color: "#54baea", offset: 0 }, { color: "#b4e79c", offset: 1 }]), 1],
+          [new LinearGradient([{ color: "#dbefa5", offset: 0 }, { color: "#9ec827", offset: 1 }]), 2],
+          [new LinearGradient([{ color: "#b7ec7c", offset: 0 }, { color: "#f8db4c", offset: 1 }]), 1],
+          [new LinearGradient([{ color: "#f1e707", offset: 0 }, { color: "#e64566", offset: 1 }]), 1],
+        ])
+        .description(this.descriptionBuilder(cardData))
       }
-      .width('100%')
-      .justifyContent(FlexAlign.Start)
-      .alignItems(VerticalAlign.Center)
-      .margin({ bottom: $r('app.integer.view_margin') })
 
       Row() {
         // 日期信息
@@ -203,9 +251,10 @@ export struct HealthOverviewView {
       .justifyContent(FlexAlign.SpaceBetween)
     }
     .width('100%')
-    .height(120)
-    .alignItems(HorizontalAlign.Start)
+    .height(230)
     .padding($r('app.integer.view_padding'))
+    .alignItems(HorizontalAlign.Start)
+    .justifyContent(FlexAlign.SpaceBetween)
     .backgroundColor($r('app.color.white'))
     .borderRadius($r('app.integer.view_radius'))
     .shadow({
@@ -219,7 +268,7 @@ export struct HealthOverviewView {
   // 身高体重信息卡片
   @Builder
   BasicInfoCard() {
-    Column() {
+    Column({ space: $r('app.integer.view_content_space') }) {
       Row() {
         Text('叶记健康')
           .fontSize($r('app.float.font_size_large_title'))
@@ -303,16 +352,17 @@ export struct HealthOverviewView {
                 }
               })
             }
+            .width('100%')
+            .layoutWeight(1)
             .columnsTemplate('1fr 1fr')
             .rowsGap($r('app.integer.view_space'))
             .columnsGap($r('app.integer.view_space'))
-            .width('100%')
+            .scrollBar(BarState.Off)
           }
           .height('100%')
           .padding($r('app.integer.view_padding'))
         }
         .width('100%')
-        .height('100%')
         .layoutWeight(1)
         .scrollBar(BarState.Off)
       }
@@ -320,7 +370,9 @@ export struct HealthOverviewView {
       .height('100%')
       .backgroundColor($r('app.color.view_background_color'))
 
+      // 遮罩背景半透明
       Column() {
+        // 半弹层背景白色
         Column() {
           if (this.showType === HealthCardDataType.BaseInfo) {
             BaseInputView()
@@ -335,7 +387,10 @@ export struct HealthOverviewView {
           } else if (this.showType === HealthCardDataType.BloodLipidInfo) {
             BloodLipidInputView()
           }
-        }.height(300).backgroundColor($r('app.color.white'))
+        }
+        .width('100%')
+        .height(300)
+        .backgroundColor($r('app.color.white'))
       }
       .onClick(() => {
         this.showType = HealthCardDataType.Unknown
