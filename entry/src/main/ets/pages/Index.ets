@@ -3,7 +3,7 @@
  */
 
 import { CommonDefine } from '../common/CommonDefine';
-import { HealthOverviewView } from '../views/HealthOverviewView';
+import { HealthOverviewView } from '../components/HealthOverviewView';
 
 
 @Entry

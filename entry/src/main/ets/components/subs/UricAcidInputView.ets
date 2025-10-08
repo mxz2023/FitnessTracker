@@ -14,7 +14,7 @@
 // module
 
 // inner
-import { HealthStatusIndicator } from "../../commonents/HealthStatusIndicator"
+import { HealthStatusIndicator } from "../HealthStatusIndicator"
 import { MButton } from "../../commonui/MButton"
 import { MLable } from "../../commonui/MLable"
 import { MTextInput } from "../../commonui/MTextInput"

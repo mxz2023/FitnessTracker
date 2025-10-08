@@ -15,7 +15,7 @@ import {
   HealthCardData,
   HealthCardDataType
 } from '../models/HealthDataModel';
-import { HealthStatusIndicator } from '../commonents/HealthStatusIndicator';
+import { HealthStatusIndicator } from './HealthStatusIndicator';
 import {
   formatDate,
   evaluateWeightStatus,
