@@ -6,13 +6,13 @@ import {
   HealthStatus,
   HealthRanges,
   MeasurementType,
-  Gender,
   WeightData,
   BloodPressureData,
   BloodSugarData,
   UricAcidData,
   BloodLipidData
 } from '../models/HealthDataModel';
+import { Gender } from '../models/UserDataModel';
 
 /**
  * 格式化日期

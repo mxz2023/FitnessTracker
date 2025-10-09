@@ -18,11 +18,11 @@ import {
   UricAcidData,
   BloodLipidData,
   MeasurementType,
-  Gender,
   HealthStatus
 } from '../models/HealthDataModel';
 import { HealthDataServiceImpl } from '../models/HealthDataServiceImpl';
-import { 
+import { Gender } from '../models/UserDataModel';
+import {
   evaluateWeightStatus, 
   evaluateBloodPressureStatus, 
   evaluateBloodSugarStatus,

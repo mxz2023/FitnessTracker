@@ -22,7 +22,7 @@ export struct MRadio {
       Text(this.titles).fontSize($r('app.float.font_size_normal'))
       Radio({ value: this.value, group: this.groupName,
         indicatorType:RadioIndicatorType.TICK
-      }).checked(true)
+      }).checked(this.isChecked)
         .height(20)
         .onChange((isChecked: boolean) => {
           this.onChange(isChecked)

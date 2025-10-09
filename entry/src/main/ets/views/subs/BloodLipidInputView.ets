@@ -8,21 +8,15 @@
  * @desc
  */
 
-import { MButton } from "../../commonui/MButton"
-import { MLable } from "../../commonui/MLable"
-import { MTextInput } from "../../commonui/MTextInput"
+import { MButton } from "../../components/MButton"
+import { MLable } from "../../components/MLable"
+import { MTextInput } from "../../components/MTextInput"
 import { BloodLipidData } from "../../models/HealthDataModel"
 import { HealthDataServiceImpl } from "../../models/HealthDataServiceImpl"
 import { showToast } from "../../utils/ToastUtils"
 
-// system
-
-// module
-
-// inner
 
 const TAG = 'BloodLipidInputView.ets'
-
 
 @ComponentV2
 export struct BloodLipidInputView {
@@ -71,9 +65,9 @@ export struct BloodLipidInputView {
           MLable({ lable: "TC:" })
 
           MTextInput({
-            text: this.totalCholesterolText,
             type: InputType.NUMBER_DECIMAL,
-            onChangeBlock: (v: string) => {
+            text: this.totalCholesterolText,
+            onText: (v: string) => {
               this.totalCholesterolText = v;
             }
           }).layoutWeight(1)
@@ -85,9 +79,9 @@ export struct BloodLipidInputView {
           MLable({ lable: "TG:" })
 
           MTextInput({
-            text: this.triglyceridesText,
             type: InputType.NUMBER_DECIMAL,
-            onChangeBlock: (v: string) => {
+            text: this.triglyceridesText,
+            onText: (v: string) => {
               this.triglyceridesText = v;
             }
           }).layoutWeight(1)
@@ -101,7 +95,7 @@ export struct BloodLipidInputView {
           MTextInput({
             text: this.hdlCholesterolText,
             type: InputType.NUMBER_DECIMAL,
-            onChangeBlock: (v: string) => {
+            onText: (v: string) => {
               this.hdlCholesterolText = v;
             }
           }).layoutWeight(1)
@@ -113,9 +107,9 @@ export struct BloodLipidInputView {
           MLable({ lable: "LDL-C:" })
 
           MTextInput({
-            text: this.ldlCholesterolText,
             type: InputType.NUMBER_DECIMAL,
-            onChangeBlock: (v: string) => {
+            text: this.ldlCholesterolText,
+            onText: (v: string) => {
               this.ldlCholesterolText = v;
             }
           }).layoutWeight(1)

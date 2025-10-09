@@ -8,14 +8,9 @@
  * @desc
  */
 
-// system
-
-// module
-
-// inner
-import { MButton } from "../../commonui/MButton"
-import { MLable } from "../../commonui/MLable";
-import { MTextInput } from "../../commonui/MTextInput"
+import { MButton } from "../../components/MButton"
+import { MLable } from "../../components/MLable";
+import { MTextInput } from "../../components/MTextInput"
 import { HealthStatus, WeightData } from "../../models/HealthDataModel";
 import { HealthDataServiceImpl } from "../../models/HealthDataServiceImpl";
 
@@ -102,9 +97,9 @@ export struct WeightInputView {
           MLable({ lable: "身高:" })
 
           MTextInput({
-            text: this.heightInputText,
             type: InputType.NUMBER_DECIMAL,
-            onChangeBlock: (v: string) => {
+            text: this.heightInputText,
+            onText: (v: string) => {
               this.heightInputText = v
             }
           }).layoutWeight(1)
@@ -116,9 +111,9 @@ export struct WeightInputView {
           MLable({ lable: "体重:" })
 
           MTextInput({
-            text: this.weightInputText,
             type: InputType.NUMBER_DECIMAL,
-            onChangeBlock: (v: string) => {
+            text: this.weightInputText,
+            onText: (v: string) => {
               this.weightInputText = v
             }
           }).layoutWeight(1)
@@ -127,10 +122,18 @@ export struct WeightInputView {
         }
       }
 
-      Row() {
+      Row({ space: $r('app.integer.view_space') }) {
         MButton({
           text: '保存记录',
           bgColor: $r('app.color.green'),
+          onClickBlock: () => {
+            this.saveData();
+          }
+        }).layoutWeight(1)
+
+        MButton({
+          text: '取消',
+          bgColor: $r('app.color.gray'),
           onClickBlock: () => {
             this.saveData();
           }

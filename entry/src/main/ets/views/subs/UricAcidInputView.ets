@@ -8,18 +8,12 @@
  * @desc
  */
 
-
-// system
-
-// module
-
-// inner
-import { HealthStatusIndicator } from "../HealthStatusIndicator"
-import { MButton } from "../../commonui/MButton"
-import { MLable } from "../../commonui/MLable"
-import { MTextInput } from "../../commonui/MTextInput"
-import { Gender, HealthStatus, UricAcidData } from "../../models/HealthDataModel"
+import { MButton } from "../../components/MButton"
+import { MLable } from "../../components/MLable"
+import { MTextInput } from "../../components/MTextInput"
+import { HealthStatus, UricAcidData } from "../../models/HealthDataModel"
 import { HealthDataServiceImpl } from "../../models/HealthDataServiceImpl"
+import { Gender } from "../../models/UserDataModel"
 
 import { getAppPathStack } from "../../utils/PathStackUtils"
 import { showToast } from "../../utils/ToastUtils"
@@ -74,9 +68,9 @@ export struct UricAcidInputView {
           MLable({ lable: "尿酸:" })
 
           MTextInput({
-            text: this.inputValue.toString(),
             type: InputType.NUMBER_DECIMAL,
-            onChangeBlock: (v: string) => {
+            text: this.inputValue.toString(),
+            onText: (v: string) => {
               this.inputValue = parseFloat(v || '0');
             }
           }).layoutWeight(1)
@@ -88,9 +82,9 @@ export struct UricAcidInputView {
           MLable({ lable: "备注:" })
 
           MTextInput({
-            text: this.inputNote,
             type: InputType.Normal,
-            onChangeBlock: (v: string) => {
+            text: this.inputNote,
+            onText: (v: string) => {
               this.inputNote = v;
             }
           }).layoutWeight(1)

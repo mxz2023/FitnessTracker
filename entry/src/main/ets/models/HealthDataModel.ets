@@ -2,6 +2,8 @@
  * 健康数据模型
  */
 
+import { Gender } from "./UserDataModel";
+
 // 健康指标卡片数据接口
 export interface HealthCardData {
   title: string;
@@ -34,12 +36,6 @@ export enum HealthStatus {
   POOR = 'poor', // 差
 }
 
-// 性别枚举
-export enum Gender {
-  UNKNOWN = 'N/A', // 未知/不参与计算
-  MALE = '男',
-  FEMALE = '女'
-}
 
 // 测量类型枚举
 export enum MeasurementType {
@@ -60,12 +56,6 @@ export class WeightData extends HealthData {
   value: number = 0; // 体重值，单位kg
 }
 
-// 血压数据
-export class BloodPressureData extends HealthData {
-  systolic: number = 0; // 收缩压，单位mmHg
-  diastolic: number = 0; // 舒张压，单位mmHg
-}
-
 // 血糖数据
 export class BloodSugarData extends HealthData {
   value: number = 0; // 血糖值，单位mmol/L
@@ -77,6 +67,13 @@ export class UricAcidData extends HealthData {
   value: number = 0; // 尿酸值，单位μmol/L
   gender: Gender = Gender.MALE; // 性别，用于判断参考范围
 }
+
+// 血压数据
+export class BloodPressureData extends HealthData {
+  systolic: number = 0; // 收缩压，单位mmHg
+  diastolic: number = 0; // 舒张压，单位mmHg
+}
+
 
 // 血脂数据
 export class BloodLipidData extends HealthData {

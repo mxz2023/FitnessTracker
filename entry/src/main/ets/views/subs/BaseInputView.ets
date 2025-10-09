@@ -2,32 +2,31 @@
  * 基本信息输入（Figma 48_31 对齐实现）
  * 灰背景(参考 310x621)、居中白色卡片(265x345, 圆角5)、底部绿色胶囊按钮(224x28)
  */
-import { MButton } from "../../commonui/MButton";
-import { MLable } from "../../commonui/MLable";
-import { MRadio } from "../../commonui/MRadio";
-import { MTextInput } from "../../commonui/MTextInput";
-import { formatDate } from "../../utils/HealthUtils";
+import { MButton } from "../../components/MButton";
+import { MLable } from "../../components/MLable";
+import { MRadio } from "../../components/MRadio";
+import { MTextInput } from "../../components/MTextInput";
+import { UserDataModel, Gender } from "../../models/UserDataModel";
 
-interface BasicInfoFormData {
-  nickname: string;
-  gender: string;
-  birthTimestamp: number;
-  heightCm: number;
-}
 
 @Preview
 @ComponentV2
 export struct BaseInputView {
+  @Param @Require initData: UserDataModel
+  @Event onSubmit: (data?: UserDataModel) => void
+
   // 本地状态
   @Local private nickname: string = '';
-  @Local private gender: string = '未知'; // 备选：未知/男/女
-  @Local private birthDate: Date = new Date(1990, 0, 1);
+  @Local private gender: Gender = Gender.UNKNOWN; // 备选：未知/男/女
+  @Local private year: number = 1983
   @Local private heightCm: number = 0;
-  @Event onSubmitBlock: (data: BasicInfoFormData) => void = (data: BasicInfoFormData) => {
-  };
 
   aboutToAppear(): void {
-
+    this.nickname = this.initData.nickname
+    this.gender = this.initData.gender
+    this.heightCm = this.initData.heightCm
+    const year = new Date().getFullYear()
+    this.year = year - this.initData.age
   }
 
   private async loadData() {
@@ -35,10 +34,10 @@ export struct BaseInputView {
   }
 
   private async saveData() {
-    this.onSubmitBlock({
+    this.onSubmit({
       nickname: this.nickname?.trim() ?? '',
       gender: this.gender,
-      birthTimestamp: this.birthDate.getTime(),
+      age: (new Date().getFullYear()-this.year),
       heightCm: Number(this.heightCm) || 0
     });
   }
@@ -51,12 +50,12 @@ export struct BaseInputView {
           MLable({ lable: '昵称:' })
 
           MTextInput({
+            type: InputType.USER_NAME,
             text: this.nickname,
-            placeholder: '请输入昵称',
-            type: InputType.NUMBER_DECIMAL,
-            onChangeBlock: (v: string) => {
+            onText: (v: string) => {
               this.nickname = v;
-            }
+            },
+            placeholder: '请输入昵称',
           }).layoutWeight(1)
         }
 
@@ -67,20 +66,32 @@ export struct BaseInputView {
           Row({ space: $r('app.integer.view_space') }) {
             MRadio({
               titles: "男",
-              groupName: "genderGroup"
+              isChecked: this.gender == Gender.MALE,
+              groupName: "genderGroup",
+              onChange: (isCheck: boolean) => {
+                if (isCheck) {
+                  this.gender = Gender.MALE
+                }
+              }
             })
             MRadio({
               titles: "女",
-              groupName: "genderGroup"
+              isChecked: this.gender == Gender.FEMALE,
+              groupName: "genderGroup",
+              onChange: (isCheck: boolean) => {
+                if (isCheck) {
+                  this.gender = Gender.FEMALE
+                }
+              }
             })
           }.layoutWeight(1)
         }
 
         // 出生日期
         Row({ space: $r('app.integer.view_content_space') }) {
-          MLable({ lable: '出生日期:' })
+          MLable({ lable: '出生:' })
 
-          MLable({ lable: formatDate(this.birthDate.getTime(), 'YYYY-MM-DD') })
+          MLable({ lable: `${this.year}年` })
             .layoutWeight(1)
         }
 
@@ -89,10 +100,9 @@ export struct BaseInputView {
           MLable({ lable: '身高:' })
 
           MTextInput({
-            text: this.nickname,
-            placeholder: '请输入身高（cm）',
             type: InputType.NUMBER_DECIMAL,
-            onChangeBlock: (value: string) => {
+            text: this.nickname,
+            onText: (value: string) => {
               let res = value;
               if (!/^\d*\.?\d*$/.test(res)) {
                 return;
@@ -102,20 +112,29 @@ export struct BaseInputView {
                 res = `${parts[0]}.${parts[1].substring(0, 2)}`;
               }
               this.heightCm = Number(res) || 0;
-            }
+            },
+            placeholder: '请输入身高（cm）',
           }).layoutWeight(1)
 
           MLable({ lable: 'cm' })
         }
       }
 
-      // 底部居中按钮
-      Row() {
+      // 底部
+      Row({ space: $r('app.integer.view_space') }) {
         MButton({
           text: '保存记录',
           bgColor: $r('app.color.green'),
           onClickBlock: () => {
             this.saveData();
+          }
+        }).layoutWeight(1)
+
+        MButton({
+          text: '取消',
+          bgColor: $r('app.color.gray'),
+          onClickBlock: () => {
+            this.onSubmit();
           }
         }).layoutWeight(1)
       }

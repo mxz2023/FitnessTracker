@@ -8,20 +8,14 @@
  * @desc
  */
 
-// system
-
-// module
-
-// inner
-import { MButton } from "../../commonui/MButton";
-import { MTextInput } from "../../commonui/MTextInput";
+import { MButton } from "../../components/MButton";
+import { MTextInput } from "../../components/MTextInput";
 import { BloodSugarData, MeasurementType } from "../../models/HealthDataModel";
 import { HealthDataServiceImpl } from "../../models/HealthDataServiceImpl";
 import { showToast } from "../../utils/ToastUtils";
 
 
 const TAG = 'BloodSugarInputView.ets'
-
 
 @ComponentV2
 export struct BloodSugarInputView {
@@ -63,9 +57,9 @@ export struct BloodSugarInputView {
             .fontColor('#666666')
             .maxLines(1)
           MTextInput({
-            text: this.bloodSugarValue.toString(),
             type: InputType.NUMBER_DECIMAL,
-            onChangeBlock: (v: string) => {
+            text: this.bloodSugarValue.toString(),
+            onText: (v: string) => {
               this.bloodSugarValue = parseFloat(v || '0');
             }
           }).layoutWeight(1)

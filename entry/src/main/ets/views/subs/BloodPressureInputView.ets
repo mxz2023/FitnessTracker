@@ -8,14 +8,9 @@
  * @desc
  */
 
-// system
-
-// module
-
-// inner
-import { MButton } from "../../commonui/MButton";
-import { MLable } from "../../commonui/MLable";
-import { MTextInput } from "../../commonui/MTextInput";
+import { MButton } from "../../components/MButton";
+import { MLable } from "../../components/MLable";
+import { MTextInput } from "../../components/MTextInput";
 import { BloodPressureData } from "../../models/HealthDataModel";
 import { HealthDataServiceImpl } from "../../models/HealthDataServiceImpl";
 import { showToast } from "../../utils/ToastUtils";
@@ -60,9 +55,9 @@ export struct BloodPressureInputView {
           MLable({ lable: "收缩压:" })
 
           MTextInput({
-            text: this.systolicValue.toString(),
             type: InputType.NUMBER_DECIMAL,
-            onChangeBlock: (v: string) => {
+            text: this.systolicValue.toString(),
+            onText: (v: string) => {
               this.systolicValue = parseFloat(v || '0');
             }
           }).layoutWeight(1)
@@ -74,9 +69,9 @@ export struct BloodPressureInputView {
           MLable({ lable: "舒张压:" })
 
           MTextInput({
-            text: this.diastolicValue.toString(),
             type: InputType.NUMBER_DECIMAL,
-            onChangeBlock: (v: string) => {
+            text: this.diastolicValue.toString(),
+            onText: (v: string) => {
               this.diastolicValue = parseFloat(v || '0');
             }
           }).layoutWeight(1)
