@@ -34,6 +34,8 @@ import { UricAcidInputView } from './subs/UricAcidInputView';
 import { BloodLipidInputView } from './subs/BloodLipidInputView';
 import { HealthValueDashBoard } from './HealthValueDashBoard';
 import { UserDataModel, Gender } from '../models/UserDataModel';
+import { UserViewModel } from '../viewmodels/UserViewModel';
+import { showToast } from '../utils/ToastUtils';
 
 
 @Preview
@@ -51,11 +53,21 @@ export struct HealthOverview {
   @Local private nTotalCholesterol: number = 0; // 总胆固醇，单位:mmol/L
   @Local private showType: HealthCardDataType = HealthCardDataType.Unknown;
 
+  private userViewModel?:UserViewModel
+
   aboutToAppear(): void {
     this.getUIContext().setKeyboardAvoidMode(KeyboardAvoidMode.RESIZE);
 
-
-
+    this.userViewModel = new UserViewModel(this.getUIContext().getHostContext())
+    this.userViewModel.loadUserData().then(()=>{
+      const userData = this.userViewModel?.getUserData()
+      if (userData) {
+        this.nickName = userData.nickname
+        this.nAge = userData.age
+        this.nGender = userData.gender
+        this.nHeight = userData.heightCm
+      }
+    })
   }
 
   // 将数值转换为显示字符串，0 则显示 N/A
@@ -340,6 +352,21 @@ export struct HealthOverview {
                   this.nHeight = data.heightCm
                   this.nGender = data.gender
                   this.nAge = data.age
+
+                  if (this.userViewModel) {
+                    this.userViewModel.setNickname(data.nickname)
+                    this.userViewModel.setGender(data.gender)
+                    this.userViewModel.setAge(data.age)
+                    this.userViewModel.setHeightCm(data.heightCm)
+                    this.userViewModel.saveUserData().then((isOK:boolean)=>{
+                      if (isOK) {
+                        showToast(this.getUIContext(), "保存数据成功")
+                      } else {
+                        showToast(this.getUIContext(), "保存数据失败")
+                      }
+
+                    })
+                  }
                 }
                 this.showType = HealthCardDataType.Unknown
               }

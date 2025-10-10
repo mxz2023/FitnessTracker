@@ -3,6 +3,70 @@
     {
       "name": "app_name",
       "value": "叶记健康"
+    },
+    {
+      "name": "user_nickname",
+      "value": "昵称"
+    },
+    {
+      "name": "user_gender",
+      "value": "性别"
+    },
+    {
+      "name": "user_age",
+      "value": "年龄"
+    },
+    {
+      "name": "user_height",
+      "value": "身高"
+    },
+    {
+      "name": "user_data_incomplete",
+      "value": "用户数据不完整"
+    },
+    {
+      "name": "user_data_saved",
+      "value": "用户数据已保存"
+    },
+    {
+      "name": "user_data_loaded",
+      "value": "用户数据已加载"
+    },
+    {
+      "name": "user_data_cleared",
+      "value": "用户数据已清除"
+    },
+    {
+      "name": "nickname_required",
+      "value": "昵称不能为空"
+    },
+    {
+      "name": "age_required",
+      "value": "年龄必须大于0"
+    },
+    {
+      "name": "height_required",
+      "value": "身高必须大于0"
+    },
+    {
+      "name": "gender_required",
+      "value": "请选择性别"
+    },
+    {
+      "name": "invalid_nickname_length",
+      "value": "昵称长度超过限制"
+    },
+    {
+      "name": "invalid_age_range",
+      "value": "年龄值超出有效范围"
+    },
+    {
+      "name": "invalid_height_range",
+      "value": "身高值超出有效范围"
+    },
+    {
+      "name": "invalid_gender_value",
+      "value": "无效的性别值"
     }
   ]
 }
