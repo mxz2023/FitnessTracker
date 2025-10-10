@@ -30,7 +30,7 @@ export struct BaseInputView {
     }
   }
 
-  buildYears(): string[] {
+  private buildYears(): string[] {
     const startYear: number = 1983;
     const currentYear: number = new Date().getFullYear();
     const years: string[] = [];
@@ -38,15 +38,6 @@ export struct BaseInputView {
       years.push(`${y}年`);
     }
     return years;
-  }
-
-  private async saveData() {
-    this.onSubmit({
-      nickname: this.nickname?.trim() ?? '',
-      gender: this.gender,
-      age: (new Date().getFullYear() - this.year),
-      heightCm: Number(this.heightCm) || 0
-    });
   }
 
   build() {
@@ -164,7 +155,12 @@ export struct BaseInputView {
           text: '保存记录',
           bgColor: $r('app.color.green'),
           onClickBlock: () => {
-            this.saveData();
+            this.onSubmit({
+              nickname: this.nickname?.trim() ?? '',
+              gender: this.gender,
+              age: (new Date().getFullYear() - this.year),
+              heightCm: Number(this.heightCm) || 0
+            });
           }
         }).layoutWeight(1)
 

@@ -4,6 +4,7 @@
 
 import { preferences } from '@kit.ArkData';
 import { Context } from '@ohos.abilityAccessCtrl';
+import { plainToClass } from 'class-transformer';
 import {
   HealthData,
   WeightData,
@@ -24,13 +25,12 @@ export class HealthDataServiceImpl {
 
   constructor(context?: Context) {
     this.context = context;
-    this.initDataStore();
   }
 
   /**
    * 初始化数据存储
    */
-  private async initDataStore(): Promise<void> {
+  async initDataStore(): Promise<void> {
     if (!this.initialized) {
       try {
         await preferences.getPreferences(this.context, {
@@ -135,18 +135,36 @@ export class HealthDataServiceImpl {
         return null;
       }
       switch (data.id.split('_')[0]) {
-        case 'weight':
-          return data as WeightData;
-        case 'bloodPressure':
-          return data as BloodPressureData;
-        case 'bloodSugar':
-          return data as BloodSugarData;
-        case 'uricAcid':
-          return data as UricAcidData;
-        case 'bloodLipid':
-          return data as BloodLipidData;
-        default:
-          return data as HealthData;
+        case 'weight': {
+          let res = plainToClass(WeightData, data as WeightData)
+          return res;
+        }
+
+        case 'bloodPressure': {
+          let res = plainToClass(BloodPressureData, data as BloodPressureData)
+          return res;
+        }
+
+        case 'bloodSugar': {
+          let res = plainToClass(BloodSugarData, data as BloodSugarData)
+          return res;
+        }
+
+        case 'uricAcid': {
+          let res = plainToClass(UricAcidData, data as UricAcidData)
+          return res;
+        }
+
+        case 'bloodLipid': {
+          let res = plainToClass(BloodLipidData, data as BloodLipidData)
+          return res;
+        }
+
+        default: {
+          let res = plainToClass(HealthData, data as HealthData)
+          return res;
+        }
+
       }
     } catch (error) {
       console.error(`获取数据失败: ${error}`);

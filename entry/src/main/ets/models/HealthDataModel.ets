@@ -2,6 +2,9 @@
  * 健康数据模型
  */
 
+import { Type as JsonType, plainToClass } from 'class-transformer';
+import "reflect-metadata";
+
 import { Gender } from "./UserDataModel";
 
 // 健康指标卡片数据接口

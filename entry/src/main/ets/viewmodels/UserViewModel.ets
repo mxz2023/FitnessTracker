@@ -3,14 +3,16 @@
  * 用于管理用户基本信息的获取、存储和验证
  */
 
+import { Context } from '@ohos.abilityAccessCtrl';
+
 import { UserDataModel, Gender } from '../models/UserDataModel';
 import { UserDataServiceImpl } from '../models/UserDataServiceImpl';
-import { Context } from '@ohos.abilityAccessCtrl';
-import { logger } from '../utils/Logger';
 import { HealthTypeConstants, GenderConstants } from '../common/HealthTypeDefine';
 import { UserConstants } from '../common/CommonDefine';
+import { logger } from '../utils/Logger';
 
 const TAG = 'UserViewModel';
+
 
 /**
  * 用户数据验证结果接口
@@ -35,40 +37,23 @@ export interface BMIEvaluationResult {
  */
 export class UserViewModel {
   private userData: UserDataModel;
-  private dataService: UserDataServiceImpl;
-  private context?: Context;
+  private dataService?: UserDataServiceImpl;
 
   /**
    * 构造函数
    * @param context 应用上下文
    */
-  constructor(context?: Context) {
-    this.context = context;
-    this.dataService = new UserDataServiceImpl(context);
+  constructor() {
     this.userData = this.getDefaultUserData();
-  }
-
-  /**
-   * 获取默认用户数据
-   * @returns 默认用户数据对象
-   */
-  private getDefaultUserData(): UserDataModel {
-    const defaultData: UserDataModel = {
-      nickname: '',
-      gender: Gender.UNKNOWN,
-      age: 0,
-      heightCm: 0
-    };
-    return defaultData;
   }
 
   /**
    * 初始化数据服务
    * @param context 应用上下文
    */
-  public initDataService(context: Context): void {
-    this.context = context;
+  public async initDataService(context: Context): Promise<void> {
     this.dataService = new UserDataServiceImpl(context);
+    await this.dataService.initDataStore()
   }
 
   /**
@@ -210,9 +195,9 @@ export class UserViewModel {
       errors.push('昵称不能为空');
     }
 
-    // if (this.userData.age <= 0) {
-    //   errors.push('年龄必须大于0');
-    // }
+    if (this.userData.age <= 0) {
+      errors.push('年龄必须大于0');
+    }
 
     if (this.userData.heightCm <= 0) {
       errors.push('身高必须大于0');
@@ -282,7 +267,7 @@ export class UserViewModel {
    * @returns 保存是否成功
    */
   public async saveUserData(): Promise<boolean> {
-    if (!this.context) {
+    if (!this.dataService) {
       logger.error(TAG, '数据服务未初始化，请先调用 initDataService()');
       return false;
     }
@@ -312,7 +297,7 @@ export class UserViewModel {
    * @returns 加载是否成功
    */
   public async loadUserData(): Promise<boolean> {
-    if (!this.context) {
+    if (!this.dataService) {
       logger.error(TAG, '数据服务未初始化，请先调用 initDataService()');
       return false;
     }
@@ -341,7 +326,7 @@ export class UserViewModel {
    * @returns 清除是否成功
    */
   public async clearUserData(): Promise<boolean> {
-    if (!this.context) {
+    if (!this.dataService) {
       logger.error(TAG, '数据服务未初始化，请先调用 initDataService()');
       return false;
     }
@@ -382,5 +367,19 @@ export class UserViewModel {
     }
 
     return `${this.userData.nickname}，${this.userData.age}岁，${this.getGenderText()}，身高${this.userData.heightCm}cm`;
+  }
+
+  /**
+   * 获取默认用户数据
+   * @returns 默认用户数据对象
+   */
+  private getDefaultUserData(): UserDataModel {
+    const defaultData: UserDataModel = {
+      nickname: '',
+      gender: Gender.UNKNOWN,
+      age: 0,
+      heightCm: 0
+    };
+    return defaultData;
   }
 }

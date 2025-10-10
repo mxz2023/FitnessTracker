@@ -11,101 +11,38 @@
 import { MButton } from "../../components/MButton"
 import { MLable } from "../../components/MLable";
 import { MTextInput } from "../../components/MTextInput"
-import { HealthStatus, WeightData } from "../../models/HealthDataModel";
-import { HealthDataServiceImpl } from "../../models/HealthDataServiceImpl";
-
-import { evaluateWeightStatus } from "../../utils/HealthUtils";
-import { showToast } from "../../utils/ToastUtils";
+import { WeightData } from "../../models/HealthDataModel";
 
 
 const TAG = 'WeightInputView.ets'
 
 @ComponentV2
 export struct WeightInputView {
-  @Local weightInputText: string = '80';
-  @Local heightInputText: string = '1.85';
-  @Local isLoading: boolean = false;
-  @Local latestData: WeightData | null = null;
-  @Local healthStatus: HealthStatus = HealthStatus.EXCELLENT;
-  private dataService: HealthDataServiceImpl = new HealthDataServiceImpl(this.getUIContext().getHostContext());
-
+  @Event onSubmit: (data?: WeightData) => void
+  @Param @Require weight: number;
+  // 本地状态
+  @Local weightInputText: string = "";
+  
   aboutToAppear(): void {
-
-  }
-
-  private async loadData() {
-
+    // 使用外部传入的 weight 初始化输入框文本
+    this.weightInputText = `${this.weight}`;
   }
 
   private async saveData() {
-    if (Number(this.weightInputText) <= 0) {
-      showToast(this.getUIContext(), "请输入有效的体重值");
-      return;
-    }
-    const ok = await this.saveAveragedToday();
-    if (ok) {
-      this.healthStatus = evaluateWeightStatus(Number(this.weightInputText), Number(this.heightInputText));
-      showToast(this.getUIContext(), "保存成功");
-    } else {
-      showToast(this.getUIContext(), "保存失败");
-    }
-  }
-
-  // 当天多次记录时，做平均并只保留一条记录
-  private async saveAveragedToday(): Promise<boolean> {
+    // 构造体重数据并通过事件提交，持久化由主页面处理
     const now = Date.now();
-    // 计算本地当天起止时间戳
-    const d = new Date(now);
-    const dayStart = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0, 0).getTime();
-    const dayEnd = dayStart + 24 * 60 * 60 * 1000 - 1;
-
-    const all = await this.dataService.getDataByType('weight');
-    const todayList = (all as WeightData[]).filter(item => item.timestamp >= dayStart && item.timestamp <= dayEnd);
-
-    let sum = Number(this.weightInputText);
-    let count = 1;
-    for (const it of todayList) {
-      sum += it.value;
-      count += 1;
-    }
-
-    const avg = sum / count;
-
-    // 删除当天已有记录
-    for (const it of todayList) {
-      await this.dataService.deleteData(it.id);
-    }
-
-    // 保存一条平均值记录
     const record = new WeightData();
     record.id = `weight_${now}`;
     record.timestamp = now;
-    record.value = avg;
+    record.value = Number(this.weightInputText) || 0;
     record.note = '';
-
-    const ok = await this.dataService.saveData(record);
-    if (ok) {
-      this.latestData = record;
-    }
-    return ok;
+    this.onSubmit(record);
   }
 
   build() {
     Column({ space: $r('app.integer.view_space') }) {
       Column({ space: $r('app.integer.view_content_space') }) {
-        Row({ space: $r('app.integer.view_content_space') }) {
-          MLable({ lable: "身高:" })
 
-          MTextInput({
-            type: InputType.NUMBER_DECIMAL,
-            text: this.heightInputText,
-            onText: (v: string) => {
-              this.heightInputText = v
-            }
-          }).layoutWeight(1)
-
-          MLable({ lable: "m" })
-        }
 
         Row({ space: $r('app.integer.view_content_space') }) {
           MLable({ lable: "体重:" })
@@ -114,7 +51,16 @@ export struct WeightInputView {
             type: InputType.NUMBER_DECIMAL,
             text: this.weightInputText,
             onText: (v: string) => {
-              this.weightInputText = v
+              // 数字与小数点输入校验，最多两位小数
+              let res: string = v ?? '';
+              if (!/^\d*\.?\d*$/.test(res)) {
+                return;
+              }
+              const parts: string[] = res.split('.');
+              if (parts.length > 1 && parts[1].length > 2) {
+                res = `${parts[0]}.${parts[1].substring(0, 2)}`;
+              }
+              this.weightInputText = res;
             }
           }).layoutWeight(1)
 
@@ -135,16 +81,15 @@ export struct WeightInputView {
           text: '取消',
           bgColor: $r('app.color.gray'),
           onClickBlock: () => {
-            this.saveData();
+            const res = new WeightData()
+            res.value = Number(this.weightInputText)
+            this.onSubmit(res);
           }
         }).layoutWeight(1)
       }
       .width('100%')
       .justifyContent(FlexAlign.SpaceBetween)
     }
-    .onAppear(() => {
-      this.loadData();
-    })
     .width('100%')
     .height('100%')
     .padding($r('app.integer.view_padding'))

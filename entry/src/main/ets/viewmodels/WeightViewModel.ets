@@ -16,7 +16,7 @@ export class WeightViewModel extends BaseHealthViewModel {
   private _id: string = '';
   private _note: string = '';
 
-  constructor(weight: number = 0, height: number = 0) {
+  constructor(weight: number, height: number) {
     super();
     this._weight = weight;
     this._height = height;
@@ -24,18 +24,9 @@ export class WeightViewModel extends BaseHealthViewModel {
     this._id = `weight_${this._timestamp}`;
   }
 
-  /**
-   * 从WeightData创建ViewModel实例
-   * @param data WeightData对象
-   * @param height 身高
-   * @returns WeightViewModel实例
-   */
-  public static fromData(data: WeightData, height: number): WeightViewModel {
-    const viewModel = new WeightViewModel(data.value, height);
-    viewModel._id = data.id;
-    viewModel._timestamp = data.timestamp;
-    viewModel.note = data.note;
-    return viewModel;
+  public async getWeightData(): Promise<HealthData | null> {
+    await this.loadLatestData("weight")
+    return this.toHealthData()
   }
 
   /**

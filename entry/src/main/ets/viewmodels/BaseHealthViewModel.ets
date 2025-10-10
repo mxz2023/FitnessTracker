@@ -37,9 +37,10 @@ export abstract class BaseHealthViewModel extends HealthViewModel {
    * 初始化数据服务
    * @param context 应用上下文
    */
-  public initDataService(context: Context): void {
+  public async initDataService(context: Context): Promise<void> {
     this.context = context;
     this.dataService = new HealthDataServiceImpl(context);
+    await this.dataService.initDataStore()
   }
 
   /**

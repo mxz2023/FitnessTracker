@@ -32,13 +32,12 @@ export class UserDataServiceImpl {
 
   constructor(context?: Context) {
     this.context = context;
-    this.initDataStore();
   }
 
   /**
    * 初始化数据存储
    */
-  private async initDataStore(): Promise<void> {
+  public async initDataStore(): Promise<void> {
     if (!this.initialized) {
       try {
         await preferences.getPreferences(this.context, {

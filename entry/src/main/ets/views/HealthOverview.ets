@@ -37,6 +37,7 @@ import { UserDataModel, Gender } from '../models/UserDataModel';
 import { UserViewModel } from '../viewmodels/UserViewModel';
 import { showToast } from '../utils/ToastUtils';
 import { MLable } from '../components/MLable';
+import { WeightViewModel } from '../viewmodels/WeightViewModel';
 
 
 @Preview
@@ -54,20 +55,35 @@ export struct HealthOverview {
   @Local private nTotalCholesterol: number = 0; // 总胆固醇，单位:mmol/L
   @Local private showType: HealthCardDataType = HealthCardDataType.Unknown;
   private userViewModel?: UserViewModel
+  private weightViewModel?: WeightViewModel
 
-  aboutToAppear(): void {
+  async aboutToAppear(): Promise<void> {
     this.getUIContext().setKeyboardAvoidMode(KeyboardAvoidMode.RESIZE);
 
-    this.userViewModel = new UserViewModel(this.getUIContext().getHostContext())
-    this.userViewModel.loadUserData().then(() => {
-      const userData = this.userViewModel?.getUserData()
-      if (userData) {
-        this.nickName = userData.nickname
-        this.nAge = userData.age
-        this.nGender = userData.gender
-        this.nHeight = userData.heightCm
-      }
-    })
+    const context = this.getUIContext().getHostContext()
+    if (!context) {
+      return
+    }
+
+    // 用户信息
+    this.userViewModel = new UserViewModel()
+    await this.userViewModel.initDataService(context)
+    await this.userViewModel.loadUserData()
+    const userData = this.userViewModel.getUserData()
+    if (userData) {
+      this.nickName = userData.nickname
+      this.nAge = userData.age
+      this.nGender = userData.gender
+      this.nHeight = userData.heightCm
+    }
+
+    // 体重信息
+    this.weightViewModel = new WeightViewModel(this.nWeight, this.nHeight)
+    await this.weightViewModel.initDataService(context)
+    const weightData = await this.weightViewModel.getWeightData()
+    if (weightData) {
+      this.nWeight = (weightData as WeightData).value
+    }
   }
 
   // 将数值转换为显示字符串，0 则显示 N/A
@@ -92,7 +108,6 @@ export struct HealthOverview {
   // 获取健康卡片数据
   private getHealthCardData(): HealthCardData[] {
     const currentDate = formatDate(Date.now(), 'MM-DD');
-
     return [
       {
         title: '体重',
@@ -144,6 +159,65 @@ export struct HealthOverview {
         date: currentDate
       }
     ];
+  }
+
+  // 更新用户基本信息
+  private updateUserInfo(data: UserDataModel) {
+    this.nickName = data.nickname
+    this.nHeight = data.heightCm
+    this.nGender = data.gender
+    this.nAge = data.age
+
+    if (!this.userViewModel) {
+      return
+    }
+
+    let res = this.userViewModel.setNickname(data.nickname)
+    if (!res) {
+      showToast(this.getUIContext(), "请输入正确的昵称")
+      return
+    }
+    res = this.userViewModel.setGender(data.gender)
+    if (!res) {
+      showToast(this.getUIContext(), "请输选择一个性别")
+      return
+    }
+    res = this.userViewModel.setAge(data.age)
+    if (!res) {
+      showToast(this.getUIContext(), "请输选择出生年份")
+      return
+    }
+    res = this.userViewModel.setHeightCm(data.heightCm)
+    if (!res) {
+      showToast(this.getUIContext(), "请输输入你的身高")
+      return
+    }
+    this.userViewModel.saveUserData().then((isOK: boolean) => {
+      if (isOK) {
+        this.showType = HealthCardDataType.Unknown
+        showToast(this.getUIContext(), "保存数据成功")
+      } else {
+        showToast(this.getUIContext(), "保存数据失败")
+      }
+    })
+  }
+
+  // 更新体重信息
+  private async updateWeight(data: WeightData) {
+    this.nWeight = data.value
+    if (!this.weightViewModel) {
+      return
+    }
+
+    this.weightViewModel.weight = data.value
+    const res = await this.weightViewModel?.saveData()
+    if (res) {
+      this.showType = HealthCardDataType.Unknown
+      showToast(this.getUIContext(), "保存数据成功")
+    } else {
+      showToast(this.getUIContext(), "保存数据失败")
+    }
+
   }
 
   // 健康指标卡片组件
@@ -241,9 +315,6 @@ export struct HealthOverview {
         SymbolGlyph($r('sys.symbol.doc_plaintext_and_pencil'))
           .fontSize(24)
           .fontColor([$r('app.color.text_666')])
-          .onClick(() => {
-            this.showType = HealthCardDataType.BaseInfo
-          })
       }
       .width('100%')
       .margin({ bottom: $r('app.integer.view_margin') })
@@ -304,6 +375,9 @@ export struct HealthOverview {
       offsetX: 0,
       offsetY: 2
     })
+    .onClick(() => {
+      this.showType = HealthCardDataType.BaseInfo
+    })
   }
 
   build() {
@@ -355,47 +429,19 @@ export struct HealthOverview {
               } as UserDataModel,
               onSubmit: (data?: UserDataModel) => {
                 if (data) {
-                  this.nickName = data.nickname
-                  this.nHeight = data.heightCm
-                  this.nGender = data.gender
-                  this.nAge = data.age
-
-                  if (this.userViewModel) {
-                    let res = this.userViewModel.setNickname(data.nickname)
-                    if (!res) {
-                      showToast(this.getUIContext(), "请输入正确的昵称")
-                      return
-                    }
-                    res = this.userViewModel.setGender(data.gender)
-                    if (!res) {
-                      showToast(this.getUIContext(), "请输选择一个性别")
-                      return
-                    }
-                    res = this.userViewModel.setAge(data.age)
-                    if (!res) {
-                      showToast(this.getUIContext(), "请输选择出生年份")
-                      return
-                    }
-                    res = this.userViewModel.setHeightCm(data.heightCm)
-                    if (!res) {
-                      showToast(this.getUIContext(), "请输输入你的身高")
-                      return
-                    }
-                    this.userViewModel.saveUserData().then((isOK: boolean) => {
-                      if (isOK) {
-                        this.showType = HealthCardDataType.Unknown
-                        showToast(this.getUIContext(), "保存数据成功")
-                      } else {
-                        showToast(this.getUIContext(), "保存数据失败")
-                      }
-
-                    })
-                  }
+                  this.updateUserInfo(data)
                 }
               }
             })
           } else if (this.showType === HealthCardDataType.WeightInfo) {
-            WeightInputView()
+            WeightInputView({
+              weight: this.nWeight,
+              onSubmit: (data?: WeightData) => {
+                if (data) {
+                  this.updateWeight(data)
+                }
+              }
+            })
           } else if (this.showType === HealthCardDataType.BloodPressureInfo) {
             BloodPressureInputView()
           } else if (this.showType === HealthCardDataType.BloodSugarInfo) {
