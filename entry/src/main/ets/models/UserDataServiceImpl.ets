@@ -13,6 +13,14 @@ const TAG = 'UserDataServiceImpl';
 // 存储用户数据的首选项名称
 const USER_DATA_PREFERENCE = 'user_data_preference';
 
+const Default_NickName = ""
+
+// 键值key定义
+const kNickName = "kNickname"
+const kGender = "kGender"
+const kAge = "kAge"
+const kHeight = "kHeight"
+
 /**
  * 用户数据服务实现类
  * 提供用户数据的增删改查功能
@@ -70,10 +78,10 @@ export class UserDataServiceImpl {
     }
 
     try {
-      await this.dataStore.put('nickname', userData.nickname);
-      await this.dataStore.put('gender', userData.gender);
-      await this.dataStore.put('age', userData.age);
-      await this.dataStore.put('heightCm', userData.heightCm);
+      await this.dataStore.put(kNickName, userData.nickname);
+      await this.dataStore.put(kGender, userData.gender);
+      await this.dataStore.put(kAge, userData.age);
+      await this.dataStore.put(kHeight, userData.heightCm);
       await this.dataStore.flush();
 
       logger.info(TAG, '用户数据保存成功');
@@ -95,10 +103,10 @@ export class UserDataServiceImpl {
     }
 
     try {
-      const nickname = await this.dataStore.get('nickname', '');
-      const gender = await this.dataStore.get('gender', Gender.UNKNOWN);
-      const age = await this.dataStore.get('age', 0);
-      const heightCm = await this.dataStore.get('heightCm', 0);
+      const nickname = await this.dataStore.get(kNickName, Default_NickName);
+      const gender = await this.dataStore.get(kGender, Gender.UNKNOWN);
+      const age = await this.dataStore.get(kAge, 0);
+      const heightCm = await this.dataStore.get(kHeight, 0);
 
       const userData: UserDataModel = {
         nickname: nickname as string,
@@ -145,7 +153,7 @@ export class UserDataServiceImpl {
     }
 
     try {
-      const nickname = await this.dataStore.get('nickname', '');
+      const nickname = await this.dataStore.get(kNickName, '');
       return (nickname as string).length > 0;
     } catch (error) {
       logger.error(TAG, `检查用户数据失败: ${error}`);

@@ -77,7 +77,7 @@ export class UserViewModel {
    * @returns 设置是否成功
    */
   public setNickname(nickname: string): boolean {
-    if (nickname.length > UserConstants.NICKNAME_MAX_LENGTH) {
+    if (nickname.length > UserConstants.NICKNAME_MAX_LENGTH || nickname.trim().length == 0) {
       logger.warn(TAG, '昵称长度超过限制');
       return false;
     }
@@ -92,7 +92,7 @@ export class UserViewModel {
    * @returns 设置是否成功
    */
   public setGender(gender: Gender): boolean {
-    if (gender !== Gender.MALE && gender !== Gender.FEMALE && gender !== Gender.UNKNOWN) {
+    if (gender !== Gender.MALE && gender !== Gender.FEMALE) {
       logger.warn(TAG, '无效的性别值');
       return false;
     }

@@ -10,7 +10,7 @@
 
 // 性别枚举
 export enum Gender {
-  UNKNOWN = 'N/A', // 未知/不参与计算
+  UNKNOWN = '未知', // 未知/不参与计算
   MALE = '男',
   FEMALE = '女'
 }

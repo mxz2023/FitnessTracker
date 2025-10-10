@@ -14,7 +14,6 @@ import { UserDataModel, Gender } from "../../models/UserDataModel";
 export struct BaseInputView {
   @Param @Require initData: UserDataModel
   @Event onSubmit: (data?: UserDataModel) => void
-
   // 本地状态
   @Local private nickname: string = '';
   @Local private gender: Gender = Gender.UNKNOWN; // 备选：未知/男/女
@@ -26,18 +25,26 @@ export struct BaseInputView {
     this.gender = this.initData.gender
     this.heightCm = this.initData.heightCm
     const year = new Date().getFullYear()
-    this.year = year - this.initData.age
+    if (this.initData.age > 0) {
+      this.year = year - this.initData.age
+    }
   }
 
-  private async loadData() {
-
+  buildYears(): string[] {
+    const startYear: number = 1983;
+    const currentYear: number = new Date().getFullYear();
+    const years: string[] = [];
+    for (let y: number = startYear; y <= currentYear; y++) {
+      years.push(`${y}年`);
+    }
+    return years;
   }
 
   private async saveData() {
     this.onSubmit({
       nickname: this.nickname?.trim() ?? '',
       gender: this.gender,
-      age: (new Date().getFullYear()-this.year),
+      age: (new Date().getFullYear() - this.year),
       heightCm: Number(this.heightCm) || 0
     });
   }
@@ -93,7 +100,38 @@ export struct BaseInputView {
 
           MLable({ lable: `${this.year}年` })
             .layoutWeight(1)
-        }
+        }.onClick(() => {
+          // 显示日期选择器设置日期
+          this.getUIContext().showTextPickerDialog({
+            range: this.buildYears(),
+            selected: this.buildYears().length,
+            defaultPickerItemHeight: 40,
+            onAccept: (value: TextPickerResult) => {
+              this.year = Number(value.value.slice(0, -1));
+            },
+            onCancel: () => {
+              console.info("TextPickerDialog:onCancel()");
+            },
+            onChange: (value: TextPickerResult) => {
+              console.info("TextPickerDialog:onChange()" + JSON.stringify(value));
+            },
+            onScrollStop: (value: TextPickerResult) => {
+              console.info("TextPickerDialog:onScrollStop()" + JSON.stringify(value));
+            },
+            onDidAppear: () => {
+              console.info("TextPickerDialog:onDidAppear()");
+            },
+            onDidDisappear: () => {
+              console.info("TextPickerDialog:onDidDisappear()");
+            },
+            onWillAppear: () => {
+              console.info("TextPickerDialog:onWillAppear()");
+            },
+            onWillDisappear: () => {
+              console.info("TextPickerDialog:onWillDisappear()");
+            }
+          });
+        })
 
         // 身高（cm）
         Row({ space: $r('app.integer.view_content_space') }) {
@@ -101,7 +139,7 @@ export struct BaseInputView {
 
           MTextInput({
             type: InputType.NUMBER_DECIMAL,
-            text: this.nickname,
+            text: `${this.heightCm}`,
             onText: (value: string) => {
               let res = value;
               if (!/^\d*\.?\d*$/.test(res)) {
@@ -141,9 +179,6 @@ export struct BaseInputView {
       .width('100%')
       .justifyContent(FlexAlign.SpaceBetween)
     }
-    .onAppear(() => {
-      this.loadData();
-    })
     .width('100%')
     .height('100%')
     .padding($r('app.integer.view_padding'))

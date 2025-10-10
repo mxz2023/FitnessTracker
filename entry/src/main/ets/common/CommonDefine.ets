@@ -125,7 +125,7 @@ export class UserConstants {
   /**
    * 用户年龄最小值
    */
-  static readonly AGE_MIN_VALUE: number = 0;
+  static readonly AGE_MIN_VALUE: number = 1;
   
   /**
    * 用户年龄最大值

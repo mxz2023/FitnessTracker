@@ -36,12 +36,13 @@ import { HealthValueDashBoard } from './HealthValueDashBoard';
 import { UserDataModel, Gender } from '../models/UserDataModel';
 import { UserViewModel } from '../viewmodels/UserViewModel';
 import { showToast } from '../utils/ToastUtils';
+import { MLable } from '../components/MLable';
 
 
 @Preview
 @ComponentV2
 export struct HealthOverview {
-  @Local private nickName: ResourceStr = $r('app.string.app_name')
+  @Local private nickName: string = ""
   @Local private nAge: number = 0; // 年龄
   @Local private nGender: Gender = Gender.UNKNOWN;
   @Local private nHeight: number = 0; // 身高，单位:cm
@@ -52,14 +53,13 @@ export struct HealthOverview {
   @Local private nUricAcid: number = 0; // 尿酸，单位:μmol/L
   @Local private nTotalCholesterol: number = 0; // 总胆固醇，单位:mmol/L
   @Local private showType: HealthCardDataType = HealthCardDataType.Unknown;
-
-  private userViewModel?:UserViewModel
+  private userViewModel?: UserViewModel
 
   aboutToAppear(): void {
     this.getUIContext().setKeyboardAvoidMode(KeyboardAvoidMode.RESIZE);
 
     this.userViewModel = new UserViewModel(this.getUIContext().getHostContext())
-    this.userViewModel.loadUserData().then(()=>{
+    this.userViewModel.loadUserData().then(() => {
       const userData = this.userViewModel?.getUserData()
       if (userData) {
         this.nickName = userData.nickname
@@ -233,7 +233,7 @@ export struct HealthOverview {
   BasicInfoCard() {
     Column({ space: $r('app.integer.view_content_space') }) {
       Row() {
-        Text(this.nickName)
+        Text(this.nickName.length > 0 ? this.nickName : "请设置基本信息")
           .fontSize($r('app.float.font_size_large_title'))
           .fontWeight(FontWeight.Medium)
           .fontColor($r('app.color.text_333'))
@@ -253,34 +253,41 @@ export struct HealthOverview {
       Row() {
         Row() {
           Row({ space: $r('app.integer.view_space') }) {
-            Text(this.nGender)
-              .fontSize($r('app.float.font_size_large'))
-              .fontWeight(FontWeight.Medium)
-              .fontColor($r('app.color.text_333'))
+            Row() {
+              MLable({ lable: "性别:" })
 
-            Text(this.isValid(this.nAge) ? `${this.nAge}` : 'N/A')
-              .fontSize($r('app.float.font_size_large'))
-              .fontWeight(FontWeight.Medium)
-              .fontColor($r('app.color.text_333'))
-          }
-          .layoutWeight(2)
+              Text(`${this.nGender}`)
+                .fontSize($r('app.float.font_size_large'))
+                .fontWeight(FontWeight.Medium)
+                .fontColor($r('app.color.text_333'))
+            }.alignItems(VerticalAlign.Bottom)
 
-          Row({ space: $r('app.integer.view_space') }) {
-            Text(this.isValid(this.nHeight) ? `${this.nHeight}` : 'N/A')
-              .fontSize($r('app.float.font_size_large'))
-              .fontWeight(FontWeight.Medium)
-              .fontColor($r('app.color.text_333'))
+            Row() {
+              MLable({ lable: "年龄:" })
 
-            if (this.isValid(this.nHeight)) {
-              Text('cm')
-                .fontSize($r('app.float.font_size_normal'))
-                .fontColor($r('app.color.text_666'))
-            }
-          }
-          .layoutWeight(1)
-          .alignItems(VerticalAlign.Bottom)
+              Text(`${this.nAge}`)
+                .fontSize($r('app.float.font_size_large'))
+                .fontWeight(FontWeight.Medium)
+                .fontColor($r('app.color.text_333'))
 
-          Blank().layoutWeight(1)
+              if (this.isValid(this.nAge)) {
+                MLable({ lable: " 岁" })
+              }
+            }.alignItems(VerticalAlign.Bottom)
+
+            Row() {
+              MLable({ lable: "身高:" })
+
+              Text(`${this.nHeight}`)
+                .fontSize($r('app.float.font_size_large'))
+                .fontWeight(FontWeight.Medium)
+                .fontColor($r('app.color.text_333'))
+
+              if (this.isValid(this.nHeight)) {
+                MLable({ lable: " cm" })
+              }
+            }.alignItems(VerticalAlign.Bottom)
+          }.alignItems(VerticalAlign.Bottom)
         }
         .justifyContent(FlexAlign.SpaceBetween)
         .layoutWeight(1)
@@ -343,7 +350,7 @@ export struct HealthOverview {
               initData: {
                 nickname: this.nickName,
                 gender: this.nGender,
-                heightCm:this.nHeight,
+                heightCm: this.nHeight,
                 age: this.nAge,
               } as UserDataModel,
               onSubmit: (data?: UserDataModel) => {
@@ -354,12 +361,29 @@ export struct HealthOverview {
                   this.nAge = data.age
 
                   if (this.userViewModel) {
-                    this.userViewModel.setNickname(data.nickname)
-                    this.userViewModel.setGender(data.gender)
-                    this.userViewModel.setAge(data.age)
-                    this.userViewModel.setHeightCm(data.heightCm)
-                    this.userViewModel.saveUserData().then((isOK:boolean)=>{
+                    let res = this.userViewModel.setNickname(data.nickname)
+                    if (!res) {
+                      showToast(this.getUIContext(), "请输入正确的昵称")
+                      return
+                    }
+                    res = this.userViewModel.setGender(data.gender)
+                    if (!res) {
+                      showToast(this.getUIContext(), "请输选择一个性别")
+                      return
+                    }
+                    res = this.userViewModel.setAge(data.age)
+                    if (!res) {
+                      showToast(this.getUIContext(), "请输选择出生年份")
+                      return
+                    }
+                    res = this.userViewModel.setHeightCm(data.heightCm)
+                    if (!res) {
+                      showToast(this.getUIContext(), "请输输入你的身高")
+                      return
+                    }
+                    this.userViewModel.saveUserData().then((isOK: boolean) => {
                       if (isOK) {
+                        this.showType = HealthCardDataType.Unknown
                         showToast(this.getUIContext(), "保存数据成功")
                       } else {
                         showToast(this.getUIContext(), "保存数据失败")
@@ -368,7 +392,6 @@ export struct HealthOverview {
                     })
                   }
                 }
-                this.showType = HealthCardDataType.Unknown
               }
             })
           } else if (this.showType === HealthCardDataType.WeightInfo) {
