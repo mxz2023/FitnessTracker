@@ -11,54 +11,36 @@
 import { MButton } from "../../components/MButton"
 import { MLable } from "../../components/MLable"
 import { MTextInput } from "../../components/MTextInput"
-import { HealthStatus, UricAcidData } from "../../models/HealthDataModel"
-import { HealthDataServiceImpl } from "../../models/HealthDataServiceImpl"
+import { UricAcidData } from "../../models/HealthDataModel"
 import { Gender } from "../../models/UserDataModel"
 
-import { getAppPathStack } from "../../utils/PathStackUtils"
-import { showToast } from "../../utils/ToastUtils"
-
-
-const TAG = 'UricAcidInputView.ets'
 
 @ComponentV2
 export struct UricAcidInputView {
-  @Local records: UricAcidData[] = []
-  @Local latestRecord: UricAcidData | null = null
-  @Local healthStatus: HealthStatus = HealthStatus.EXCELLENT
-  @Local inputValue: number = 3
-  @Local inputNote: string = ''
-  private navPathStack: NavPathStack = new NavPathStack()
-  private dataService: HealthDataServiceImpl = new HealthDataServiceImpl(this.getUIContext().getHostContext())
+  @Event onSubmit: (data?: UricAcidData) => void;
+  @Param @Require inputValue: number;
+  @Param @Require gender: Gender;
+  @Local inputNote: string = '';
+  // 本地状态
+  @Local private inputText: string = "";
 
   aboutToAppear(): void {
-    this.navPathStack = getAppPathStack()
-  }
-
-  async loadData() {
-
+    this.inputText = `${this.inputValue}`
   }
 
   async saveData() {
-    const value = this.inputValue
+    const value = parseInt(this.inputText)
     if (isNaN(value) || value <= 0) {
-      showToast(this.getUIContext(), "请输入有效的尿酸值");
       return
     }
     const record: UricAcidData = {
       id: `uricAcid_${Date.now()}`,
       timestamp: Date.now(),
       value: value,
-      gender: Gender.MALE,
+      gender: this.gender ?? Gender.UNKNOWN,
       note: this.inputNote || ''
     }
-    const ok = await this.dataService.saveData(record)
-    if (ok) {
-      this.inputNote = ''
-      showToast(this.getUIContext(), "保存成功");
-    } else {
-      showToast(this.getUIContext(), "保存失败");
-    }
+    this.onSubmit(record)
   }
 
   build() {
@@ -69,9 +51,9 @@ export struct UricAcidInputView {
 
           MTextInput({
             type: InputType.NUMBER_DECIMAL,
-            text: this.inputValue.toString(),
+            text: this.inputText,
             onText: (v: string) => {
-              this.inputValue = parseFloat(v || '0');
+              this.inputText = v;
             }
           }).layoutWeight(1)
 
@@ -103,9 +85,6 @@ export struct UricAcidInputView {
       .width('100%')
       .justifyContent(FlexAlign.SpaceBetween)
     }
-    .onAppear(() => {
-      this.loadData();
-    })
     .width('100%')
     .height('100%')
     .padding($r('app.integer.view_padding'))

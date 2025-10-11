@@ -4,6 +4,7 @@
  */
 import { KeyboardAvoidMode } from '@kit.ArkUI';
 
+import { MLable } from '../components/MLable';
 import {
   HealthStatus,
   WeightData,
@@ -35,9 +36,13 @@ import { BloodLipidInputView } from './subs/BloodLipidInputView';
 import { HealthValueDashBoard } from './HealthValueDashBoard';
 import { UserDataModel, Gender } from '../models/UserDataModel';
 import { UserViewModel } from '../viewmodels/UserViewModel';
-import { showToast } from '../utils/ToastUtils';
-import { MLable } from '../components/MLable';
 import { WeightViewModel } from '../viewmodels/WeightViewModel';
+import { BloodSugarViewModel } from '../viewmodels/BloodSugarViewModel';
+import { BloodPressureViewModel } from '../viewmodels/BloodPressureViewModel';
+import { UricAcidViewModel } from '../viewmodels/UricAcidViewModel';
+import { BloodLipidViewModel } from '../viewmodels/BloodLipidViewModel';
+
+import { showToast } from '../utils/ToastUtils';
 
 
 @Preview
@@ -53,9 +58,17 @@ export struct HealthOverview {
   @Local private nBloodPressureDiastolic: number = 0; // 舒张压
   @Local private nUricAcid: number = 0; // 尿酸，单位:μmol/L
   @Local private nTotalCholesterol: number = 0; // 总胆固醇，单位:mmol/L
+  @Local private triglycerides: number = 0;
+  @Local private hdlCholesterol: number = 0;
+  @Local private ldlCholesterol: number = 0;
   @Local private showType: HealthCardDataType = HealthCardDataType.Unknown;
-  private userViewModel?: UserViewModel
-  private weightViewModel?: WeightViewModel
+  // ViewModel
+  private userInfoVM?: UserViewModel
+  private weightDataVM?: WeightViewModel
+  private bloodSugarVM?: BloodSugarViewModel
+  private bloodPressVM?: BloodPressureViewModel
+  private uricAcidVM ?: UricAcidViewModel
+  private bloodLipidVM?: BloodLipidViewModel
 
   async aboutToAppear(): Promise<void> {
     this.getUIContext().setKeyboardAvoidMode(KeyboardAvoidMode.RESIZE);
@@ -66,10 +79,10 @@ export struct HealthOverview {
     }
 
     // 用户信息
-    this.userViewModel = new UserViewModel()
-    await this.userViewModel.initDataService(context)
-    await this.userViewModel.loadUserData()
-    const userData = this.userViewModel.getUserData()
+    this.userInfoVM = new UserViewModel()
+    await this.userInfoVM.initDataService(context)
+    await this.userInfoVM.loadUserData()
+    const userData = this.userInfoVM.getUserData()
     if (userData) {
       this.nickName = userData.nickname
       this.nAge = userData.age
@@ -78,11 +91,47 @@ export struct HealthOverview {
     }
 
     // 体重信息
-    this.weightViewModel = new WeightViewModel(this.nWeight, this.nHeight)
-    await this.weightViewModel.initDataService(context)
-    const weightData = await this.weightViewModel.getWeightData()
+    this.weightDataVM = new WeightViewModel(this.nWeight, this.nHeight)
+    await this.weightDataVM.initDataService(context)
+    const weightData = await this.weightDataVM.getWeightData()
     if (weightData) {
       this.nWeight = (weightData as WeightData).value
+    }
+
+    // 血糖信息
+    this.bloodSugarVM = new BloodSugarViewModel(this.nBloodSugar, MeasurementType.FASTING)
+    await this.bloodSugarVM.initDataService(context)
+    const bloodSugarData = await this.bloodSugarVM.getBloodSugarData()
+    if (bloodSugarData) {
+      this.nBloodSugar = (bloodSugarData as BloodSugarData).value
+    }
+
+    // 血压信息
+    this.bloodPressVM = new BloodPressureViewModel(this.nBloodPressureSystolic, this.nBloodPressureDiastolic)
+    await this.bloodPressVM.initDataService(context)
+    const bloodPressureData = await this.bloodPressVM.getBloodPressureData()
+    if (bloodPressureData) {
+      this.nBloodPressureSystolic = (bloodPressureData as BloodPressureData).systolic
+      this.nBloodPressureDiastolic = (bloodPressureData as BloodPressureData).diastolic
+    }
+
+    // 尿酸信息
+    this.uricAcidVM = new UricAcidViewModel(this.nUricAcid, this.nGender)
+    await this.uricAcidVM.initDataService(context)
+    const uricAcidData = await this.uricAcidVM.getUricAcidData()
+    if (uricAcidData) {
+      this.nUricAcid = (uricAcidData as UricAcidData).value
+    }
+
+    // 血脂信息
+    this.bloodLipidVM = new BloodLipidViewModel(this.nTotalCholesterol, this.triglycerides, this.hdlCholesterol, this.ldlCholesterol)
+    await this.bloodLipidVM.initDataService(context)
+    const bloodLipidData = await this.bloodLipidVM.getBloodLipidData()
+    if (bloodLipidData) {
+      this.nTotalCholesterol = (bloodLipidData as BloodLipidData).totalCholesterol
+      this.triglycerides = (bloodLipidData as BloodLipidData).triglycerides
+      this.hdlCholesterol = (bloodLipidData as BloodLipidData).hdlCholesterol
+      this.ldlCholesterol = (bloodLipidData as BloodLipidData).ldlCholesterol
     }
   }
 
@@ -168,31 +217,31 @@ export struct HealthOverview {
     this.nGender = data.gender
     this.nAge = data.age
 
-    if (!this.userViewModel) {
+    if (!this.userInfoVM) {
       return
     }
 
-    let res = this.userViewModel.setNickname(data.nickname)
+    let res = this.userInfoVM.setNickname(data.nickname)
     if (!res) {
       showToast(this.getUIContext(), "请输入正确的昵称")
       return
     }
-    res = this.userViewModel.setGender(data.gender)
+    res = this.userInfoVM.setGender(data.gender)
     if (!res) {
       showToast(this.getUIContext(), "请输选择一个性别")
       return
     }
-    res = this.userViewModel.setAge(data.age)
+    res = this.userInfoVM.setAge(data.age)
     if (!res) {
       showToast(this.getUIContext(), "请输选择出生年份")
       return
     }
-    res = this.userViewModel.setHeightCm(data.heightCm)
+    res = this.userInfoVM.setHeightCm(data.heightCm)
     if (!res) {
       showToast(this.getUIContext(), "请输输入你的身高")
       return
     }
-    this.userViewModel.saveUserData().then((isOK: boolean) => {
+    this.userInfoVM.saveUserData().then((isOK: boolean) => {
       if (isOK) {
         this.showType = HealthCardDataType.Unknown
         showToast(this.getUIContext(), "保存数据成功")
@@ -205,19 +254,91 @@ export struct HealthOverview {
   // 更新体重信息
   private async updateWeight(data: WeightData) {
     this.nWeight = data.value
-    if (!this.weightViewModel) {
+    if (!this.weightDataVM) {
       return
     }
 
-    this.weightViewModel.weight = data.value
-    const res = await this.weightViewModel?.saveData()
+    this.weightDataVM.weight = data.value
+    const res = await this.weightDataVM?.saveData()
     if (res) {
       this.showType = HealthCardDataType.Unknown
       showToast(this.getUIContext(), "保存数据成功")
     } else {
       showToast(this.getUIContext(), "保存数据失败")
     }
+  }
 
+  // 更新血压信息
+  private async updateBloodPressure(data: BloodPressureData) {
+    this.nBloodPressureSystolic = data.systolic
+    this.nBloodPressureDiastolic = data.diastolic
+    if (!this.bloodPressVM) {
+      return
+    }
+    this.bloodPressVM.systolic = data.systolic
+    this.bloodPressVM.diastolic = data.diastolic
+    const res = await this.bloodPressVM.saveData()
+    if (res) {
+      this.showType = HealthCardDataType.Unknown
+      showToast(this.getUIContext(), "保存数据成功")
+    } else {
+      showToast(this.getUIContext(), "保存数据失败")
+    }
+  }
+
+  private async updateBloodSugar(data: BloodSugarData) {
+    this.nBloodSugar = data.value
+    if (!this.bloodSugarVM) {
+      return
+    }
+    this.bloodSugarVM.value = data.value
+    this.bloodSugarVM.measurementType = data.measurementType
+    const res = await this.bloodSugarVM.saveData()
+    if (res) {
+      this.showType = HealthCardDataType.Unknown
+      showToast(this.getUIContext(), "保存数据成功")
+    } else {
+      showToast(this.getUIContext(), "保存数据失败")
+    }
+  }
+
+  // 更新尿酸信息
+  private async updateUricAcid(data: UricAcidData) {
+    this.nUricAcid = data.value
+    if (!this.uricAcidVM) {
+      return
+    }
+    this.uricAcidVM.value = data.value
+    this.uricAcidVM.gender = data.gender
+    const res = await this.uricAcidVM.saveData()
+    if (res) {
+      this.showType = HealthCardDataType.Unknown
+      showToast(this.getUIContext(), "保存数据成功")
+    } else {
+      showToast(this.getUIContext(), "保存数据失败")
+    }
+  }
+
+  // 更新血脂信息
+  private async updateBloodLipid(data: BloodLipidData) {
+    this.nTotalCholesterol = data.totalCholesterol
+    this.triglycerides = data.triglycerides
+    this.hdlCholesterol = data.hdlCholesterol
+    this.ldlCholesterol = data.ldlCholesterol
+    if (!this.bloodLipidVM) {
+      return
+    }
+    this.bloodLipidVM.totalCholesterol = data.totalCholesterol
+    this.bloodLipidVM.triglycerides = data.triglycerides
+    this.bloodLipidVM.hdlCholesterol = data.hdlCholesterol
+    this.bloodLipidVM.ldlCholesterol = data.ldlCholesterol
+    const res = await this.bloodLipidVM.saveData()
+    if (res) {
+      this.showType = HealthCardDataType.Unknown
+      showToast(this.getUIContext(), "保存数据成功")
+    } else {
+      showToast(this.getUIContext(), "保存数据失败")
+    }
   }
 
   // 健康指标卡片组件
@@ -443,13 +564,47 @@ export struct HealthOverview {
               }
             })
           } else if (this.showType === HealthCardDataType.BloodPressureInfo) {
-            BloodPressureInputView()
+            BloodPressureInputView({
+              systolicValue: this.nBloodPressureSystolic,
+              diastolicValue: this.nBloodPressureDiastolic,
+              onSubmit: (data?: BloodPressureData) => {
+                if (data) {
+                  this.updateBloodPressure(data)
+                }
+              }
+            })
           } else if (this.showType === HealthCardDataType.BloodSugarInfo) {
-            BloodSugarInputView()
+            BloodSugarInputView({
+              bloodSugarValue: this.nBloodSugar,
+              measurementType: MeasurementType.FASTING,
+              onSubmit: (data?: BloodSugarData) => {
+                if (data) {
+                  this.updateBloodSugar(data)
+                }
+              }
+            })
           } else if (this.showType === HealthCardDataType.UricAcidInfo) {
-            UricAcidInputView()
+            UricAcidInputView({
+              inputValue: this.nUricAcid,
+              gender: this.nGender,
+              onSubmit: (data?: UricAcidData) => {
+                if (data) {
+                  this.updateUricAcid(data)
+                }
+              }
+            })
           } else if (this.showType === HealthCardDataType.BloodLipidInfo) {
-            BloodLipidInputView()
+            BloodLipidInputView({
+              totalCholesterol: this.nTotalCholesterol,
+              triglycerides: this.triglycerides,
+              hdlCholesterol: this.hdlCholesterol,
+              ldlCholesterol: this.ldlCholesterol,
+              onSubmit: (data?: BloodLipidData) => {
+                if (data) {
+                  this.updateBloodLipid(data)
+                }
+              }
+            })
           }
         }
         .width('100%')

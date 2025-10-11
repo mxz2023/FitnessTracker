@@ -30,7 +30,7 @@ export class BloodSugarViewModel extends BaseHealthViewModel {
     this._value = value;
     this._measurementType = measurementType;
     this._timestamp = Date.now();
-    this._id = `bs_${this._timestamp}`;
+    this._id = `bloodSugar_${this._timestamp}`;
   }
 
   /**
@@ -38,6 +38,11 @@ export class BloodSugarViewModel extends BaseHealthViewModel {
    * @param data BloodSugarData对象
    * @returns BloodSugarViewModel实例
    */
+  public async getBloodSugarData(): Promise<HealthData | null> {
+    await this.loadLatestData("bloodSugar");
+    return this.toHealthData();
+  }
+
   public static fromData(data: BloodSugarData): BloodSugarViewModel {
     const viewModel = new BloodSugarViewModel(data.value, data.measurementType);
     viewModel._id = data.id;

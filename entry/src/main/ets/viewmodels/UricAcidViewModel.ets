@@ -2,11 +2,13 @@
  * 尿酸健康评估ViewModel
  */
 
-import { HealthStatus, HealthRanges, UricAcidData, Gender, HealthData } from '../models/HealthDataModel';
+import { HealthStatus, HealthRanges, UricAcidData, HealthData } from '../models/HealthDataModel';
 import { BaseHealthViewModel } from './BaseHealthViewModel';
+import { Gender } from '../models/UserDataModel';
 import { logger } from '../utils/Logger';
 
 const TAG = 'UricAcidViewModel';
+
 
 /**
  * 尿酸ViewModel类
@@ -29,7 +31,7 @@ export class UricAcidViewModel extends BaseHealthViewModel {
     this._value = value;
     this._gender = gender;
     this._timestamp = Date.now();
-    this._id = `ua_${this._timestamp}`;
+    this._id = `uricAcid_${this._timestamp}`;
   }
 
   /**
@@ -37,6 +39,11 @@ export class UricAcidViewModel extends BaseHealthViewModel {
    * @param data UricAcidData对象
    * @returns UricAcidViewModel实例
    */
+  public async getUricAcidData(): Promise<HealthData | null> {
+    await this.loadLatestData("uricAcid");
+    return this.toHealthData();
+  }
+
   public static fromData(data: UricAcidData): UricAcidViewModel {
     const viewModel = new UricAcidViewModel(data.value, data.gender);
     viewModel._id = data.id;

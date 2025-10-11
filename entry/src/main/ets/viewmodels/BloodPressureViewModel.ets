@@ -29,7 +29,7 @@ export class BloodPressureViewModel extends BaseHealthViewModel {
     this._systolic = systolic;
     this._diastolic = diastolic;
     this._timestamp = Date.now();
-    this._id = `bp_${this._timestamp}`;
+    this._id = `bloodPressure_${this._timestamp}`;
   }
 
   /**
@@ -37,6 +37,11 @@ export class BloodPressureViewModel extends BaseHealthViewModel {
    * @param data BloodPressureData对象
    * @returns BloodPressureViewModel实例
    */
+  public async getBloodPressureData(): Promise<HealthData | null> {
+    await this.loadLatestData("bloodPressure");
+    return this.toHealthData();
+  }
+
   public static fromData(data: BloodPressureData): BloodPressureViewModel {
     const viewModel = new BloodPressureViewModel(data.systolic, data.diastolic);
     viewModel._id = data.id;

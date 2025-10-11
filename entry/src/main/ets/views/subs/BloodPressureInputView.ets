@@ -12,40 +12,37 @@ import { MButton } from "../../components/MButton";
 import { MLable } from "../../components/MLable";
 import { MTextInput } from "../../components/MTextInput";
 import { BloodPressureData } from "../../models/HealthDataModel";
-import { HealthDataServiceImpl } from "../../models/HealthDataServiceImpl";
-import { showToast } from "../../utils/ToastUtils";
 
-
-const TAG = 'BloodPressureInputView.ets'
 
 @ComponentV2
 export struct BloodPressureInputView {
-  @Local systolicValue: number = 120;
-  @Local diastolicValue: number = 80;
-  private dataService: HealthDataServiceImpl = new HealthDataServiceImpl(this.getUIContext().getHostContext());
+  @Event onSubmit: (data?: BloodPressureData) => void;
+  @Param @Require systolicValue: number;
+  @Param @Require diastolicValue: number;
+  // 本地状态
+  @Local private systolicText: string = "";
+  @Local private diastolicText: string = "";
 
-  async loadData() {
-
+  aboutToAppear(): void {
+    this.systolicText = `${this.systolicValue}`;
+    this.diastolicText = `${this.diastolicValue}`;
   }
 
-  async saveData() {
-    if (this.systolicValue <= 0 || this.diastolicValue <= 0) {
-      showToast(this.getUIContext(), "请输入有效的血压值");
-      return;
+  private async saveData() {
+    const systolicValue = parseInt(this.systolicText)
+    const diastolicValue = parseInt(this.diastolicText)
+    if (isNaN(systolicValue) || systolicValue <= 0 || isNaN(diastolicValue) || diastolicValue <= 0) {
+      return
     }
+
     const now = Date.now();
     const record = new BloodPressureData();
     record.id = `bloodPressure_${now}`;
     record.timestamp = now;
-    record.systolic = this.systolicValue;
-    record.diastolic = this.diastolicValue;
+    record.systolic = systolicValue;
+    record.diastolic = diastolicValue;
     record.note = '';
-    const ok = await this.dataService.saveData(record);
-    if (ok) {
-      showToast(this.getUIContext(), "保存成功");
-    } else {
-      showToast(this.getUIContext(), "保存失败");
-    }
+    this.onSubmit(record);
   }
 
   build() {
@@ -56,9 +53,9 @@ export struct BloodPressureInputView {
 
           MTextInput({
             type: InputType.NUMBER_DECIMAL,
-            text: this.systolicValue.toString(),
+            text: this.systolicText,
             onText: (v: string) => {
-              this.systolicValue = parseFloat(v || '0');
+              this.systolicText = v
             }
           }).layoutWeight(1)
 
@@ -70,9 +67,9 @@ export struct BloodPressureInputView {
 
           MTextInput({
             type: InputType.NUMBER_DECIMAL,
-            text: this.diastolicValue.toString(),
+            text: this.diastolicText,
             onText: (v: string) => {
-              this.diastolicValue = parseFloat(v || '0');
+              this.diastolicText = v
             }
           }).layoutWeight(1)
 
@@ -93,9 +90,6 @@ export struct BloodPressureInputView {
       .width('100%')
       .justifyContent(FlexAlign.SpaceBetween)
     }
-    .onAppear(() => {
-      this.loadData();
-    })
     .width('100%')
     .height('100%')
     .padding($r('app.integer.view_padding'))

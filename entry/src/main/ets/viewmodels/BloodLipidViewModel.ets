@@ -36,7 +36,7 @@ export class BloodLipidViewModel extends BaseHealthViewModel {
     this._hdlCholesterol = hdlCholesterol;
     this._ldlCholesterol = ldlCholesterol;
     this._timestamp = Date.now();
-    this._id = `bl_${this._timestamp}`;
+    this._id = `bloodLipid_${this._timestamp}`;
   }
 
   /**
@@ -44,6 +44,11 @@ export class BloodLipidViewModel extends BaseHealthViewModel {
    * @param data BloodLipidData对象
    * @returns BloodLipidViewModel实例
    */
+  public async getBloodLipidData(): Promise<HealthData | null> {
+    await this.loadLatestData("bloodLipid");
+    return this.toHealthData();
+  }
+
   public static fromData(data: BloodLipidData): BloodLipidViewModel {
     const viewModel = new BloodLipidViewModel(
       data.totalCholesterol,

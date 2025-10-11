@@ -11,41 +11,37 @@
 import { MButton } from "../../components/MButton";
 import { MTextInput } from "../../components/MTextInput";
 import { BloodSugarData, MeasurementType } from "../../models/HealthDataModel";
-import { HealthDataServiceImpl } from "../../models/HealthDataServiceImpl";
-import { showToast } from "../../utils/ToastUtils";
 
-
-const TAG = 'BloodSugarInputView.ets'
 
 @ComponentV2
 export struct BloodSugarInputView {
-  @Local bloodSugarValue: number = 5.0;
-  @Local measurementType: MeasurementType = MeasurementType.FASTING;
-  private dataService: HealthDataServiceImpl = new HealthDataServiceImpl(this.getUIContext().getHostContext());
+  @Event onSubmit: (data?: BloodSugarData) => void;
+  @Param @Require bloodSugarValue: number;
+  @Param @Require measurementType: MeasurementType;
+  // 本地状态
+  @Local private bloodSugarText: string = "";
+  @Local private measurementText: MeasurementType = MeasurementType.RANDOM;
 
-  async loadData() {
-
+  aboutToAppear(): void {
+    this.bloodSugarText = `${this.bloodSugarValue}`;
+    this.measurementText = this.measurementType;
   }
 
-  async saveData() {
-    if (this.bloodSugarValue <= 0) {
-      showToast(this.getUIContext(), "请输入有效的血糖值");
-      return;
+  private async saveData() {
+    const value = parseInt(this.bloodSugarText)
+    if (isNaN(value) || value <= 0 ) {
+      return
     }
+
     const now = Date.now();
     const record: BloodSugarData = {
       id: `bloodSugar_${now}`,
       timestamp: now,
-      value: this.bloodSugarValue,
+      value: value,
       measurementType: this.measurementType,
       note: ''
     };
-    const ok = await this.dataService.saveData(record);
-    if (ok) {
-      showToast(this.getUIContext(), "保存成功");
-    } else {
-      showToast(this.getUIContext(), "保存失败");
-    }
+    this.onSubmit(record);
   }
 
   build() {
@@ -58,9 +54,9 @@ export struct BloodSugarInputView {
             .maxLines(1)
           MTextInput({
             type: InputType.NUMBER_DECIMAL,
-            text: this.bloodSugarValue.toString(),
+            text: this.bloodSugarText,
             onText: (v: string) => {
-              this.bloodSugarValue = parseFloat(v || '0');
+              this.bloodSugarText = v;
             }
           }).layoutWeight(1)
 
@@ -74,26 +70,26 @@ export struct BloodSugarInputView {
             .maxLines(1)
           Row({ space: 8 }) {
             Radio({ value: 'FASTING', group: 'bsType' })
-              .checked(this.measurementType === MeasurementType.FASTING)
+              .checked(this.measurementText === MeasurementType.FASTING)
               .onChange((c: boolean) => {
                 if (c) {
-                  this.measurementType = MeasurementType.FASTING;
+                  this.measurementText = MeasurementType.FASTING;
                 }
               })
             Text('空腹')
             Radio({ value: 'AFTER_MEAL', group: 'bsType' })
-              .checked(this.measurementType === MeasurementType.AFTER_MEAL)
+              .checked(this.measurementText === MeasurementType.AFTER_MEAL)
               .onChange((c: boolean) => {
                 if (c) {
-                  this.measurementType = MeasurementType.AFTER_MEAL;
+                  this.measurementText = MeasurementType.AFTER_MEAL;
                 }
               })
             Text('餐后')
             Radio({ value: 'RANDOM', group: 'bsType' })
-              .checked(this.measurementType === MeasurementType.RANDOM)
+              .checked(this.measurementText === MeasurementType.RANDOM)
               .onChange((c: boolean) => {
                 if (c) {
-                  this.measurementType = MeasurementType.RANDOM;
+                  this.measurementText = MeasurementType.RANDOM;
                 }
               })
             Text('随机')
@@ -116,9 +112,6 @@ export struct BloodSugarInputView {
       .width('100%')
       .justifyContent(FlexAlign.SpaceBetween)
     }
-    .onAppear(() => {
-      this.loadData();
-    })
     .width('100%')
     .height('100%')
     .padding($r('app.integer.view_padding'))

@@ -12,32 +12,35 @@ import { MButton } from "../../components/MButton"
 import { MLable } from "../../components/MLable"
 import { MTextInput } from "../../components/MTextInput"
 import { BloodLipidData } from "../../models/HealthDataModel"
-import { HealthDataServiceImpl } from "../../models/HealthDataServiceImpl"
-import { showToast } from "../../utils/ToastUtils"
 
-
-const TAG = 'BloodLipidInputView.ets'
 
 @ComponentV2
 export struct BloodLipidInputView {
-  @Local private totalCholesterolText: string = ''
-  @Local private triglyceridesText: string = ''
-  @Local private hdlCholesterolText: string = ''
-  @Local private ldlCholesterolText: string = ''
-  private dataService: HealthDataServiceImpl = new HealthDataServiceImpl(this.getUIContext().getHostContext())
+  @Event onSubmit: (data?: BloodLipidData) => void;
+  @Param @Require totalCholesterol: number;
+  @Param @Require triglycerides: number;
+  @Param @Require hdlCholesterol: number;
+  @Param @Require ldlCholesterol: number;
+  // 本地状态
+  @Local private totalCholesterolText: string = "";
+  @Local private triglyceridesText: string = "";
+  @Local private hdlCholesterolText: string = "";
+  @Local private ldlCholesterolText: string = "";
 
-  async loadData() {
-
+  aboutToAppear(): void {
+    this.totalCholesterolText = `${this.totalCholesterol}`;
+    this.triglyceridesText = `${this.triglycerides}`;
+    this.hdlCholesterolText = `${this.hdlCholesterol}`;
+    this.ldlCholesterolText = `${this.ldlCholesterol}`;
   }
 
-  async saveData() {
+  private async saveData() {
     if (
       this.totalCholesterolText.length <= 0 ||
-        this.triglyceridesText.length <= 0 ||
-        this.hdlCholesterolText.length <= 0 ||
-        this.ldlCholesterolText.length <= 0
+      this.triglyceridesText.length <= 0 ||
+      this.hdlCholesterolText.length <= 0 ||
+      this.ldlCholesterolText.length <= 0
     ) {
-      showToast(this.getUIContext(), '请输入有效的血脂值')
       return
     }
     const now = Date.now()
@@ -50,12 +53,7 @@ export struct BloodLipidInputView {
       ldlCholesterol: Number(this.ldlCholesterolText),
       note: ''
     }
-    const ok = await this.dataService.saveData(record)
-    if (ok) {
-      showToast(this.getUIContext(), '保存成功')
-    } else {
-      showToast(this.getUIContext(), '保存失败')
-    }
+    this.onSubmit(record)
   }
 
   build() {
@@ -130,9 +128,7 @@ export struct BloodLipidInputView {
       .width('100%')
       .justifyContent(FlexAlign.SpaceBetween)
     }
-    .onAppear(() => {
-      this.loadData();
-    })
+
     .width('100%')
     .height('100%')
     .padding($r('app.integer.view_padding'))
