@@ -27,11 +27,10 @@ export class BloodSugarViewModel extends BaseHealthViewModel {
   }
 
   /**
-   * 从BloodSugarData创建ViewModel实例
-   * @param data BloodSugarData对象
-   * @returns BloodSugarViewModel实例
+   * 获取最新数据
+   * @returns
    */
-  public async getBloodSugarData(): Promise<HealthData | null> {
+  public async getHealthData(): Promise<HealthData | null> {
     await this.loadLatestData("bloodSugar");
     return this.toHealthData();
   }

@@ -30,11 +30,10 @@ export class UricAcidViewModel extends BaseHealthViewModel {
   }
 
   /**
-   * 从UricAcidData创建ViewModel实例
-   * @param data UricAcidData对象
-   * @returns UricAcidViewModel实例
+   * 获取最新数据
+   * @returns
    */
-  public async getUricAcidData(): Promise<HealthData | null> {
+  public async getHealthData(): Promise<HealthData | null> {
     await this.loadLatestData("uricAcid");
     return this.toHealthData();
   }

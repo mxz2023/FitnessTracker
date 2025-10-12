@@ -9,6 +9,13 @@ import { HealthStatus } from '../models/HealthDataModel';
  * 健康评估ViewModel抽象基类
  */
 export abstract class HealthViewModel {
+
+  /**
+   * 获取最新数据
+   * @returns
+   */
+  public abstract getHealthData(): Object
+
   /**
    * 评估健康状态
    * @returns 健康状态枚举

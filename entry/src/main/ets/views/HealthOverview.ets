@@ -32,6 +32,7 @@ import { HealthInfoCard } from './HealthInfoCard';
 import { UserInfoCard } from './UserInfoCard';
 
 import { showToast } from '../utils/ToastUtils';
+import { getAppPathStack } from '../utils/PathStackUtils';
 
 
 @Preview
@@ -70,27 +71,27 @@ export struct HealthOverview {
     // 体重信息
     this.weightDataVM = new WeightViewModel(this.userInfoVM.heightCm)
     await this.weightDataVM.initDataService(context)
-    await this.weightDataVM.getWeightData()
+    await this.weightDataVM.getHealthData()
 
     // 血糖信息
     this.bloodSugarVM = new BloodSugarViewModel()
     await this.bloodSugarVM.initDataService(context)
-    await this.bloodSugarVM.getBloodSugarData()
+    await this.bloodSugarVM.getHealthData()
 
     // 尿酸信息
     this.uricAcidVM = new UricAcidViewModel()
     await this.uricAcidVM.initDataService(context)
-    await this.uricAcidVM.getUricAcidData()
+    await this.uricAcidVM.getHealthData()
 
     // 血压信息
     this.bloodPressVM = new BloodPressureViewModel()
     await this.bloodPressVM.initDataService(context)
-    await this.bloodPressVM.getBloodPressureData()
+    await this.bloodPressVM.getHealthData()
 
     // 血脂信息
     this.bloodLipidVM = new BloodLipidViewModel()
     await this.bloodLipidVM.initDataService(context)
-    await this.bloodLipidVM.getBloodLipidData()
+    await this.bloodLipidVM.getHealthData()
 
     this.isLoading = false
   }
@@ -250,6 +251,29 @@ export struct HealthOverview {
     }
   }
 
+  getTextByType(type:HealthCardDataType) {
+    switch (type) {
+      case HealthCardDataType.WeightInfo: {
+        return "weight"
+      }
+      case HealthCardDataType.BloodSugarInfo: {
+        return "bloodSugar"
+      }
+      case HealthCardDataType.UricAcidInfo: {
+        return "uricAcid"
+      }
+      case HealthCardDataType.BloodPressureInfo: {
+        return "bloodPressure"
+      }
+      case HealthCardDataType.BloodLipidInfo: {
+        return "bloodLipid"
+      }
+      default:{
+        return ""
+      }
+    }
+  }
+
   build() {
     Stack() {
       Column() {
@@ -278,7 +302,12 @@ export struct HealthOverview {
                         this.showType = type
                       }
                     })
-                  }
+                  }.onClick(()=>{
+                    const data: Record<string, string> = {
+                      "data": this.getTextByType(cardData.type)
+                    }
+                    getAppPathStack().pushPathByName("history", data)
+                  })
                 })
               }
               .width('100%')

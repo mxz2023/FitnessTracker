@@ -20,9 +20,13 @@ export class WeightViewModel extends BaseHealthViewModel {
     this.heightCm = height;
   }
 
-  public async getWeightData(): Promise<HealthData | null> {
-    await this.loadLatestData("weight")
-    return this.toHealthData()
+  /**
+   * 获取最新数据
+   * @returns
+   */
+  public async getHealthData(): Promise<HealthData | null> {
+    await this.loadLatestData("weight");
+    return this.toHealthData();
   }
 
   /**

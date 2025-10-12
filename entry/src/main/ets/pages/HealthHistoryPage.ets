@@ -2,6 +2,7 @@
  * 通用健康历史记录页面
  */
 
+import { MNavigationTitle, NavigationTitleBuilder } from '../components/MNavigationTitle';
 import {
   WeightData,
   BloodLipidData,
@@ -13,6 +14,7 @@ import {
 import { ChartOptions, XAxis, YAxis } from '../thirds/EChart/EChartOption';
 import { MChart } from '../thirds/MChart';
 import { formatDate } from '../utils/HealthUtils';
+import { getAppPathStack } from '../utils/PathStackUtils';
 import { StorageUtils } from '../utils/StorageUtils';
 
 interface ChartDataItem {
@@ -315,14 +317,14 @@ struct HealthHistoryPage {
     switch (this.dataType) {
       case 'weight':
         return '体重';
-      case 'bloodLipid':
-        return '血脂';
       case 'bloodSugar':
         return '血糖';
-      case 'bloodPressure':
-        return '血压';
       case 'uricAcid':
         return '尿酸';
+      case 'bloodPressure':
+        return '血压';
+      case 'bloodLipid':
+        return '血脂';
       default:
         return '健康';
     }
@@ -393,9 +395,21 @@ struct HealthHistoryPage {
       .height('100%')
       .backgroundColor('#F5F5F5')
     }
+    // .title({
+    //   main: "历史记录",
+    //   sub: this.getTitle()
+    // })
     .title({
-      main: "历史记录",
-      sub: this.getTitle()
+      builder: NavigationTitleBuilder(getAppPathStack(), {
+        title: {
+          text: "历史记录"
+        },
+        subTitle: {
+          text: this.getTitle()
+        },
+        height: 45
+      }),
+      height: 58
     })
     .width('100%')
     .height('100%')

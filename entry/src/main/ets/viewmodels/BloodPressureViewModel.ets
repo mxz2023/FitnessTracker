@@ -26,11 +26,10 @@ export class BloodPressureViewModel extends BaseHealthViewModel {
   }
 
   /**
-   * 从BloodPressureData创建ViewModel实例
-   * @param data BloodPressureData对象
-   * @returns BloodPressureViewModel实例
+   * 获取最新数据
+   * @returns
    */
-  public async getBloodPressureData(): Promise<HealthData | null> {
+  public async getHealthData(): Promise<HealthData | null> {
     await this.loadLatestData("bloodPressure");
     return this.toHealthData();
   }

@@ -14,7 +14,7 @@ import { MMenu, MMenuItem } from "./MMenu"
 
 export interface NavOption {
   canBack?: boolean // 是否可以返回
-  height?: number
+  height?: Length
   bgColor?: string | Color
   title?: NavTitleData
   subTitle?: NavTitleData

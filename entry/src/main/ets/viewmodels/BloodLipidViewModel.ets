@@ -28,11 +28,10 @@ export class BloodLipidViewModel extends BaseHealthViewModel {
   }
 
   /**
-   * 从BloodLipidData创建ViewModel实例
-   * @param data BloodLipidData对象
-   * @returns BloodLipidViewModel实例
+   * 获取最新数据
+   * @returns
    */
-  public async getBloodLipidData(): Promise<HealthData | null> {
+  public async getHealthData(): Promise<HealthData | null> {
     await this.loadLatestData("bloodLipid");
     return this.toHealthData();
   }
