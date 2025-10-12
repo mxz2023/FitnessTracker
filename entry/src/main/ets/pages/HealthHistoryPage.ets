@@ -151,40 +151,118 @@ struct HealthHistoryPage {
 
   @Builder
   renderWeightItem(item: WeightData) {
-    Column() {
-      Row() {
-        Text(formatDate(item.timestamp, 'YYYY-MM-DD HH:mm'))
-          .fontSize(14)
-          .fontColor('#666666')
-      }
-
+    Column({ space: $r('app.integer.view_space') }) {
       Row() {
         Text(`${item.value} kg`)
           .fontSize(16)
           .fontWeight(FontWeight.Bold)
-      }
 
-      if (item.note && item.note !== '') {
-        Row() {
+        if (item.note && item.note !== '') {
           Text(`备注: ${item.note}`)
             .fontSize(12)
             .fontColor('#999999')
         }
       }
-    }
-    .width('100%')
-    .padding(8)
-  }
 
-  @Builder
-  renderBloodLipidItem(item: BloodLipidData) {
-    Column() {
       Row() {
         Text(formatDate(item.timestamp, 'YYYY-MM-DD HH:mm'))
           .fontSize(14)
           .fontColor('#666666')
       }
+    }
+    .width('100%')
+    .padding(8)
+    .alignItems(HorizontalAlign.Start)
+  }
 
+  @Builder
+  renderBloodSugarItem(item: BloodSugarData) {
+    Column({ space: $r('app.integer.view_space') }) {
+      Row() {
+        Text(`${item.value} mmol/L`)
+          .fontSize(16)
+          .fontWeight(FontWeight.Bold)
+
+        Text(`(${this.getMeasurementTypeText(item.measurementType)})`)
+          .fontSize(14)
+          .fontColor('#666666')
+          .margin({ left: 8 })
+
+        if (item.note && item.note !== '') {
+          Text(`备注: ${item.note}`)
+            .fontSize(12)
+            .fontColor('#999999')
+        }
+      }
+
+      Row() {
+        Text(formatDate(item.timestamp, 'YYYY-MM-DD HH:mm'))
+          .fontSize(14)
+          .fontColor('#666666')
+      }
+    }
+    .width('100%')
+    .padding(8)
+    .alignItems(HorizontalAlign.Start)
+  }
+
+  @Builder
+  renderUricAcidItem(item: UricAcidData) {
+    Column({ space: $r('app.integer.view_space') }) {
+      Row() {
+        Text(`${item.value} μmol/L`)
+          .fontSize(16)
+          .fontWeight(FontWeight.Bold)
+
+        if (item.note && item.note !== '') {
+          Text(`备注: ${item.note}`)
+            .fontSize(12)
+            .fontColor('#999999')
+        }
+      }
+
+      Row() {
+        Text(formatDate(item.timestamp, 'YYYY-MM-DD HH:mm'))
+          .fontSize(14)
+          .fontColor('#666666')
+      }
+    }
+    .width('100%')
+    .padding(8)
+    .alignItems(HorizontalAlign.Start)
+  }
+
+  @Builder
+  renderBloodPressureItem(item: BloodPressureData) {
+    Column({ space: $r('app.integer.view_space') }) {
+      Row() {
+        Text(`${item.systolic}/${item.diastolic} mmHg`)
+          .fontSize(16)
+          .fontWeight(FontWeight.Bold)
+
+        if (item.note && item.note !== '') {
+          Row() {
+            Text(`备注: ${item.note}`)
+              .fontSize(12)
+              .fontColor('#999999')
+          }
+        }
+      }
+
+      Row() {
+        Text(formatDate(item.timestamp, 'YYYY-MM-DD HH:mm'))
+          .fontSize(14)
+          .fontColor('#666666')
+      }
+    }
+    .width('100%')
+    .padding(8)
+    .alignItems(HorizontalAlign.Start)
+  }
+
+  @Builder
+  renderBloodLipidItem(item: BloodLipidData) {
+    Column({ space: $r('app.integer.view_space') }) {
       Row({ space: 8 }) {
         Text(`TC: ${item.totalCholesterol}`)
           .fontSize(14)
@@ -210,94 +288,16 @@ struct HealthHistoryPage {
             .fontColor('#999999')
         }
       }
-    }
-    .width('100%')
-    .padding(8)
-  }
 
-  @Builder
-  renderBloodSugarItem(item: BloodSugarData) {
-    Column() {
       Row() {
         Text(formatDate(item.timestamp, 'YYYY-MM-DD HH:mm'))
           .fontSize(14)
           .fontColor('#666666')
       }
-
-      Row() {
-        Text(`${item.value} mmol/L`)
-          .fontSize(16)
-          .fontWeight(FontWeight.Bold)
-        Text(`(${this.getMeasurementTypeText(item.measurementType)})`)
-          .fontSize(14)
-          .fontColor('#666666')
-          .margin({ left: 8 })
-      }
-
-      if (item.note && item.note !== '') {
-        Row() {
-          Text(`备注: ${item.note}`)
-            .fontSize(12)
-            .fontColor('#999999')
-        }
-      }
     }
     .width('100%')
     .padding(8)
-  }
-
-  @Builder
-  renderUricAcidItem(item: UricAcidData) {
-    Column() {
-      Row() {
-        Text(formatDate(item.timestamp, 'YYYY-MM-DD HH:mm'))
-          .fontSize(14)
-          .fontColor('#666666')
-      }
-
-      Row() {
-        Text(`${item.value} μmol/L`)
-          .fontSize(16)
-          .fontWeight(FontWeight.Bold)
-      }
-
-      if (item.note && item.note !== '') {
-        Row() {
-          Text(`备注: ${item.note}`)
-            .fontSize(12)
-            .fontColor('#999999')
-        }
-      }
-    }
-    .width('100%')
-    .padding(8)
-  }
-
-  @Builder
-  renderBloodPressureItem(item: BloodPressureData) {
-    Column() {
-      Row() {
-        Text(formatDate(item.timestamp, 'YYYY-MM-DD HH:mm'))
-          .fontSize(14)
-          .fontColor('#666666')
-      }
-
-      Row() {
-        Text(`${item.systolic}/${item.diastolic} mmHg`)
-          .fontSize(16)
-          .fontWeight(FontWeight.Bold)
-      }
-
-      if (item.note && item.note !== '') {
-        Row() {
-          Text(`备注: ${item.note}`)
-            .fontSize(12)
-            .fontColor('#999999')
-        }
-      }
-    }
-    .width('100%')
-    .padding(8)
+    .alignItems(HorizontalAlign.Start)
   }
 
   private getMeasurementTypeText(type: string): string {

@@ -176,7 +176,7 @@ export struct HealthOverview {
     }
 
     this.weightDataVM.value = data.value
-    const res = await this.weightDataVM?.saveData()
+    const res = await this.weightDataVM.saveData()
     if (res) {
       this.showType = HealthCardDataType.Unknown
       showToast(this.getUIContext(), "保存数据成功")

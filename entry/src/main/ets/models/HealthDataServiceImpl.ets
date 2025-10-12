@@ -229,10 +229,10 @@ export class HealthDataServiceImpl {
         return [];
       }
 
-      const index: string[] = JSON.parse(indexValue as string);
+      const indexList: string[] = JSON.parse(indexValue as string);
       const result: HealthData[] = [];
 
-      for (const id of index) {
+      for (const id of indexList) {
         const data = await this.getDataById(id);
         if (data) {
           result.push(data);
