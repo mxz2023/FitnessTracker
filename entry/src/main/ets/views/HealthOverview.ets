@@ -39,7 +39,6 @@ import { showToast } from '../utils/ToastUtils';
 export struct HealthOverview {
   @Local private showType: HealthCardDataType = HealthCardDataType.Unknown;
   @Local private isLoading: boolean = true
-
   private userInfoVM?: UserViewModel
   private weightDataVM?: WeightViewModel
   private bloodSugarVM?: BloodSugarViewModel
@@ -316,18 +315,22 @@ export struct HealthOverview {
               onSubmit: (data?: UserDataModel) => {
                 if (data) {
                   this.updateUserInfo(data)
+                } else {
+                  this.showType = HealthCardDataType.Unknown
                 }
               }
-            })
+            }).height(350)
           } else if (this.weightDataVM && this.showType === HealthCardDataType.WeightInfo) {
             WeightInputView({
               weightKg: this.weightDataVM.value,
               onSubmit: (data?: WeightData) => {
                 if (data) {
                   this.updateWeight(data)
+                } else {
+                  this.showType = HealthCardDataType.Unknown
                 }
               }
-            })
+            }).height(250)
           } else if (this.bloodPressVM && this.showType === HealthCardDataType.BloodPressureInfo) {
             BloodPressureInputView({
               systolicValue: this.bloodPressVM.systolic,
@@ -335,9 +338,11 @@ export struct HealthOverview {
               onSubmit: (data?: BloodPressureData) => {
                 if (data) {
                   this.updateBloodPressure(data)
+                } else {
+                  this.showType = HealthCardDataType.Unknown
                 }
               }
-            })
+            }).height(300)
           } else if (this.bloodSugarVM && this.showType === HealthCardDataType.BloodSugarInfo) {
             BloodSugarInputView({
               bloodSugarValue: this.bloodSugarVM.value,
@@ -345,9 +350,11 @@ export struct HealthOverview {
               onSubmit: (data?: BloodSugarData) => {
                 if (data) {
                   this.updateBloodSugar(data)
+                } else {
+                  this.showType = HealthCardDataType.Unknown
                 }
               }
-            })
+            }).height(300)
           } else if (this.userInfoVM && this.uricAcidVM && this.showType === HealthCardDataType.UricAcidInfo) {
             UricAcidInputView({
               inputValue: this.uricAcidVM.value,
@@ -355,9 +362,11 @@ export struct HealthOverview {
               onSubmit: (data?: UricAcidData) => {
                 if (data) {
                   this.updateUricAcid(data)
+                } else {
+                  this.showType = HealthCardDataType.Unknown
                 }
               }
-            })
+            }).height(300)
           } else if (this.bloodLipidVM && this.showType === HealthCardDataType.BloodLipidInfo) {
             BloodLipidInputView({
               totalCholesterol: this.bloodLipidVM.totalCholesterol,
@@ -369,11 +378,10 @@ export struct HealthOverview {
                   this.updateBloodLipid(data)
                 }
               }
-            })
+            }).height(400)
           }
         }
         .width('100%')
-        .height(300)
         .backgroundColor($r('app.color.white'))
       }
       .justifyContent(FlexAlign.End)

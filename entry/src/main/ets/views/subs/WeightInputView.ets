@@ -11,6 +11,7 @@
 import { MButton } from "../../components/MButton"
 import { MLable } from "../../components/MLable";
 import { MTextInput } from "../../components/MTextInput"
+import { MTitleBar } from "../../components/MTitleBar";
 import { WeightData } from "../../models/HealthDataModel";
 
 
@@ -37,62 +38,80 @@ export struct WeightInputView {
     this.onSubmit(record);
   }
 
-  build() {
-    Column({ space: $r('app.integer.view_space') }) {
-      Column({ space: $r('app.integer.view_content_space') }) {
+  @Builder
+  contentBuilder() {
+    Column({ space: $r('app.integer.view_content_space') }) {
 
-        Row({ space: $r('app.integer.view_content_space') }) {
-          MLable({ lable: "体重:" })
+      Row({ space: $r('app.integer.view_content_space') }) {
+        MLable({ lable: "体重:" })
 
-          MTextInput({
-            type: InputType.NUMBER_DECIMAL,
-            text: this.weightInputText,
-            onText: (v: string) => {
-              // 数字与小数点输入校验，最多两位小数
-              let res: string = v ?? '';
-              if (!/^\d*\.?\d*$/.test(res)) {
-                return;
-              }
-              const parts: string[] = res.split('.');
-              if (parts.length > 1 && parts[1].length > 2) {
-                res = `${parts[0]}.${parts[1].substring(0, 2)}`;
-              }
-              this.weightInputText = res;
+        MTextInput({
+          type: InputType.NUMBER_DECIMAL,
+          text: this.weightInputText,
+          onText: (v: string) => {
+            // 数字与小数点输入校验，最多两位小数
+            let res: string = v ?? '';
+            if (!/^\d*\.?\d*$/.test(res)) {
+              return;
             }
-          }).layoutWeight(1)
+            const parts: string[] = res.split('.');
+            if (parts.length > 1 && parts[1].length > 2) {
+              res = `${parts[0]}.${parts[1].substring(0, 2)}`;
+            }
+            this.weightInputText = res;
+          }
+        }).layoutWeight(1)
 
-          MLable({ lable: "kg" })
-        }
+        MLable({ lable: "kg" })
       }
+    }
+  }
 
+  build() {
+    RelativeContainer() {
+      MTitleBar({
+        title: "体重信息",
+        handleBack: () => {
+          this.onSubmit()
+        }
+      }).alignRules({
+        top: { anchor: '__container__', align: VerticalAlign.Top },
+        left: { anchor: '__container__', align: HorizontalAlign.Start },
+        right: { anchor: '__container__', align: HorizontalAlign.End },
+      }).id('__nav_title_bar__')
+
+      Row() {
+        this.contentBuilder()
+      }.alignRules({
+        top: { anchor: '__nav_title_bar__', align: VerticalAlign.Bottom },
+        left: { anchor: '__container__', align: HorizontalAlign.Start },
+        right: { anchor: '__container__', align: HorizontalAlign.End },
+      }).margin({
+        top: $r('app.integer.view_space')
+      })
+
+      // 底部
       Row({ space: $r('app.integer.view_space') }) {
         MButton({
           text: '保存记录',
           bgColor: $r('app.color.green'),
           onClickBlock: () => {
-            this.saveData();
-          }
-        }).layoutWeight(1)
-
-        MButton({
-          text: '取消',
-          bgColor: $r('app.color.gray'),
-          onClickBlock: () => {
-            const res = new WeightData()
-            res.value = Number(this.weightInputText)
-            this.onSubmit(res);
+            this.saveData()
           }
         }).layoutWeight(1)
       }
       .width('100%')
       .justifyContent(FlexAlign.SpaceBetween)
+      .alignRules({
+        bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
+        left: { anchor: '__container__', align: HorizontalAlign.Start },
+        right: { anchor: '__container__', align: HorizontalAlign.End },
+      })
     }
     .width('100%')
     .height('100%')
     .padding($r('app.integer.view_padding'))
     .backgroundColor('view_background_color')
     .borderRadius($r('app.integer.view_radius'))
-    .alignSelf(ItemAlign.Start)
-    .justifyContent(FlexAlign.SpaceBetween)
   }
 }

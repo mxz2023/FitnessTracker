@@ -3,9 +3,10 @@
  * 灰背景(参考 310x621)、居中白色卡片(265x345, 圆角5)、底部绿色胶囊按钮(224x28)
  */
 import { MButton } from "../../components/MButton";
-import { MLable } from "../../components/MLable";
+import { MLable, MTitle } from "../../components/MLable";
 import { MRadio } from "../../components/MRadio";
 import { MTextInput } from "../../components/MTextInput";
+import { MTitleBar } from "../../components/MTitleBar";
 import { UserDataModel, Gender } from "../../models/UserDataModel";
 
 
@@ -40,114 +41,138 @@ export struct BaseInputView {
     return years;
   }
 
-  build() {
-    Column({ space: $r('app.integer.view_space') }) {
-      Column({ space: $r('app.integer.view_content_space') }) {
-        // 昵称
-        Row({ space: $r('app.integer.view_content_space') }) {
-          MLable({ lable: '昵称:' })
+  @Builder
+  contentBuilder() {
+    Column({ space: $r('app.integer.view_content_space') }) {
+      // 昵称
+      Row({ space: $r('app.integer.view_content_space') }) {
+        MLable({ lable: '昵称:' })
 
-          MTextInput({
-            type: InputType.USER_NAME,
-            text: this.nickname,
-            onText: (v: string) => {
-              this.nickname = v;
-            },
-            placeholder: '请输入昵称',
-          }).layoutWeight(1)
-        }
-
-        // 性别
-        Row({ space: $r('app.integer.view_content_space') }) {
-          MLable({ lable: '性别:' })
-
-          Row({ space: $r('app.integer.view_space') }) {
-            MRadio({
-              titles: "男",
-              isChecked: this.gender == Gender.MALE,
-              groupName: "genderGroup",
-              onChange: (isCheck: boolean) => {
-                if (isCheck) {
-                  this.gender = Gender.MALE
-                }
-              }
-            })
-            MRadio({
-              titles: "女",
-              isChecked: this.gender == Gender.FEMALE,
-              groupName: "genderGroup",
-              onChange: (isCheck: boolean) => {
-                if (isCheck) {
-                  this.gender = Gender.FEMALE
-                }
-              }
-            })
-          }.layoutWeight(1)
-        }
-
-        // 出生日期
-        Row({ space: $r('app.integer.view_content_space') }) {
-          MLable({ lable: '出生:' })
-
-          MLable({ lable: `${this.year}年` })
-            .layoutWeight(1)
-        }.onClick(() => {
-          // 显示日期选择器设置日期
-          this.getUIContext().showTextPickerDialog({
-            range: this.buildYears(),
-            selected: this.buildYears().length,
-            defaultPickerItemHeight: 40,
-            onAccept: (value: TextPickerResult) => {
-              this.year = Number(value.value.slice(0, -1));
-            },
-            onCancel: () => {
-              console.info("TextPickerDialog:onCancel()");
-            },
-            onChange: (value: TextPickerResult) => {
-              console.info("TextPickerDialog:onChange()" + JSON.stringify(value));
-            },
-            onScrollStop: (value: TextPickerResult) => {
-              console.info("TextPickerDialog:onScrollStop()" + JSON.stringify(value));
-            },
-            onDidAppear: () => {
-              console.info("TextPickerDialog:onDidAppear()");
-            },
-            onDidDisappear: () => {
-              console.info("TextPickerDialog:onDidDisappear()");
-            },
-            onWillAppear: () => {
-              console.info("TextPickerDialog:onWillAppear()");
-            },
-            onWillDisappear: () => {
-              console.info("TextPickerDialog:onWillDisappear()");
-            }
-          });
-        })
-
-        // 身高（cm）
-        Row({ space: $r('app.integer.view_content_space') }) {
-          MLable({ lable: '身高:' })
-
-          MTextInput({
-            type: InputType.NUMBER_DECIMAL,
-            text: `${this.heightCm}`,
-            onText: (value: string) => {
-              let res = value;
-              if (!/^\d*\.?\d*$/.test(res)) {
-                return;
-              }
-              const parts = res.split('.');
-              if (parts.length > 1 && parts[1].length > 2) {
-                res = `${parts[0]}.${parts[1].substring(0, 2)}`;
-              }
-              this.heightCm = Number(res) || 0;
-            },
-            placeholder: '请输入身高（cm）',
-          }).layoutWeight(1)
-
-          MLable({ lable: 'cm' })
-        }
+        MTextInput({
+          type: InputType.USER_NAME,
+          text: this.nickname,
+          onText: (v: string) => {
+            this.nickname = v;
+          },
+          placeholder: '请输入昵称',
+        }).layoutWeight(1)
       }
+
+      // 性别
+      Row({ space: $r('app.integer.view_content_space') }) {
+        MLable({ lable: '性别:' })
+
+        Row({ space: $r('app.integer.view_space') }) {
+          MRadio({
+            titles: "男",
+            isChecked: this.gender == Gender.MALE,
+            groupName: "genderGroup",
+            onChange: (isCheck: boolean) => {
+              if (isCheck) {
+                this.gender = Gender.MALE
+              }
+            }
+          })
+          MRadio({
+            titles: "女",
+            isChecked: this.gender == Gender.FEMALE,
+            groupName: "genderGroup",
+            onChange: (isCheck: boolean) => {
+              if (isCheck) {
+                this.gender = Gender.FEMALE
+              }
+            }
+          })
+        }.layoutWeight(1)
+      }
+
+      // 出生日期
+      Row({ space: $r('app.integer.view_content_space') }) {
+        MLable({ lable: '出生:' })
+
+        MLable({ lable: `${this.year}年` })
+          .layoutWeight(1)
+      }.onClick(() => {
+        // 显示日期选择器设置日期
+        this.getUIContext().showTextPickerDialog({
+          range: this.buildYears(),
+          selected: this.buildYears().length,
+          defaultPickerItemHeight: 40,
+          onAccept: (value: TextPickerResult) => {
+            this.year = Number(value.value.slice(0, -1));
+          },
+          onCancel: () => {
+            console.info("TextPickerDialog:onCancel()");
+          },
+          onChange: (value: TextPickerResult) => {
+            console.info("TextPickerDialog:onChange()" + JSON.stringify(value));
+          },
+          onScrollStop: (value: TextPickerResult) => {
+            console.info("TextPickerDialog:onScrollStop()" + JSON.stringify(value));
+          },
+          onDidAppear: () => {
+            console.info("TextPickerDialog:onDidAppear()");
+          },
+          onDidDisappear: () => {
+            console.info("TextPickerDialog:onDidDisappear()");
+          },
+          onWillAppear: () => {
+            console.info("TextPickerDialog:onWillAppear()");
+          },
+          onWillDisappear: () => {
+            console.info("TextPickerDialog:onWillDisappear()");
+          }
+        });
+      })
+
+      // 身高（cm）
+      Row({ space: $r('app.integer.view_content_space') }) {
+        MLable({ lable: '身高:' })
+
+        MTextInput({
+          type: InputType.NUMBER_DECIMAL,
+          text: `${this.heightCm}`,
+          onText: (value: string) => {
+            let res = value;
+            if (!/^\d*\.?\d*$/.test(res)) {
+              return;
+            }
+            const parts = res.split('.');
+            if (parts.length > 1 && parts[1].length > 2) {
+              res = `${parts[0]}.${parts[1].substring(0, 2)}`;
+            }
+            this.heightCm = Number(res) || 0;
+          },
+          placeholder: '请输入身高（cm）',
+        }).layoutWeight(1)
+
+        MLable({ lable: 'cm' })
+      }
+    }
+  }
+
+  build() {
+    RelativeContainer() {
+      MTitleBar({
+        title: "基本信息",
+        handleBack: () => {
+          this.onSubmit()
+        }
+      }).alignRules({
+        top: { anchor: '__container__', align: VerticalAlign.Top },
+        left: { anchor: '__container__', align: HorizontalAlign.Start },
+        right: { anchor: '__container__', align: HorizontalAlign.End },
+      }).id('__nav_title_bar__')
+
+      Row() {
+        this.contentBuilder()
+      }.alignRules({
+        top: { anchor: '__nav_title_bar__', align: VerticalAlign.Bottom },
+        left: { anchor: '__container__', align: HorizontalAlign.Start },
+        right: { anchor: '__container__', align: HorizontalAlign.End },
+      }).margin({
+        top: $r('app.integer.view_space')
+      })
 
       // 底部
       Row({ space: $r('app.integer.view_space') }) {
@@ -163,24 +188,19 @@ export struct BaseInputView {
             });
           }
         }).layoutWeight(1)
-
-        MButton({
-          text: '取消',
-          bgColor: $r('app.color.gray'),
-          onClickBlock: () => {
-            this.onSubmit();
-          }
-        }).layoutWeight(1)
       }
       .width('100%')
       .justifyContent(FlexAlign.SpaceBetween)
+      .alignRules({
+        bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
+        left: { anchor: '__container__', align: HorizontalAlign.Start },
+        right: { anchor: '__container__', align: HorizontalAlign.End },
+      })
     }
     .width('100%')
     .height('100%')
     .padding($r('app.integer.view_padding'))
     .backgroundColor('view_background_color')
     .borderRadius($r('app.integer.view_radius'))
-    .alignSelf(ItemAlign.Start)
-    .justifyContent(FlexAlign.SpaceBetween)
   }
 }
