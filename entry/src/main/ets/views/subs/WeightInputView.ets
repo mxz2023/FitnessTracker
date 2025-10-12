@@ -14,18 +14,16 @@ import { MTextInput } from "../../components/MTextInput"
 import { WeightData } from "../../models/HealthDataModel";
 
 
-const TAG = 'WeightInputView.ets'
-
 @ComponentV2
 export struct WeightInputView {
   @Event onSubmit: (data?: WeightData) => void
-  @Param @Require weight: number;
+  @Param @Require weightKg: number;
   // 本地状态
   @Local weightInputText: string = "";
-  
+
   aboutToAppear(): void {
-    // 使用外部传入的 weight 初始化输入框文本
-    this.weightInputText = `${this.weight}`;
+    // 使用外部传入的 weightKg 初始化输入框文本
+    this.weightInputText = `${this.weightKg}`;
   }
 
   private async saveData() {
@@ -42,7 +40,6 @@ export struct WeightInputView {
   build() {
     Column({ space: $r('app.integer.view_space') }) {
       Column({ space: $r('app.integer.view_content_space') }) {
-
 
         Row({ space: $r('app.integer.view_content_space') }) {
           MLable({ lable: "体重:" })

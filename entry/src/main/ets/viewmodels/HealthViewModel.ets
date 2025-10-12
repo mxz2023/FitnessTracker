@@ -3,7 +3,7 @@
  * 定义所有健康指标ViewModel的通用接口
  */
 
-import { HealthData, HealthStatus } from '../models/HealthDataModel';
+import { HealthStatus } from '../models/HealthDataModel';
 
 /**
  * 健康评估ViewModel抽象基类

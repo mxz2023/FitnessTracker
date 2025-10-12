@@ -9,19 +9,15 @@ import { logger } from '../utils/Logger';
 const TAG = 'WeightViewModel';
 
 
+@ObservedV2
 export class WeightViewModel extends BaseHealthViewModel {
-  private _weight: number = 0;
-  private _height: number = 0;
-  private _timestamp: number = Date.now();
-  private _id: string = '';
-  private _note: string = '';
+  @Trace private _weightKg: number = 0;
+  @Trace private _note: string = '';
+  private heightCm: number = 0;
 
-  constructor(weight: number, height: number) {
+  constructor(height: number) {
     super();
-    this._weight = weight;
-    this._height = height;
-    this._timestamp = Date.now();
-    this._id = `weight_${this._timestamp}`;
+    this.heightCm = height;
   }
 
   public async getWeightData(): Promise<HealthData | null> {
@@ -42,6 +38,29 @@ export class WeightViewModel extends BaseHealthViewModel {
       return HealthStatus.MODERATE;
     } else {
       return HealthStatus.POOR;
+    }
+  }
+
+  /**
+   * 获取健康评分
+   * @returns 健康评分 0-100
+   */
+  public getHealthScore(): number {
+    const idealBMI = 21.5; // 理想BMI值
+    const deviation = Math.abs(this.bmi - idealBMI);
+
+    if (deviation === 0) {
+      return 100;
+    } else if (deviation <= 1) {
+      return 95;
+    } else if (deviation <= 2) {
+      return 85;
+    } else if (deviation <= 3) {
+      return 70;
+    } else if (deviation <= 5) {
+      return 50;
+    } else {
+      return Math.max(20, 50 - (deviation - 5) * 5);
     }
   }
 
@@ -82,45 +101,22 @@ export class WeightViewModel extends BaseHealthViewModel {
     return content
   }
 
-  /**
-   * 获取健康评分
-   * @returns 健康评分 0-100
-   */
-  public getHealthScore(): number {
-    const idealBMI = 21.5; // 理想BMI值
-    const deviation = Math.abs(this.bmi - idealBMI);
-
-    if (deviation === 0) {
-      return 100;
-    } else if (deviation <= 1) {
-      return 95;
-    } else if (deviation <= 2) {
-      return 85;
-    } else if (deviation <= 3) {
-      return 70;
-    } else if (deviation <= 5) {
-      return 50;
-    } else {
-      return Math.max(20, 50 - (deviation - 5) * 5);
-    }
-  }
-
   /********************************************* 以下为保护方法 ************************************************/
   /**
    * 将当前ViewModel数据转换为HealthData对象
    * @returns WeightData对象
    */
   protected toHealthData(): HealthData | null {
-    if (this.weight <= 0 || this.height <= 0) {
+    if (this._weightKg <= 0 || this.heightCm <= 0) {
       logger.error(TAG, '体重或身高数据无效');
       return null;
     }
 
     const weightData = new WeightData();
-    weightData.id = this._id;
-    weightData.timestamp = this._timestamp;
+    weightData.id = this.dataId;
+    weightData.timestamp = this.timestamp;
     weightData.note = this._note;
-    weightData.value = this._weight;
+    weightData.value = this._weightKg;
 
     return weightData;
   }
@@ -131,10 +127,10 @@ export class WeightViewModel extends BaseHealthViewModel {
    */
   protected fromHealthData(data: HealthData): void {
     if (data instanceof WeightData) {
-      this._id = data.id;
-      this._timestamp = data.timestamp;
+      this.dataId = data.id;
+      this.timestamp = data.timestamp;
       this.note = data.note;
-      this.weight = data.value;
+      this.value = data.value;
     } else {
       logger.error(TAG, '数据类型不匹配，期望 WeightData 类型');
     }
@@ -147,29 +143,15 @@ export class WeightViewModel extends BaseHealthViewModel {
   /**
    * 获取体重值
    */
-  get weight() {
-    return this._weight
+  get value() {
+    return this._weightKg
   }
 
   /**
    * 设置体重值
    */
-  set weight(n: number) {
-    this._weight = n
-  }
-
-  /**
-   * 获取身高
-   */
-  get height() {
-    return this._height
-  }
-
-  /**
-   * 设置身高值
-   */
-  set height(n: number) {
-    this._height = n;
+  set value(n: number) {
+    this._weightKg = n
   }
 
   /**
@@ -191,6 +173,14 @@ export class WeightViewModel extends BaseHealthViewModel {
    * @returns BMI值
    */
   get bmi() {
-    return this.weight / (this.height * this.height);
+    const heightM = this.heightCm / 100.0
+    return this._weightKg / (heightM * heightM);
+  }
+
+  /**
+   * 设置身高值
+   */
+  set height(n: number) {
+    this.heightCm = n;
   }
 }

@@ -13,24 +13,17 @@ const TAG = 'BloodSugarViewModel';
  * 血糖ViewModel类
  * 用于管理血糖数据和健康状态评估
  */
+@ObservedV2
 export class BloodSugarViewModel extends BaseHealthViewModel {
-  private _value: number = 0; // 血糖值
-  private _measurementType: MeasurementType = MeasurementType.FASTING; // 测量类型
-  private _timestamp: number = Date.now(); // 时间戳
-  private _id: string = ''; // 数据ID
-  private _note: string = ''; // 备注
+  @Trace private _value: number = 0; // 血糖值
+  @Trace private _measurementType: MeasurementType = MeasurementType.FASTING; // 测量类型
+  @Trace private _note: string = ''; // 备注
 
   /**
    * 构造函数
-   * @param value 血糖值，单位mmol/L
-   * @param measurementType 测量类型：空腹、餐后、随机
    */
-  constructor(value: number = 0, measurementType: MeasurementType = MeasurementType.FASTING) {
+  constructor() {
     super();
-    this._value = value;
-    this._measurementType = measurementType;
-    this._timestamp = Date.now();
-    this._id = `bloodSugar_${this._timestamp}`;
   }
 
   /**
@@ -41,14 +34,6 @@ export class BloodSugarViewModel extends BaseHealthViewModel {
   public async getBloodSugarData(): Promise<HealthData | null> {
     await this.loadLatestData("bloodSugar");
     return this.toHealthData();
-  }
-
-  public static fromData(data: BloodSugarData): BloodSugarViewModel {
-    const viewModel = new BloodSugarViewModel(data.value, data.measurementType);
-    viewModel._id = data.id;
-    viewModel._timestamp = data.timestamp;
-    viewModel.note = data.note;
-    return viewModel;
   }
 
   /**
@@ -180,8 +165,8 @@ export class BloodSugarViewModel extends BaseHealthViewModel {
     }
 
     const bsData = new BloodSugarData();
-    bsData.id = this._id;
-    bsData.timestamp = this._timestamp;
+    bsData.id = this.dataId;
+    bsData.timestamp = this.timestamp;
     bsData.note = this._note;
     bsData.value = this._value;
     bsData.measurementType = this._measurementType;
@@ -195,8 +180,8 @@ export class BloodSugarViewModel extends BaseHealthViewModel {
    */
   protected fromHealthData(data: HealthData): void {
     if (data instanceof BloodSugarData) {
-      this._id = data.id;
-      this._timestamp = data.timestamp;
+      this.dataId = data.id;
+      this.timestamp = data.timestamp;
       this.note = data.note;
       this.value = data.value;
       this.measurementType = data.measurementType;

@@ -12,24 +12,17 @@ const TAG = 'BloodPressureViewModel';
  * 血压ViewModel类
  * 用于管理血压数据和健康状态评估
  */
+@ObservedV2
 export class BloodPressureViewModel extends BaseHealthViewModel {
-  private _systolic: number = 0; // 收缩压
-  private _diastolic: number = 0; // 舒张压
-  private _timestamp: number = Date.now(); // 时间戳
-  private _id: string = ''; // 数据ID
-  private _note: string = ''; // 备注
+  @Trace private _systolic: number = 0; // 收缩压
+  @Trace private _diastolic: number = 0; // 舒张压
+  @Trace private _note: string = ''; // 备注
 
   /**
    * 构造函数
-   * @param systolic 收缩压，单位mmHg
-   * @param diastolic 舒张压，单位mmHg
    */
-  constructor(systolic: number = 0, diastolic: number = 0) {
+  constructor() {
     super();
-    this._systolic = systolic;
-    this._diastolic = diastolic;
-    this._timestamp = Date.now();
-    this._id = `bloodPressure_${this._timestamp}`;
   }
 
   /**
@@ -40,14 +33,6 @@ export class BloodPressureViewModel extends BaseHealthViewModel {
   public async getBloodPressureData(): Promise<HealthData | null> {
     await this.loadLatestData("bloodPressure");
     return this.toHealthData();
-  }
-
-  public static fromData(data: BloodPressureData): BloodPressureViewModel {
-    const viewModel = new BloodPressureViewModel(data.systolic, data.diastolic);
-    viewModel._id = data.id;
-    viewModel._timestamp = data.timestamp;
-    viewModel.note = data.note;
-    return viewModel;
   }
 
   /**
@@ -153,8 +138,8 @@ export class BloodPressureViewModel extends BaseHealthViewModel {
     }
 
     const bpData = new BloodPressureData();
-    bpData.id = this._id;
-    bpData.timestamp = this._timestamp;
+    bpData.id = this.dataId;
+    bpData.timestamp = this.timestamp;
     bpData.note = this._note;
     bpData.systolic = this._systolic;
     bpData.diastolic = this._diastolic;
@@ -168,8 +153,8 @@ export class BloodPressureViewModel extends BaseHealthViewModel {
    */
   protected fromHealthData(data: HealthData): void {
     if (data instanceof BloodPressureData) {
-      this._id = data.id;
-      this._timestamp = data.timestamp;
+      this.dataId = data.id;
+      this.timestamp = data.timestamp;
       this.note = data.note;
       this.systolic = data.systolic;
       this.diastolic = data.diastolic;

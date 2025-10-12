@@ -4,9 +4,13 @@
  */
 import { KeyboardAvoidMode } from '@kit.ArkUI';
 
-import { MLable, MStatusLable } from '../components/MLable';
+import { BaseInputView } from './subs/BaseInputView';
+import { WeightInputView } from './subs/WeightInputView';
+import { BloodPressureInputView } from './subs/BloodPressureInputView';
+import { BloodSugarInputView } from './subs/BloodSugarInputView';
+import { UricAcidInputView } from './subs/UricAcidInputView';
+import { BloodLipidInputView } from './subs/BloodLipidInputView';
 import {
-  HealthStatus,
   WeightData,
   BloodPressureData,
   BloodSugarData,
@@ -16,25 +20,7 @@ import {
   HealthCardData,
   HealthCardDataType
 } from '../models/HealthDataModel';
-import {
-  formatDate,
-  evaluateWeightStatus,
-  evaluateBloodPressureStatus,
-  evaluateBloodSugarStatus,
-  evaluateUricAcidStatus,
-  evaluateBloodLipidStatus,
-  getHealthStatusText,
-  getHealthStatusColor,
-  getHealthStatusColors,
-  getHealthStatusRang,
-} from '../utils/HealthUtils';
-import { BaseInputView } from './subs/BaseInputView';
-import { WeightInputView } from './subs/WeightInputView';
-import { BloodPressureInputView } from './subs/BloodPressureInputView';
-import { BloodSugarInputView } from './subs/BloodSugarInputView';
-import { UricAcidInputView } from './subs/UricAcidInputView';
-import { BloodLipidInputView } from './subs/BloodLipidInputView';
-import { UserDataModel, Gender } from '../models/UserDataModel';
+import { UserDataModel } from '../models/UserDataModel';
 import { UserViewModel } from '../viewmodels/UserViewModel';
 import { WeightViewModel } from '../viewmodels/WeightViewModel';
 import { BloodSugarViewModel } from '../viewmodels/BloodSugarViewModel';
@@ -42,184 +28,113 @@ import { BloodPressureViewModel } from '../viewmodels/BloodPressureViewModel';
 import { UricAcidViewModel } from '../viewmodels/UricAcidViewModel';
 import { BloodLipidViewModel } from '../viewmodels/BloodLipidViewModel';
 
-import { TypeUtils } from '../utils/TypeUtils'
+import { HealthInfoCard } from './HealthInfoCard';
+import { UserInfoCard } from './UserInfoCard';
+
 import { showToast } from '../utils/ToastUtils';
-import { MDashBoard } from '../components/MDashBoard';
 
 
 @Preview
 @ComponentV2
 export struct HealthOverview {
-  @Local private nickName: string = ""
-  @Local private nAge: number = 0; // 年龄
-  @Local private nGender: Gender = Gender.UNKNOWN;
-  @Local private nHeight: number = 0; // 身高，单位:cm
-  @Local private nWeight: number = 0; // 体重，单位:g
-  @Local private nBloodSugar: number = 0; // 血糖，单位:mmol/L
-  @Local private nBloodPressureSystolic: number = 0; // 收缩压
-  @Local private nBloodPressureDiastolic: number = 0; // 舒张压
-  @Local private nUricAcid: number = 0; // 尿酸，单位:μmol/L
-  @Local private nTotalCholesterol: number = 0; // 总胆固醇，单位:mmol/L
-  @Local private triglycerides: number = 0;
-  @Local private hdlCholesterol: number = 0;
-  @Local private ldlCholesterol: number = 0;
   @Local private showType: HealthCardDataType = HealthCardDataType.Unknown;
-  // ViewModel
+  @Local private isLoading: boolean = true
+
   private userInfoVM?: UserViewModel
   private weightDataVM?: WeightViewModel
   private bloodSugarVM?: BloodSugarViewModel
   private bloodPressVM?: BloodPressureViewModel
-  private uricAcidVM ?: UricAcidViewModel
+  private uricAcidVM?: UricAcidViewModel
   private bloodLipidVM?: BloodLipidViewModel
 
   async aboutToAppear(): Promise<void> {
     this.getUIContext().setKeyboardAvoidMode(KeyboardAvoidMode.RESIZE);
 
+    await this.loadLastData()
+  }
+
+  /**
+   * 加载数据
+   */
+  private async loadLastData() {
     const context = this.getUIContext().getHostContext()
     if (!context) {
       return
     }
+    this.isLoading = true
 
     // 用户信息
     this.userInfoVM = new UserViewModel()
     await this.userInfoVM.initDataService(context)
     await this.userInfoVM.loadUserData()
-    const userData = this.userInfoVM.getUserData()
-    if (userData) {
-      this.nickName = userData.nickname
-      this.nAge = userData.age
-      this.nGender = userData.gender
-      this.nHeight = userData.heightCm
-    }
 
     // 体重信息
-    this.weightDataVM = new WeightViewModel(this.nWeight, this.nHeight)
+    this.weightDataVM = new WeightViewModel(this.userInfoVM.heightCm)
     await this.weightDataVM.initDataService(context)
-    const weightData = await this.weightDataVM.getWeightData()
-    if (weightData) {
-      this.nWeight = (weightData as WeightData).value
-    }
+    await this.weightDataVM.getWeightData()
 
     // 血糖信息
-    this.bloodSugarVM = new BloodSugarViewModel(this.nBloodSugar, MeasurementType.FASTING)
+    this.bloodSugarVM = new BloodSugarViewModel()
     await this.bloodSugarVM.initDataService(context)
-    const bloodSugarData = await this.bloodSugarVM.getBloodSugarData()
-    if (bloodSugarData) {
-      this.nBloodSugar = (bloodSugarData as BloodSugarData).value
-    }
-
-    // 血压信息
-    this.bloodPressVM = new BloodPressureViewModel(this.nBloodPressureSystolic, this.nBloodPressureDiastolic)
-    await this.bloodPressVM.initDataService(context)
-    const bloodPressureData = await this.bloodPressVM.getBloodPressureData()
-    if (bloodPressureData) {
-      this.nBloodPressureSystolic = (bloodPressureData as BloodPressureData).systolic
-      this.nBloodPressureDiastolic = (bloodPressureData as BloodPressureData).diastolic
-    }
+    await this.bloodSugarVM.getBloodSugarData()
 
     // 尿酸信息
-    this.uricAcidVM = new UricAcidViewModel(this.nUricAcid, this.nGender)
+    this.uricAcidVM = new UricAcidViewModel()
     await this.uricAcidVM.initDataService(context)
-    const uricAcidData = await this.uricAcidVM.getUricAcidData()
-    if (uricAcidData) {
-      this.nUricAcid = (uricAcidData as UricAcidData).value
-    }
+    await this.uricAcidVM.getUricAcidData()
+
+    // 血压信息
+    this.bloodPressVM = new BloodPressureViewModel()
+    await this.bloodPressVM.initDataService(context)
+    await this.bloodPressVM.getBloodPressureData()
 
     // 血脂信息
-    this.bloodLipidVM =
-      new BloodLipidViewModel(this.nTotalCholesterol, this.triglycerides, this.hdlCholesterol, this.ldlCholesterol)
+    this.bloodLipidVM = new BloodLipidViewModel()
     await this.bloodLipidVM.initDataService(context)
-    const bloodLipidData = await this.bloodLipidVM.getBloodLipidData()
-    if (bloodLipidData) {
-      this.nTotalCholesterol = (bloodLipidData as BloodLipidData).totalCholesterol
-      this.triglycerides = (bloodLipidData as BloodLipidData).triglycerides
-      this.hdlCholesterol = (bloodLipidData as BloodLipidData).hdlCholesterol
-      this.ldlCholesterol = (bloodLipidData as BloodLipidData).ldlCholesterol
-    }
-  }
+    await this.bloodLipidVM.getBloodLipidData()
 
-  // 将数值转换为显示字符串，0 则显示 N/A
-  private toDisplay(value: number): string {
-    return value !== 0 ? `${value}` : 'N/A';
-  }
-
-  // 判断数值是否有效（非 0）
-  private isValid(value: number): boolean {
-    return value !== 0;
-  }
-
-  // 血压专用显示与校验
-  private isValidBP(systolic: number, diastolic: number): boolean {
-    return systolic !== 0 && diastolic !== 0;
-  }
-
-  private toDisplayBP(systolic: number, diastolic: number): string {
-    return this.isValidBP(systolic, diastolic) ? `${systolic}/${diastolic}` : 'N/A';
+    this.isLoading = false
   }
 
   // 获取健康卡片数据
   private getHealthCardData(): HealthCardData[] {
-    const currentDate = formatDate(Date.now(), 'MM-DD');
+    if (this.userInfoVM == undefined || this.weightDataVM == undefined || this.bloodSugarVM == undefined ||
+      this.uricAcidVM == undefined || this.bloodPressVM == undefined || this.bloodLipidVM == undefined) {
+      return []
+    }
     return [
       {
         title: '体重',
         type: HealthCardDataType.WeightInfo,
-        value: this.toDisplay(this.nWeight),
+        value: this.weightDataVM.value,
         unit: 'kg',
-        status: this.isValid(this.nWeight) ? evaluateWeightStatus(this.nWeight, this.nHeight / 100) :
-          HealthStatus.UNKNOWN,
-        date: currentDate
+        status: this.weightDataVM.getHealthStatus(),
+        date: this.weightDataVM.dataStr,
+        // other: this.weightDataVM.getHealthAdvice()
       },
       {
         title: '血糖',
         type: HealthCardDataType.BloodSugarInfo,
-        value: this.toDisplay(this.nBloodSugar),
+        value: this.bloodSugarVM.value,
         unit: 'mmol/L',
-        status: this.isValid(this.nBloodSugar) ? evaluateBloodSugarStatus(this.nBloodSugar, MeasurementType.FASTING) :
-          HealthStatus.UNKNOWN,
-        date: currentDate
+        status: this.bloodSugarVM.getHealthStatus(),
+        date: this.bloodSugarVM.dataStr,
+        // other: this.bloodSugarVM.getHealthAdvice()
       },
       {
         title: '尿酸',
         type: HealthCardDataType.UricAcidInfo,
-        value: this.toDisplay(this.nUricAcid),
+        value: this.uricAcidVM.value,
         unit: 'μmol/L',
-        status: this.isValid(this.nUricAcid) ? evaluateUricAcidStatus(this.nUricAcid, Gender.MALE) :
-          HealthStatus.UNKNOWN,
-        date: currentDate
+        status: this.uricAcidVM.getHealthStatus(),
+        date: this.uricAcidVM.dataStr,
+        // other: this.uricAcidVM.getHealthAdvice()
       },
-      // {
-      //   title: '血压',
-      //   type: HealthCardDataType.BloodPressureInfo,
-      //   value: this.toDisplayBP(this.nBloodPressureSystolic, this.nBloodPressureDiastolic),
-      //   unit: 'mmHg',
-      //   status: this.isValidBP(this.nBloodPressureSystolic, this.nBloodPressureDiastolic) ?
-      //     this.nBloodPressureSystolic <= 120 && this.nBloodPressureDiastolic <= 80 ? HealthStatus.EXCELLENT :
-      //       this.nBloodPressureSystolic <= 130 && this.nBloodPressureDiastolic <= 85 ? HealthStatus.GOOD :
-      //         this.nBloodPressureSystolic <= 140 && this.nBloodPressureDiastolic <= 90 ? HealthStatus.MODERATE :
-      //           HealthStatus.POOR : HealthStatus.UNKNOWN,
-      //   date: currentDate
-      // },
-      // {
-      //   title: '血脂',
-      //   type: HealthCardDataType.BloodLipidInfo,
-      //   value: this.toDisplay(this.nTotalCholesterol),
-      //   unit: 'mmol/L',
-      //   status: this.isValid(this.nTotalCholesterol) ? this.nTotalCholesterol <= 5.2 ? HealthStatus.EXCELLENT :
-      //     this.nTotalCholesterol <= 5.7 ? HealthStatus.GOOD :
-      //       this.nTotalCholesterol <= 6.5 ? HealthStatus.MODERATE : HealthStatus.POOR : HealthStatus.UNKNOWN,
-      //   date: currentDate
-      // },
     ];
   }
 
   // 更新用户基本信息
   private updateUserInfo(data: UserDataModel) {
-    this.nickName = data.nickname
-    this.nHeight = data.heightCm
-    this.nGender = data.gender
-    this.nAge = data.age
-
     if (!this.userInfoVM) {
       return
     }
@@ -256,12 +171,11 @@ export struct HealthOverview {
 
   // 更新体重信息
   private async updateWeight(data: WeightData) {
-    this.nWeight = data.value
     if (!this.weightDataVM) {
       return
     }
 
-    this.weightDataVM.weight = data.value
+    this.weightDataVM.value = data.value
     const res = await this.weightDataVM?.saveData()
     if (res) {
       this.showType = HealthCardDataType.Unknown
@@ -273,8 +187,6 @@ export struct HealthOverview {
 
   // 更新血压信息
   private async updateBloodPressure(data: BloodPressureData) {
-    this.nBloodPressureSystolic = data.systolic
-    this.nBloodPressureDiastolic = data.diastolic
     if (!this.bloodPressVM) {
       return
     }
@@ -291,7 +203,6 @@ export struct HealthOverview {
 
   // 更新血糖信息
   private async updateBloodSugar(data: BloodSugarData) {
-    this.nBloodSugar = data.value
     if (!this.bloodSugarVM) {
       return
     }
@@ -308,7 +219,6 @@ export struct HealthOverview {
 
   // 更新尿酸信息
   private async updateUricAcid(data: UricAcidData) {
-    this.nUricAcid = data.value
     if (!this.uricAcidVM) {
       return
     }
@@ -325,10 +235,6 @@ export struct HealthOverview {
 
   // 更新血脂信息
   private async updateBloodLipid(data: BloodLipidData) {
-    this.nTotalCholesterol = data.totalCholesterol
-    this.triglycerides = data.triglycerides
-    this.hdlCholesterol = data.hdlCholesterol
-    this.ldlCholesterol = data.ldlCholesterol
     if (!this.bloodLipidVM) {
       return
     }
@@ -345,183 +251,6 @@ export struct HealthOverview {
     }
   }
 
-  // 健康指标卡片组件
-  @Builder
-  HealthCard(cardData: HealthCardData) {
-    Column() {
-      // 卡片头部 - 标题和状态指示器
-      Row() {
-        Text(cardData.title)
-          .fontSize($r('app.float.font_size_medium'))
-          .fontWeight(FontWeight.Medium)
-          .fontColor($r('app.color.text_333'))
-
-        Blank()
-
-        MStatusLable({
-          title: {
-            text: getHealthStatusText(cardData.status),
-            color: getHealthStatusColor(cardData.status)
-          },
-          status: true,
-        })
-      }
-      .width('100%')
-      .margin({ bottom: $r('app.integer.view_margin') })
-
-      // 仪表盘视图
-      if (cardData.type === HealthCardDataType.WeightInfo || cardData.type === HealthCardDataType.BloodSugarInfo ||
-        cardData.type === HealthCardDataType.UricAcidInfo) {
-        // 单值圆形仪表
-        MDashBoard({
-          value: Number(cardData.value),
-          colors: getHealthStatusColors(cardData.type),
-          range: getHealthStatusRang(cardData.type),
-          title: {
-            text: cardData.value,
-            color: getHealthStatusColor(cardData.status)
-          },
-          subTitle: {
-            text: cardData.unit,
-            color: getHealthStatusColor(cardData.status)
-          },
-          note: {
-            text: TypeUtils.isEmptyString(cardData.other) ? getHealthStatusText(cardData.status) : cardData.other,
-            color: getHealthStatusColor(cardData.status)
-          },
-        })
-      } else if (cardData.type === HealthCardDataType.BloodPressureInfo ||
-        cardData.type === HealthCardDataType.BloodLipidInfo) {
-        // 多值线条仪表
-      } else {
-        // 默认仪表
-      }
-
-      Row() {
-        // 日期信息
-        if (cardData.date) {
-          Row({ space: 4 }) {
-            SymbolGlyph($r('sys.symbol.time_inerval'))
-              .fontSize($r('app.float.font_size_normal'))
-              .fontColor([$r('app.color.text_999')])
-
-            Text(`${cardData.date}`)
-              .fontSize($r('app.float.font_size_normal'))
-              .fontColor($r('app.color.text_999'))
-              .alignSelf(ItemAlign.Start)
-          }
-        }
-
-        Column() {
-          SymbolGlyph($r('sys.symbol.plus_circle_fill'))
-            .fontSize(18)
-            .fontColor([$r('app.color.red')])
-        }
-        .onClick(() => {
-          this.showType = cardData.type
-        })
-        // .backgroundColor("#00FF00")
-        .width(30)
-        .height(30)
-        .justifyContent(FlexAlign.Center)
-        .alignItems(HorizontalAlign.End)
-      }
-      .width('100%')
-      .justifyContent(FlexAlign.SpaceBetween)
-    }
-    .width('100%')
-    .height(230)
-    .padding($r('app.integer.view_padding'))
-    .alignItems(HorizontalAlign.Start)
-    .justifyContent(FlexAlign.SpaceBetween)
-    .backgroundColor($r('app.color.white'))
-    .borderRadius($r('app.integer.view_radius'))
-    .shadow({
-      radius: $r('app.integer.view_radius'),
-      color: '#1a000000',
-      offsetX: 0,
-      offsetY: 2
-    })
-  }
-
-  // 身高体重信息卡片
-  @Builder
-  BasicInfoCard() {
-    Column({ space: $r('app.integer.view_content_space') }) {
-      Row() {
-        Text(this.nickName.length > 0 ? this.nickName : "请设置基本信息")
-          .fontSize($r('app.float.font_size_large_title'))
-          .fontWeight(FontWeight.Medium)
-          .fontColor($r('app.color.text_333'))
-
-        SymbolGlyph($r('sys.symbol.doc_plaintext_and_pencil'))
-          .fontSize(24)
-          .fontColor([$r('app.color.text_666')])
-      }
-      .width('100%')
-      .margin({ bottom: $r('app.integer.view_margin') })
-      .alignItems(VerticalAlign.Bottom)
-      .justifyContent(FlexAlign.SpaceBetween)
-
-      Row() {
-        Row() {
-          Row({ space: $r('app.integer.view_space') }) {
-            Row() {
-              MLable({ lable: "性别:" })
-
-              Text(`${this.nGender}`)
-                .fontSize($r('app.float.font_size_large'))
-                .fontWeight(FontWeight.Medium)
-                .fontColor($r('app.color.text_333'))
-            }.alignItems(VerticalAlign.Bottom)
-
-            Row() {
-              MLable({ lable: "年龄:" })
-
-              Text(`${this.nAge}`)
-                .fontSize($r('app.float.font_size_large'))
-                .fontWeight(FontWeight.Medium)
-                .fontColor($r('app.color.text_333'))
-
-              if (this.isValid(this.nAge)) {
-                MLable({ lable: " 岁" })
-              }
-            }.alignItems(VerticalAlign.Bottom)
-
-            Row() {
-              MLable({ lable: "身高:" })
-
-              Text(`${this.nHeight}`)
-                .fontSize($r('app.float.font_size_large'))
-                .fontWeight(FontWeight.Medium)
-                .fontColor($r('app.color.text_333'))
-
-              if (this.isValid(this.nHeight)) {
-                MLable({ lable: " cm" })
-              }
-            }.alignItems(VerticalAlign.Bottom)
-          }.alignItems(VerticalAlign.Bottom)
-        }
-        .justifyContent(FlexAlign.SpaceBetween)
-        .layoutWeight(1)
-      }
-      .width('100%')
-    }
-    .width('100%')
-    .padding($r('app.integer.view_padding'))
-    .backgroundColor($r('app.color.white'))
-    .borderRadius($r('app.integer.view_radius'))
-    .shadow({
-      radius: $r('app.integer.view_radius'),
-      color: '#1a000000',
-      offsetX: 0,
-      offsetY: 2
-    })
-    .onClick(() => {
-      this.showType = HealthCardDataType.BaseInfo
-    })
-  }
-
   build() {
     Stack() {
       Column() {
@@ -529,22 +258,37 @@ export struct HealthOverview {
         Scroll() {
           Column({ space: $r('app.integer.view_space') }) {
             // 基本信息卡片
-            this.BasicInfoCard()
+            UserInfoCard({
+              nickName: this.userInfoVM?.nickname,
+              nAge: this.userInfoVM?.age,
+              nGender: this.userInfoVM?.gender,
+              nHeight: this.userInfoVM?.heightCm,
+              handleClick: (type: HealthCardDataType) => {
+                this.showType = type
+              }
+            })
 
-            // 健康指标网格
-            Grid() {
-              ForEach(this.getHealthCardData(), (cardData: HealthCardData, index: number) => {
-                GridItem() {
-                  this.HealthCard(cardData)
-                }
-              })
+            if (!this.isLoading) {
+              // 健康指标网格
+              Grid() {
+                ForEach(this.getHealthCardData(), (cardData: HealthCardData, index: number) => {
+                  GridItem() {
+                    HealthInfoCard({
+                      data: cardData,
+                      handleClick: (type) => {
+                        this.showType = type
+                      }
+                    })
+                  }
+                })
+              }
+              .width('100%')
+              .layoutWeight(1)
+              .columnsTemplate('1fr 1fr')
+              .rowsGap($r('app.integer.view_space'))
+              .columnsGap($r('app.integer.view_space'))
+              .scrollBar(BarState.Off)
             }
-            .width('100%')
-            .layoutWeight(1)
-            .columnsTemplate('1fr 1fr')
-            .rowsGap($r('app.integer.view_space'))
-            .columnsGap($r('app.integer.view_space'))
-            .scrollBar(BarState.Off)
           }
           .height('100%')
           .padding($r('app.integer.view_padding'))
@@ -561,13 +305,13 @@ export struct HealthOverview {
       Column() {
         // 半弹层背景白色
         Column() {
-          if (this.showType === HealthCardDataType.BaseInfo) {
+          if (this.userInfoVM && this.showType === HealthCardDataType.BaseInfo) {
             BaseInputView({
               initData: {
-                nickname: this.nickName,
-                gender: this.nGender,
-                heightCm: this.nHeight,
-                age: this.nAge,
+                nickname: this.userInfoVM.nickname,
+                gender: this.userInfoVM.gender,
+                heightCm: this.userInfoVM.heightCm,
+                age: this.userInfoVM.age,
               } as UserDataModel,
               onSubmit: (data?: UserDataModel) => {
                 if (data) {
@@ -575,28 +319,28 @@ export struct HealthOverview {
                 }
               }
             })
-          } else if (this.showType === HealthCardDataType.WeightInfo) {
+          } else if (this.weightDataVM && this.showType === HealthCardDataType.WeightInfo) {
             WeightInputView({
-              weight: this.nWeight,
+              weightKg: this.weightDataVM.value,
               onSubmit: (data?: WeightData) => {
                 if (data) {
                   this.updateWeight(data)
                 }
               }
             })
-          } else if (this.showType === HealthCardDataType.BloodPressureInfo) {
+          } else if (this.bloodPressVM && this.showType === HealthCardDataType.BloodPressureInfo) {
             BloodPressureInputView({
-              systolicValue: this.nBloodPressureSystolic,
-              diastolicValue: this.nBloodPressureDiastolic,
+              systolicValue: this.bloodPressVM.systolic,
+              diastolicValue: this.bloodPressVM.diastolic,
               onSubmit: (data?: BloodPressureData) => {
                 if (data) {
                   this.updateBloodPressure(data)
                 }
               }
             })
-          } else if (this.showType === HealthCardDataType.BloodSugarInfo) {
+          } else if (this.bloodSugarVM && this.showType === HealthCardDataType.BloodSugarInfo) {
             BloodSugarInputView({
-              bloodSugarValue: this.nBloodSugar,
+              bloodSugarValue: this.bloodSugarVM.value,
               measurementType: MeasurementType.FASTING,
               onSubmit: (data?: BloodSugarData) => {
                 if (data) {
@@ -604,22 +348,22 @@ export struct HealthOverview {
                 }
               }
             })
-          } else if (this.showType === HealthCardDataType.UricAcidInfo) {
+          } else if (this.userInfoVM && this.uricAcidVM && this.showType === HealthCardDataType.UricAcidInfo) {
             UricAcidInputView({
-              inputValue: this.nUricAcid,
-              gender: this.nGender,
+              inputValue: this.uricAcidVM.value,
+              gender: this.userInfoVM.gender,
               onSubmit: (data?: UricAcidData) => {
                 if (data) {
                   this.updateUricAcid(data)
                 }
               }
             })
-          } else if (this.showType === HealthCardDataType.BloodLipidInfo) {
+          } else if (this.bloodLipidVM && this.showType === HealthCardDataType.BloodLipidInfo) {
             BloodLipidInputView({
-              totalCholesterol: this.nTotalCholesterol,
-              triglycerides: this.triglycerides,
-              hdlCholesterol: this.hdlCholesterol,
-              ldlCholesterol: this.ldlCholesterol,
+              totalCholesterol: this.bloodLipidVM.totalCholesterol,
+              triglycerides: this.bloodLipidVM.triglycerides,
+              hdlCholesterol: this.bloodLipidVM.hdlCholesterol,
+              ldlCholesterol: this.bloodLipidVM.ldlCholesterol,
               onSubmit: (data?: BloodLipidData) => {
                 if (data) {
                   this.updateBloodLipid(data)

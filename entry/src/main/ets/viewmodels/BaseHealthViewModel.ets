@@ -18,6 +18,8 @@ const TAG = 'BaseHealthViewModel';
 export abstract class BaseHealthViewModel extends HealthViewModel {
   protected dataService?: HealthDataServiceImpl;
   protected context?: Context;
+  protected dataId: string = '';
+  protected timestamp: number = Date.now();
 
   /**
    * 将当前ViewModel数据转换为HealthData对象
@@ -39,8 +41,19 @@ export abstract class BaseHealthViewModel extends HealthViewModel {
    */
   public async initDataService(context: Context): Promise<void> {
     this.context = context;
+    this.timestamp = Date.now();
+    this.dataId = `weight_${this.timestamp}`;
     this.dataService = new HealthDataServiceImpl(context);
     await this.dataService.initDataStore()
+  }
+
+  /**
+   * 日期
+   * @returns
+   */
+  get dataStr() {
+    const date = new Date(this.timestamp)
+    return `${date.getMonth() + 1}/${date.getDate()}`
   }
 
   /**

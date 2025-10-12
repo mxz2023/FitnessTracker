@@ -4,17 +4,9 @@
 
 import {
   HealthStatus,
-  HealthRanges,
-  MeasurementType,
-  WeightData,
-  BloodPressureData,
-  BloodSugarData,
-  UricAcidData,
-  BloodLipidData,
   HealthCardDataType,
   Range
 } from '../models/HealthDataModel';
-import { Gender } from '../models/UserDataModel';
 
 /**
  * 格式化日期
@@ -38,153 +30,6 @@ export function formatDate(timestamp: number, format: string = 'YYYY-MM-DD'): st
     .replace('HH', hours)
     .replace('mm', minutes)
     .replace('ss', seconds);
-}
-
-/**
- * 评估体重状态
- * @param weight 体重数据
- * @param height 身高，单位m
- * @returns 健康状态
- */
-export function evaluateWeightStatus(weightValue: number, height: number): HealthStatus {
-  const bmi = weightValue / (height * height);
-
-  if (bmi >= HealthRanges.WEIGHT_EXCELLENT.min && bmi <= HealthRanges.WEIGHT_EXCELLENT.max) {
-    return HealthStatus.EXCELLENT;
-  } else if (bmi >= HealthRanges.WEIGHT_GOOD.min && bmi <= HealthRanges.WEIGHT_GOOD.max) {
-    return HealthStatus.GOOD;
-  } else if (bmi >= HealthRanges.WEIGHT_MODERATE.min && bmi <= HealthRanges.WEIGHT_MODERATE.max) {
-    return HealthStatus.MODERATE;
-  } else {
-    return HealthStatus.POOR;
-  }
-}
-
-/**
- * 评估血压状态
- * @param bp 血压数据
- * @returns 健康状态
- */
-export function evaluateBloodPressureStatus(bp: BloodPressureData): HealthStatus {
-  if (
-    bp.systolic >= HealthRanges.BP_EXCELLENT.systolic.min &&
-      bp.systolic <= HealthRanges.BP_EXCELLENT.systolic.max &&
-      bp.diastolic >= HealthRanges.BP_EXCELLENT.diastolic.min &&
-      bp.diastolic <= HealthRanges.BP_EXCELLENT.diastolic.max
-  ) {
-    return HealthStatus.EXCELLENT;
-  } else if (
-    bp.systolic >= HealthRanges.BP_GOOD.systolic.min &&
-      bp.systolic <= HealthRanges.BP_GOOD.systolic.max &&
-      bp.diastolic >= HealthRanges.BP_GOOD.diastolic.min &&
-      bp.diastolic <= HealthRanges.BP_GOOD.diastolic.max
-  ) {
-    return HealthStatus.GOOD;
-  } else if (
-    bp.systolic >= HealthRanges.BP_MODERATE.systolic.min &&
-      bp.systolic <= HealthRanges.BP_MODERATE.systolic.max &&
-      bp.diastolic >= HealthRanges.BP_MODERATE.diastolic.min &&
-      bp.diastolic <= HealthRanges.BP_MODERATE.diastolic.max
-  ) {
-    return HealthStatus.MODERATE;
-  } else {
-    return HealthStatus.POOR;
-  }
-}
-
-/**
- * 评估血糖状态
- * @param bs 血糖数据
- * @returns 健康状态
- */
-export function evaluateBloodSugarStatus(value: number, measurementType: MeasurementType): HealthStatus {
-  const range = measurementType === MeasurementType.FASTING ?
-    HealthRanges.BS_FASTING_EXCELLENT : HealthRanges.BS_AFTER_MEAL_EXCELLENT;
-
-  if (value >= range.min && value <= range.max) {
-    return HealthStatus.EXCELLENT;
-  } else if (value >= range.min && value <= (range === HealthRanges.BS_FASTING_EXCELLENT ?
-    HealthRanges.BS_FASTING_GOOD.max : HealthRanges.BS_AFTER_MEAL_GOOD.max)) {
-    return HealthStatus.GOOD;
-  } else if (value >= (range === HealthRanges.BS_FASTING_EXCELLENT ?
-    HealthRanges.BS_FASTING_MODERATE.min : HealthRanges.BS_AFTER_MEAL_MODERATE.min) &&
-    value <= (range === HealthRanges.BS_FASTING_EXCELLENT ?
-      HealthRanges.BS_FASTING_MODERATE.max : HealthRanges.BS_AFTER_MEAL_MODERATE.max)) {
-    return HealthStatus.MODERATE;
-  } else {
-    return HealthStatus.POOR;
-  }
-}
-
-/**
- * 评估尿酸状态
- * @param ua 尿酸数据
- * @returns 健康状态
- */
-export function evaluateUricAcidStatus(value: number, gender: Gender = Gender.MALE): HealthStatus {
-  const range = gender === Gender.MALE ?
-    HealthRanges.UA_EXCELLENT.male : HealthRanges.UA_EXCELLENT.female;
-
-  if (value >= range.min && value <= range.max) {
-    return HealthStatus.EXCELLENT;
-  } else if (value >= range.min && value <= (gender === Gender.MALE ?
-    HealthRanges.UA_GOOD.male.max : HealthRanges.UA_GOOD.female.max)) {
-    return HealthStatus.GOOD;
-  } else if (value >= (gender === Gender.MALE ?
-    HealthRanges.UA_MODERATE.male.min : HealthRanges.UA_MODERATE.female.min) &&
-    value <= (gender === Gender.MALE ?
-      HealthRanges.UA_MODERATE.male.max : HealthRanges.UA_MODERATE.female.max)) {
-    return HealthStatus.MODERATE;
-  } else {
-    return HealthStatus.POOR;
-  }
-}
-
-/**
- * 评估血脂状态
- * @param bl 血脂数据
- * @returns 健康状态
- */
-export function evaluateBloodLipidStatus(bl: BloodLipidData): HealthStatus {
-  // 检查是否有任何指标处于较差状态
-  if (
-    bl.totalCholesterol >= HealthRanges.BL_POOR.totalCholesterol.min ||
-      bl.triglycerides >= HealthRanges.BL_POOR.triglycerides.min ||
-      bl.hdlCholesterol <= HealthRanges.BL_POOR.hdlCholesterol.max ||
-      bl.ldlCholesterol >= HealthRanges.BL_POOR.ldlCholesterol.min
-  ) {
-    return HealthStatus.POOR;
-  }
-
-  // 检查是否有任何指标处于中等状态
-  if (
-    (bl.totalCholesterol >= HealthRanges.BL_MODERATE.totalCholesterol.min &&
-      bl.totalCholesterol <= HealthRanges.BL_MODERATE.totalCholesterol.max) ||
-      (bl.triglycerides >= HealthRanges.BL_MODERATE.triglycerides.min &&
-        bl.triglycerides <= HealthRanges.BL_MODERATE.triglycerides.max) ||
-      (bl.hdlCholesterol >= HealthRanges.BL_MODERATE.hdlCholesterol.min &&
-        bl.hdlCholesterol <= HealthRanges.BL_MODERATE.hdlCholesterol.max) ||
-      (bl.ldlCholesterol >= HealthRanges.BL_MODERATE.ldlCholesterol.min &&
-        bl.ldlCholesterol <= HealthRanges.BL_MODERATE.ldlCholesterol.max)
-  ) {
-    return HealthStatus.MODERATE;
-  }
-
-  // 检查是否有任何指标处于良好状态
-  if ((bl.totalCholesterol >= HealthRanges.BL_GOOD.totalCholesterol.min &&
-    bl.totalCholesterol <= HealthRanges.BL_GOOD.totalCholesterol.max) ||
-    (bl.triglycerides >= HealthRanges.BL_GOOD.triglycerides.min &&
-      bl.triglycerides <= HealthRanges.BL_GOOD.triglycerides.max) ||
-    (bl.hdlCholesterol >= HealthRanges.BL_GOOD.hdlCholesterol.min &&
-      bl.hdlCholesterol <= HealthRanges.BL_GOOD.hdlCholesterol.max) ||
-    (bl.ldlCholesterol >= HealthRanges.BL_GOOD.ldlCholesterol.min &&
-      bl.ldlCholesterol <= HealthRanges.BL_GOOD.ldlCholesterol.max)
-  ) {
-    return HealthStatus.GOOD;
-  }
-
-  // 所有指标都在优秀范围内
-  return HealthStatus.EXCELLENT;
 }
 
 /**
@@ -237,10 +82,9 @@ export function getHealthStatusColors(type: HealthCardDataType): Array<[Resource
   switch (type) {
     case HealthCardDataType.WeightInfo: {
       colors = [
-        [new LinearGradient([{ color: "#0978ab", offset: 0 }, { color: "#439b9b", offset: 1 }]), 1],
-        [new LinearGradient([{ color: "#54baea", offset: 0 }, { color: "#b4e79c", offset: 1 }]), 1],
-        [new LinearGradient([{ color: "#dbefa5", offset: 0 }, { color: "#9ec827", offset: 1 }]), 2],
-        [new LinearGradient([{ color: "#b7ec7c", offset: 0 }, { color: "#f8db4c", offset: 1 }]), 1],
+        [new LinearGradient([{ color: "#54baea", offset: 0 }, { color: "#dbefa5", offset: 1 }]), 0.5],
+        [new LinearGradient([{ color: "#dbefa5", offset: 0 }, { color: "#65b50e", offset: 1 }]), 1],
+        [new LinearGradient([{ color: "#65b50e", offset: 0 }, { color: "#f1e707", offset: 1 }]), 1],
         [new LinearGradient([{ color: "#f1e707", offset: 0 }, { color: "#e64566", offset: 1 }]), 1],
       ]
       break;
@@ -248,10 +92,9 @@ export function getHealthStatusColors(type: HealthCardDataType): Array<[Resource
 
     case HealthCardDataType.BloodSugarInfo: {
       colors = [
-        [new LinearGradient([{ color: "#0978ab", offset: 0 }, { color: "#439b9b", offset: 1 }]), 1],
-        [new LinearGradient([{ color: "#54baea", offset: 0 }, { color: "#b4e79c", offset: 1 }]), 1],
-        [new LinearGradient([{ color: "#dbefa5", offset: 0 }, { color: "#9ec827", offset: 1 }]), 2],
-        [new LinearGradient([{ color: "#b7ec7c", offset: 0 }, { color: "#f8db4c", offset: 1 }]), 1],
+        [new LinearGradient([{ color: "#54baea", offset: 0 }, { color: "#dbefa5", offset: 1 }]), 0.5],
+        [new LinearGradient([{ color: "#dbefa5", offset: 0 }, { color: "#65b50e", offset: 1 }]), 1],
+        [new LinearGradient([{ color: "#65b50e", offset: 0 }, { color: "#f1e707", offset: 1 }]), 1],
         [new LinearGradient([{ color: "#f1e707", offset: 0 }, { color: "#e64566", offset: 1 }]), 1],
       ]
       break;
@@ -259,10 +102,8 @@ export function getHealthStatusColors(type: HealthCardDataType): Array<[Resource
 
     case HealthCardDataType.UricAcidInfo: {
       colors = [
-        [new LinearGradient([{ color: "#0978ab", offset: 0 }, { color: "#439b9b", offset: 1 }]), 1],
-        [new LinearGradient([{ color: "#54baea", offset: 0 }, { color: "#b4e79c", offset: 1 }]), 1],
-        [new LinearGradient([{ color: "#dbefa5", offset: 0 }, { color: "#9ec827", offset: 1 }]), 2],
-        [new LinearGradient([{ color: "#b7ec7c", offset: 0 }, { color: "#f8db4c", offset: 1 }]), 1],
+        [new LinearGradient([{ color: "#dbefa5", offset: 0 }, { color: "#65b50e", offset: 1 }]), 0.5],
+        [new LinearGradient([{ color: "#65b50e", offset: 0 }, { color: "#f1e707", offset: 1 }]), 1],
         [new LinearGradient([{ color: "#f1e707", offset: 0 }, { color: "#e64566", offset: 1 }]), 1],
       ]
       break;
@@ -284,8 +125,8 @@ export function getHealthStatusRang(type: HealthCardDataType):Range {
   const res:Range = new Range()
   switch (type) {
     case HealthCardDataType.WeightInfo: {
-      res.min = 20
-      res.max = 200
+      res.min = 50
+      res.max = 120
       break;
     }
     case HealthCardDataType.BloodSugarInfo: {

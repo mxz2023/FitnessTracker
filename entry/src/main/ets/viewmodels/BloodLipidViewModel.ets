@@ -12,31 +12,19 @@ const TAG = 'BloodLipidViewModel';
  * 血脂ViewModel类
  * 用于管理血脂数据和健康状态评估
  */
+@ObservedV2
 export class BloodLipidViewModel extends BaseHealthViewModel {
-  private _totalCholesterol: number = 0; // 总胆固醇
-  private _triglycerides: number = 0; // 甘油三酯
-  private _hdlCholesterol: number = 0; // 高密度脂蛋白胆固醇
-  private _ldlCholesterol: number = 0; // 低密度脂蛋白胆固醇
-  private _timestamp: number = Date.now(); // 时间戳
-  private _id: string = ''; // 数据ID
-  private _note: string = ''; // 备注
+  @Trace private _totalCholesterol: number = 0; // 总胆固醇
+  @Trace private _triglycerides: number = 0; // 甘油三酯
+  @Trace private _hdlCholesterol: number = 0; // 高密度脂蛋白胆固醇
+  @Trace private _ldlCholesterol: number = 0; // 低密度脂蛋白胆固醇
+  @Trace private _note: string = ''; // 备注
 
   /**
    * 构造函数
-   * @param totalCholesterol 总胆固醇，单位mmol/L
-   * @param triglycerides 甘油三酯，单位mmol/L
-   * @param hdlCholesterol 高密度脂蛋白胆固醇，单位mmol/L
-   * @param ldlCholesterol 低密度脂蛋白胆固醇，单位mmol/L
    */
-  constructor(totalCholesterol: number = 0, triglycerides: number = 0,
-    hdlCholesterol: number = 0, ldlCholesterol: number = 0) {
+  constructor() {
     super();
-    this._totalCholesterol = totalCholesterol;
-    this._triglycerides = triglycerides;
-    this._hdlCholesterol = hdlCholesterol;
-    this._ldlCholesterol = ldlCholesterol;
-    this._timestamp = Date.now();
-    this._id = `bloodLipid_${this._timestamp}`;
   }
 
   /**
@@ -47,19 +35,6 @@ export class BloodLipidViewModel extends BaseHealthViewModel {
   public async getBloodLipidData(): Promise<HealthData | null> {
     await this.loadLatestData("bloodLipid");
     return this.toHealthData();
-  }
-
-  public static fromData(data: BloodLipidData): BloodLipidViewModel {
-    const viewModel = new BloodLipidViewModel(
-      data.totalCholesterol,
-      data.triglycerides,
-      data.hdlCholesterol,
-      data.ldlCholesterol
-    );
-    viewModel._id = data.id;
-    viewModel._timestamp = data.timestamp;
-    viewModel.note = data.note;
-    return viewModel;
   }
 
   /**
@@ -184,8 +159,8 @@ export class BloodLipidViewModel extends BaseHealthViewModel {
     }
 
     const blData = new BloodLipidData();
-    blData.id = this._id;
-    blData.timestamp = this._timestamp;
+    blData.id = this.dataId;
+    blData.timestamp = this.timestamp;
     blData.note = this._note;
     blData.totalCholesterol = this._totalCholesterol;
     blData.triglycerides = this._triglycerides;
@@ -201,8 +176,8 @@ export class BloodLipidViewModel extends BaseHealthViewModel {
    */
   protected fromHealthData(data: HealthData): void {
     if (data instanceof BloodLipidData) {
-      this._id = data.id;
-      this._timestamp = data.timestamp;
+      this.dataId = data.id;
+      this.timestamp = data.timestamp;
       this.note = data.note;
       this.totalCholesterol = data.totalCholesterol;
       this.triglycerides = data.triglycerides;

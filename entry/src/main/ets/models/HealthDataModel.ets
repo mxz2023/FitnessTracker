@@ -11,7 +11,7 @@ import { Gender } from "./UserDataModel";
 export interface HealthCardData {
   title: string;
   type: HealthCardDataType;
-  value: string;
+  value: number;
   unit?: string;
   status: HealthStatus;
   date?: string;
@@ -147,12 +147,6 @@ export class HealthRanges {
   static readonly WEIGHT_MODERATE = new Range(16.0, 29.9); // BMI 中度偏离正常范围
   static readonly WEIGHT_POOR = new Range(0, 999); // BMI 严重偏离正常范围
 
-  // 血压指标范围
-  static readonly BP_EXCELLENT = new BloodPressureRangeType(90, 120, 60, 80); // 理想血压
-  static readonly BP_GOOD = new BloodPressureRangeType(120, 130, 80, 85); // 正常血压
-  static readonly BP_MODERATE = new BloodPressureRangeType(130, 140, 85, 90); // 正常高值
-  static readonly BP_POOR = new BloodPressureRangeType(140, 999, 90, 999); // 高血压
-
   // 血糖指标范围（空腹）
   static readonly BS_FASTING_EXCELLENT = new Range(3.9, 5.5); // 理想空腹血糖
   static readonly BS_FASTING_GOOD = new Range(3.9, 6.0); // 正常空腹血糖
@@ -170,6 +164,12 @@ export class HealthRanges {
   static readonly UA_GOOD = new GenderSpecificRange(149, 450, 89, 380); // 正常尿酸
   static readonly UA_MODERATE = new GenderSpecificRange(451, 500, 381, 420); // 尿酸偏高
   static readonly UA_POOR = new GenderSpecificRange(501, 9999, 421, 9999); // 高尿酸
+
+  // 血压指标范围
+  static readonly BP_EXCELLENT = new BloodPressureRangeType(90, 120, 60, 80); // 理想血压
+  static readonly BP_GOOD = new BloodPressureRangeType(120, 130, 80, 85); // 正常血压
+  static readonly BP_MODERATE = new BloodPressureRangeType(130, 140, 85, 90); // 正常高值
+  static readonly BP_POOR = new BloodPressureRangeType(140, 999, 90, 999); // 高血压
 
   // 血脂指标范围
   static readonly BL_EXCELLENT = new BloodLipidRangeType(0, 5.2, 0, 1.7, 1.0, 999, 0, 3.4);

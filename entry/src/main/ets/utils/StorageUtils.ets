@@ -22,22 +22,15 @@ import {
 } from '../models/HealthDataModel';
 import { HealthDataServiceImpl } from '../models/HealthDataServiceImpl';
 import { Gender } from '../models/UserDataModel';
-import {
-  evaluateWeightStatus, 
-  evaluateBloodPressureStatus, 
-  evaluateBloodSugarStatus,
-  evaluateUricAcidStatus,
-  evaluateBloodLipidStatus
-} from './HealthUtils';
 
 const TAG = 'StorageUtils.ets';
+
 
 /**
  * 健康数据操作结果基础接口
  */
 export interface HealthDataResult {
   success: boolean;
-  status: HealthStatus;
 }
 
 /**
@@ -108,7 +101,7 @@ export class StorageUtils {
   public async saveWeightData(weight: number, height: number, note: string = ''): Promise<WeightDataResult> {
     if (weight <= 0) {
       promptAction.showToast({ message: '请输入有效的体重值' });
-      return { success: false, status: HealthStatus.MODERATE, data: null };
+      return { success: false, data: null };
     }
     
     try {
@@ -144,14 +137,13 @@ export class StorageUtils {
       
       const ok = await this.dataService.saveData(record);
       if (ok) {
-        const status = evaluateWeightStatus(avg, height);
-        return { success: true, status, data: record };
+        return { success: true, data: record };
       } else {
-        return { success: false, status: HealthStatus.MODERATE, data: null };
+        return { success: false, data: null };
       }
     } catch (error) {
       console.error(`${TAG} 保存体重数据失败: ${error}`);
-      return { success: false, status: HealthStatus.MODERATE, data: null };
+      return { success: false, data: null };
     }
   }
   
@@ -165,7 +157,7 @@ export class StorageUtils {
   public async saveBloodPressureData(systolic: number, diastolic: number, note: string = ''): Promise<BloodPressureDataResult> {
     if (systolic <= 0 || diastolic <= 0) {
       promptAction.showToast({ message: '请输入有效的血压值' });
-      return { success: false, status: HealthStatus.MODERATE, data: null };
+      return { success: false, data: null };
     }
     
     try {
@@ -179,14 +171,13 @@ export class StorageUtils {
       
       const ok = await this.dataService.saveData(record);
       if (ok) {
-        const status = evaluateBloodPressureStatus(record);
-        return { success: true, status, data: record };
+        return { success: true, data: record };
       } else {
-        return { success: false, status: HealthStatus.MODERATE, data: null };
+        return { success: false, data: null };
       }
     } catch (error) {
       console.error(`${TAG} 保存血压数据失败: ${error}`);
-      return { success: false, status: HealthStatus.MODERATE, data: null };
+      return { success: false, data: null };
     }
   }
   
@@ -200,7 +191,7 @@ export class StorageUtils {
   public async saveBloodSugarData(value: number, measurementType: MeasurementType, note: string = ''): Promise<BloodSugarDataResult> {
     if (value <= 0) {
       promptAction.showToast({ message: '请输入有效的血糖值' });
-      return { success: false, status: HealthStatus.MODERATE, data: null };
+      return { success: false, data: null };
     }
     
     try {
@@ -214,15 +205,13 @@ export class StorageUtils {
       
       const ok = await this.dataService.saveData(record);
       if (ok) {
-        // 修正：传递正确的参数给 evaluateBloodSugarStatus
-        const status = evaluateBloodSugarStatus(value, measurementType);
-        return { success: true, status, data: record };
+        return { success: true, data: record };
       } else {
-        return { success: false, status: HealthStatus.MODERATE, data: null };
+        return { success: false, data: null };
       }
     } catch (error) {
       console.error(`${TAG} 保存血糖数据失败: ${error}`);
-      return { success: false, status: HealthStatus.MODERATE, data: null };
+      return { success: false, data: null };
     }
   }
   
@@ -236,7 +225,7 @@ export class StorageUtils {
   public async saveUricAcidData(value: number, gender: Gender, note: string = ''): Promise<UricAcidDataResult> {
     if (value <= 0) {
       promptAction.showToast({ message: '请输入有效的尿酸值' });
-      return { success: false, status: HealthStatus.MODERATE, data: null };
+      return { success: false, data: null };
     }
     
     try {
@@ -250,15 +239,13 @@ export class StorageUtils {
       
       const ok = await this.dataService.saveData(record);
       if (ok) {
-        // 修正：传递正确的参数给 evaluateUricAcidStatus
-        const status = evaluateUricAcidStatus(value, gender);
-        return { success: true, status, data: record };
+        return { success: true, data: record };
       } else {
-        return { success: false, status: HealthStatus.MODERATE, data: null };
+        return { success: false, data: null };
       }
     } catch (error) {
       console.error(`${TAG} 保存尿酸数据失败: ${error}`);
-      return { success: false, status: HealthStatus.MODERATE, data: null };
+      return { success: false, data: null };
     }
   }
   
@@ -280,7 +267,7 @@ export class StorageUtils {
   ): Promise<BloodLipidDataResult> {
     if (totalCholesterol <= 0 || triglycerides <= 0 || hdlCholesterol <= 0 || ldlCholesterol <= 0) {
       promptAction.showToast({ message: '请输入有效的血脂值' });
-      return { success: false, status: HealthStatus.MODERATE, data: null };
+      return { success: false, data: null };
     }
     
     try {
@@ -296,14 +283,13 @@ export class StorageUtils {
       
       const ok = await this.dataService.saveData(record);
       if (ok) {
-        const status = evaluateBloodLipidStatus(record);
-        return { success: true, status, data: record };
+        return { success: true, data: record };
       } else {
-        return { success: false, status: HealthStatus.MODERATE, data: null };
+        return { success: false, data: null };
       }
     } catch (error) {
       console.error(`${TAG} 保存血脂数据失败: ${error}`);
-      return { success: false, status: HealthStatus.MODERATE, data: null };
+      return { success: false, data: null };
     }
   }
   

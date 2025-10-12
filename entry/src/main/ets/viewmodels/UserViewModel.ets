@@ -35,8 +35,12 @@ export interface BMIEvaluationResult {
  * 用户信息ViewModel类
  * 负责用户基本信息的业务逻辑处理
  */
+@ObservedV2
 export class UserViewModel {
-  private userData: UserDataModel;
+  @Trace private _nickname: string;
+  @Trace private _gender: Gender;
+  @Trace private _age: number;
+  @Trace private _heightCm: number;
   private dataService?: UserDataServiceImpl;
 
   /**
@@ -44,7 +48,43 @@ export class UserViewModel {
    * @param context 应用上下文
    */
   constructor() {
-    this.userData = this.getDefaultUserData();
+    this._nickname = ""
+    this._age = 0
+    this._gender = Gender.UNKNOWN
+    this._heightCm = 0
+  }
+
+  /**
+   * 获取用户昵称
+   * @returns 用户昵称
+   */
+  get nickname() {
+    return this._nickname
+  }
+
+  /**
+   * 获取用户年龄
+   * @returns 用户年龄
+   */
+  get age() {
+    return this._age
+  }
+
+  /**
+   * 获取用户性别
+   * @returns 用户性别枚举
+   */
+  get gender(): Gender {
+    return this._gender;
+  }
+
+
+  /**
+   * 获取用户身高（厘米）
+   * @returns 用户身高（厘米）
+   */
+  get heightCm(): number {
+    return this._heightCm;
   }
 
   /**
@@ -66,8 +106,7 @@ export class UserViewModel {
       logger.warn(TAG, '昵称长度超过限制');
       return false;
     }
-    this.userData.nickname = nickname.trim();
-    logger.info(TAG, `设置昵称: ${this.userData.nickname}`);
+    this._nickname = nickname.trim();
     return true;
   }
 
@@ -81,8 +120,7 @@ export class UserViewModel {
       logger.warn(TAG, '无效的性别值');
       return false;
     }
-    this.userData.gender = gender;
-    logger.info(TAG, `设置性别: ${gender}`);
+    this._gender = gender;
     return true;
   }
 
@@ -96,8 +134,7 @@ export class UserViewModel {
       logger.warn(TAG, '年龄值超出有效范围');
       return false;
     }
-    this.userData.age = Math.floor(age);
-    logger.info(TAG, `设置年龄: ${this.userData.age}`);
+    this._age = Math.floor(age);
     return true;
   }
 
@@ -108,59 +145,12 @@ export class UserViewModel {
    */
   public setHeightCm(heightCm: number): boolean {
     if (heightCm < HealthTypeConstants.HEIGHT_MIN_VALUE || heightCm > HealthTypeConstants.HEIGHT_MAX_VALUE) {
-      logger.warn(TAG, `身高值超出有效范围: ${HealthTypeConstants.HEIGHT_MIN_VALUE}-${HealthTypeConstants.HEIGHT_MAX_VALUE}cm`);
+      logger.warn(TAG,
+        `身高值超出有效范围: ${HealthTypeConstants.HEIGHT_MIN_VALUE}-${HealthTypeConstants.HEIGHT_MAX_VALUE}cm`);
       return false;
     }
-    this.userData.heightCm = heightCm;
-    logger.info(TAG, `设置身高: ${this.userData.heightCm}cm`);
+    this._heightCm = heightCm;
     return true;
-  }
-
-  /**
-   * 获取用户昵称
-   * @returns 用户昵称
-   */
-  public getNickname(): string {
-    return this.userData.nickname;
-  }
-
-  /**
-   * 获取用户性别
-   * @returns 用户性别枚举
-   */
-  public getGender(): Gender {
-    return this.userData.gender;
-  }
-
-  /**
-   * 获取用户性别文本
-   * @returns 性别文本描述
-   */
-  public getGenderText(): string {
-    switch (this.userData.gender) {
-      case Gender.MALE:
-        return GenderConstants.MALE_TEXT;
-      case Gender.FEMALE:
-        return GenderConstants.FEMALE_TEXT;
-      default:
-        return GenderConstants.UNKNOWN_TEXT;
-    }
-  }
-
-  /**
-   * 获取用户年龄
-   * @returns 用户年龄
-   */
-  public getAge(): number {
-    return this.userData.age;
-  }
-
-  /**
-   * 获取用户身高（厘米）
-   * @returns 用户身高（厘米）
-   */
-  public getHeightCm(): number {
-    return this.userData.heightCm;
   }
 
   /**
@@ -168,20 +158,7 @@ export class UserViewModel {
    * @returns 用户身高（米）
    */
   public getHeightM(): number {
-    return this.userData.heightCm / 100;
-  }
-
-  /**
-   * 获取完整的用户数据
-   * @returns 用户数据对象
-   */
-  public getUserData(): UserDataModel {
-    return {
-      nickname: this.userData.nickname,
-      gender: this.userData.gender,
-      age: this.userData.age,
-      heightCm: this.userData.heightCm
-    };
+    return this.heightCm / 100;
   }
 
   /**
@@ -191,19 +168,19 @@ export class UserViewModel {
   public validateUserData(): UserDataValidationResult {
     const errors: string[] = [];
 
-    if (!this.userData.nickname || this.userData.nickname.trim().length === 0) {
+    if (!this.nickname || this.nickname.trim().length === 0) {
       errors.push('昵称不能为空');
     }
 
-    if (this.userData.age <= 0) {
+    if (this.age <= 0) {
       errors.push('年龄必须大于0');
     }
 
-    if (this.userData.heightCm <= 0) {
+    if (this.heightCm <= 0) {
       errors.push('身高必须大于0');
     }
 
-    if (this.userData.gender === Gender.UNKNOWN) {
+    if (this.gender === Gender.UNKNOWN) {
       errors.push('请选择性别');
     }
 
@@ -220,12 +197,12 @@ export class UserViewModel {
    * @returns BMI指数，如果数据不完整返回-1
    */
   public calculateBMI(weightKg: number): number {
-    if (weightKg <= 0 || this.userData.heightCm <= 0) {
+    if (weightKg <= 0 || this.heightCm <= 0) {
       logger.warn(TAG, '无法计算BMI：体重或身高数据不完整');
       return -1;
     }
-    
-    const heightM = this.userData.heightCm / 100;
+
+    const heightM = this.heightCm / 100;
     const bmi = weightKg / (heightM * heightM);
     return Number(bmi.toFixed(1));
   }
@@ -236,12 +213,22 @@ export class UserViewModel {
    * @returns 健康状态描述
    */
   public evaluateBMIStatus(bmi: number): string {
-    if (bmi < 0) return '数据不完整';
+    if (bmi < 0) {
+      return '数据不完整';
+    }
 
-    if (bmi < 18.5) return '体重过轻';
-    if (bmi < 24) return '正常体重';
-    if (bmi < 28) return '超重';
-    if (bmi < 32) return '肥胖';
+    if (bmi < 18.5) {
+      return '体重过轻';
+    }
+    if (bmi < 24) {
+      return '正常体重';
+    }
+    if (bmi < 28) {
+      return '超重';
+    }
+    if (bmi < 32) {
+      return '肥胖';
+    }
     return '严重肥胖';
   }
 
@@ -253,7 +240,7 @@ export class UserViewModel {
   public calculateAndEvaluateBMI(weightKg: number): BMIEvaluationResult {
     const bmi = this.calculateBMI(weightKg);
     const status = this.evaluateBMIStatus(bmi);
-    
+
     const result: BMIEvaluationResult = {
       bmi: bmi,
       status: status,
@@ -279,7 +266,12 @@ export class UserViewModel {
     }
 
     try {
-      const success = await this.dataService.saveUserData(this.userData);
+      const success = await this.dataService.saveUserData({
+        nickname: this.nickname,
+        age: this.age,
+        gender: this.gender,
+        heightCm: this.heightCm,
+      });
       if (success) {
         logger.info(TAG, '用户数据保存成功');
       } else {
@@ -305,11 +297,10 @@ export class UserViewModel {
     try {
       const loadedData = await this.dataService.loadUserData();
       if (loadedData) {
-        this.userData.nickname = loadedData.nickname;
-        this.userData.gender = loadedData.gender;
-        this.userData.age = loadedData.age;
-        this.userData.heightCm = loadedData.heightCm;
-        logger.info(TAG, '用户数据加载成功');
+        this._nickname = loadedData.nickname;
+        this._gender = loadedData.gender;
+        this._age = loadedData.age;
+        this._heightCm = loadedData.heightCm;
         return true;
       } else {
         logger.info(TAG, '未找到用户数据');
@@ -334,7 +325,10 @@ export class UserViewModel {
     try {
       const success = await this.dataService.clearUserData();
       if (success) {
-        this.userData = this.getDefaultUserData();
+        this._nickname = ""
+        this._age = 0
+        this._gender = Gender.UNKNOWN
+        this._heightCm = 0
         logger.info(TAG, '用户数据清除成功');
       } else {
         logger.error(TAG, '用户数据清除失败');
@@ -351,10 +345,10 @@ export class UserViewModel {
    * @returns 数据是否完整
    */
   public isUserDataComplete(): boolean {
-    return this.userData.nickname.length > 0 &&
-           this.userData.age > 0 &&
-           this.userData.heightCm > 0 &&
-           this.userData.gender !== Gender.UNKNOWN;
+    return this.nickname.length > 0 &&
+      this.age > 0 &&
+      this.heightCm > 0 &&
+      this.gender !== Gender.UNKNOWN;
   }
 
   /**
@@ -366,7 +360,7 @@ export class UserViewModel {
       return '用户数据不完整';
     }
 
-    return `${this.userData.nickname}，${this.userData.age}岁，${this.getGenderText()}，身高${this.userData.heightCm}cm`;
+    return `${this.nickname}，${this.age}岁，${this.gender}，身高${this.heightCm}cm`;
   }
 
   /**

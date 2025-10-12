@@ -14,24 +14,19 @@ const TAG = 'UricAcidViewModel';
  * 尿酸ViewModel类
  * 用于管理尿酸数据和健康状态评估
  */
+@ObservedV2
 export class UricAcidViewModel extends BaseHealthViewModel {
-  private _value: number = 0; // 尿酸值
-  private _gender: Gender = Gender.MALE; // 性别
-  private _timestamp: number = Date.now(); // 时间戳
-  private _id: string = ''; // 数据ID
-  private _note: string = ''; // 备注
+  @Trace private _value: number = 0; // 尿酸值
+  @Trace private _gender: Gender = Gender.MALE; // 性别
+  @Trace private _note: string = ''; // 备注
 
   /**
    * 构造函数
    * @param value 尿酸值，单位μmol/L
    * @param gender 性别
    */
-  constructor(value: number = 0, gender: Gender = Gender.MALE) {
+  constructor() {
     super();
-    this._value = value;
-    this._gender = gender;
-    this._timestamp = Date.now();
-    this._id = `uricAcid_${this._timestamp}`;
   }
 
   /**
@@ -42,14 +37,6 @@ export class UricAcidViewModel extends BaseHealthViewModel {
   public async getUricAcidData(): Promise<HealthData | null> {
     await this.loadLatestData("uricAcid");
     return this.toHealthData();
-  }
-
-  public static fromData(data: UricAcidData): UricAcidViewModel {
-    const viewModel = new UricAcidViewModel(data.value, data.gender);
-    viewModel._id = data.id;
-    viewModel._timestamp = data.timestamp;
-    viewModel.note = data.note;
-    return viewModel;
   }
 
   /**
@@ -148,8 +135,8 @@ export class UricAcidViewModel extends BaseHealthViewModel {
     }
 
     const uaData = new UricAcidData();
-    uaData.id = this._id;
-    uaData.timestamp = this._timestamp;
+    uaData.id = this.dataId;
+    uaData.timestamp = this.timestamp;
     uaData.note = this._note;
     uaData.value = this._value;
     uaData.gender = this._gender;
@@ -163,8 +150,8 @@ export class UricAcidViewModel extends BaseHealthViewModel {
    */
   protected fromHealthData(data: HealthData): void {
     if (data instanceof UricAcidData) {
-      this._id = data.id;
-      this._timestamp = data.timestamp;
+      this.dataId = data.id;
+      this.timestamp = data.timestamp;
       this.note = data.note;
       this.value = data.value;
       this.gender = data.gender;
