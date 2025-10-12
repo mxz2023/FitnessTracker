@@ -10,7 +10,9 @@ import {
   BloodPressureData,
   BloodSugarData,
   UricAcidData,
-  BloodLipidData
+  BloodLipidData,
+  HealthCardDataType,
+  Range
 } from '../models/HealthDataModel';
 import { Gender } from '../models/UserDataModel';
 
@@ -223,4 +225,79 @@ export function getHealthStatusText(status: HealthStatus): string {
     default:
       return '未知';
   }
+}
+
+/**
+ * 根据类型，获取数据量规图表颜色值
+ * @param type
+ * @returns
+ */
+export function getHealthStatusColors(type: HealthCardDataType): Array<[ResourceColor | LinearGradient, number]> {
+  let colors: Array<[ResourceColor | LinearGradient, number]> = []
+  switch (type) {
+    case HealthCardDataType.WeightInfo: {
+      colors = [
+        [new LinearGradient([{ color: "#0978ab", offset: 0 }, { color: "#439b9b", offset: 1 }]), 1],
+        [new LinearGradient([{ color: "#54baea", offset: 0 }, { color: "#b4e79c", offset: 1 }]), 1],
+        [new LinearGradient([{ color: "#dbefa5", offset: 0 }, { color: "#9ec827", offset: 1 }]), 2],
+        [new LinearGradient([{ color: "#b7ec7c", offset: 0 }, { color: "#f8db4c", offset: 1 }]), 1],
+        [new LinearGradient([{ color: "#f1e707", offset: 0 }, { color: "#e64566", offset: 1 }]), 1],
+      ]
+      break;
+    }
+
+    case HealthCardDataType.BloodSugarInfo: {
+      colors = [
+        [new LinearGradient([{ color: "#0978ab", offset: 0 }, { color: "#439b9b", offset: 1 }]), 1],
+        [new LinearGradient([{ color: "#54baea", offset: 0 }, { color: "#b4e79c", offset: 1 }]), 1],
+        [new LinearGradient([{ color: "#dbefa5", offset: 0 }, { color: "#9ec827", offset: 1 }]), 2],
+        [new LinearGradient([{ color: "#b7ec7c", offset: 0 }, { color: "#f8db4c", offset: 1 }]), 1],
+        [new LinearGradient([{ color: "#f1e707", offset: 0 }, { color: "#e64566", offset: 1 }]), 1],
+      ]
+      break;
+    }
+
+    case HealthCardDataType.UricAcidInfo: {
+      colors = [
+        [new LinearGradient([{ color: "#0978ab", offset: 0 }, { color: "#439b9b", offset: 1 }]), 1],
+        [new LinearGradient([{ color: "#54baea", offset: 0 }, { color: "#b4e79c", offset: 1 }]), 1],
+        [new LinearGradient([{ color: "#dbefa5", offset: 0 }, { color: "#9ec827", offset: 1 }]), 2],
+        [new LinearGradient([{ color: "#b7ec7c", offset: 0 }, { color: "#f8db4c", offset: 1 }]), 1],
+        [new LinearGradient([{ color: "#f1e707", offset: 0 }, { color: "#e64566", offset: 1 }]), 1],
+      ]
+      break;
+    }
+
+    default: {
+      break;
+    }
+  }
+
+  return colors
+}
+
+/**
+ * 获取指标的有效范围
+ * @param type
+ */
+export function getHealthStatusRang(type: HealthCardDataType):Range {
+  const res:Range = new Range()
+  switch (type) {
+    case HealthCardDataType.WeightInfo: {
+      res.min = 20
+      res.max = 200
+      break;
+    }
+    case HealthCardDataType.BloodSugarInfo: {
+      res.min = 3.0
+      res.max = 15.0
+      break;
+    }
+    case HealthCardDataType.UricAcidInfo: {
+      res.min = 100
+      res.max = 600
+      break;
+    }
+  }
+  return res
 }

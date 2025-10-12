@@ -4,7 +4,7 @@
  */
 import { KeyboardAvoidMode } from '@kit.ArkUI';
 
-import { MLable } from '../components/MLable';
+import { MLable, MStatusLable } from '../components/MLable';
 import {
   HealthStatus,
   WeightData,
@@ -16,7 +16,6 @@ import {
   HealthCardData,
   HealthCardDataType
 } from '../models/HealthDataModel';
-import { HealthStatusIndicator } from './HealthStatusIndicator';
 import {
   formatDate,
   evaluateWeightStatus,
@@ -26,6 +25,8 @@ import {
   evaluateBloodLipidStatus,
   getHealthStatusText,
   getHealthStatusColor,
+  getHealthStatusColors,
+  getHealthStatusRang,
 } from '../utils/HealthUtils';
 import { BaseInputView } from './subs/BaseInputView';
 import { WeightInputView } from './subs/WeightInputView';
@@ -33,7 +34,6 @@ import { BloodPressureInputView } from './subs/BloodPressureInputView';
 import { BloodSugarInputView } from './subs/BloodSugarInputView';
 import { UricAcidInputView } from './subs/UricAcidInputView';
 import { BloodLipidInputView } from './subs/BloodLipidInputView';
-import { HealthValueDashBoard } from './HealthValueDashBoard';
 import { UserDataModel, Gender } from '../models/UserDataModel';
 import { UserViewModel } from '../viewmodels/UserViewModel';
 import { WeightViewModel } from '../viewmodels/WeightViewModel';
@@ -42,7 +42,9 @@ import { BloodPressureViewModel } from '../viewmodels/BloodPressureViewModel';
 import { UricAcidViewModel } from '../viewmodels/UricAcidViewModel';
 import { BloodLipidViewModel } from '../viewmodels/BloodLipidViewModel';
 
+import { TypeUtils } from '../utils/TypeUtils'
 import { showToast } from '../utils/ToastUtils';
+import { MDashBoard } from '../components/MDashBoard';
 
 
 @Preview
@@ -124,7 +126,8 @@ export struct HealthOverview {
     }
 
     // 血脂信息
-    this.bloodLipidVM = new BloodLipidViewModel(this.nTotalCholesterol, this.triglycerides, this.hdlCholesterol, this.ldlCholesterol)
+    this.bloodLipidVM =
+      new BloodLipidViewModel(this.nTotalCholesterol, this.triglycerides, this.hdlCholesterol, this.ldlCholesterol)
     await this.bloodLipidVM.initDataService(context)
     const bloodLipidData = await this.bloodLipidVM.getBloodLipidData()
     if (bloodLipidData) {
@@ -177,16 +180,6 @@ export struct HealthOverview {
         date: currentDate
       },
       {
-        title: '血脂',
-        type: HealthCardDataType.BloodLipidInfo,
-        value: this.toDisplay(this.nTotalCholesterol),
-        unit: 'mmol/L',
-        status: this.isValid(this.nTotalCholesterol) ? this.nTotalCholesterol <= 5.2 ? HealthStatus.EXCELLENT :
-          this.nTotalCholesterol <= 5.7 ? HealthStatus.GOOD :
-            this.nTotalCholesterol <= 6.5 ? HealthStatus.MODERATE : HealthStatus.POOR : HealthStatus.UNKNOWN,
-        date: currentDate
-      },
-      {
         title: '尿酸',
         type: HealthCardDataType.UricAcidInfo,
         value: this.toDisplay(this.nUricAcid),
@@ -195,18 +188,28 @@ export struct HealthOverview {
           HealthStatus.UNKNOWN,
         date: currentDate
       },
-      {
-        title: '血压',
-        type: HealthCardDataType.BloodPressureInfo,
-        value: this.toDisplayBP(this.nBloodPressureSystolic, this.nBloodPressureDiastolic),
-        unit: 'mmHg',
-        status: this.isValidBP(this.nBloodPressureSystolic, this.nBloodPressureDiastolic) ?
-          this.nBloodPressureSystolic <= 120 && this.nBloodPressureDiastolic <= 80 ? HealthStatus.EXCELLENT :
-            this.nBloodPressureSystolic <= 130 && this.nBloodPressureDiastolic <= 85 ? HealthStatus.GOOD :
-              this.nBloodPressureSystolic <= 140 && this.nBloodPressureDiastolic <= 90 ? HealthStatus.MODERATE :
-                HealthStatus.POOR : HealthStatus.UNKNOWN,
-        date: currentDate
-      }
+      // {
+      //   title: '血压',
+      //   type: HealthCardDataType.BloodPressureInfo,
+      //   value: this.toDisplayBP(this.nBloodPressureSystolic, this.nBloodPressureDiastolic),
+      //   unit: 'mmHg',
+      //   status: this.isValidBP(this.nBloodPressureSystolic, this.nBloodPressureDiastolic) ?
+      //     this.nBloodPressureSystolic <= 120 && this.nBloodPressureDiastolic <= 80 ? HealthStatus.EXCELLENT :
+      //       this.nBloodPressureSystolic <= 130 && this.nBloodPressureDiastolic <= 85 ? HealthStatus.GOOD :
+      //         this.nBloodPressureSystolic <= 140 && this.nBloodPressureDiastolic <= 90 ? HealthStatus.MODERATE :
+      //           HealthStatus.POOR : HealthStatus.UNKNOWN,
+      //   date: currentDate
+      // },
+      // {
+      //   title: '血脂',
+      //   type: HealthCardDataType.BloodLipidInfo,
+      //   value: this.toDisplay(this.nTotalCholesterol),
+      //   unit: 'mmol/L',
+      //   status: this.isValid(this.nTotalCholesterol) ? this.nTotalCholesterol <= 5.2 ? HealthStatus.EXCELLENT :
+      //     this.nTotalCholesterol <= 5.7 ? HealthStatus.GOOD :
+      //       this.nTotalCholesterol <= 6.5 ? HealthStatus.MODERATE : HealthStatus.POOR : HealthStatus.UNKNOWN,
+      //   date: currentDate
+      // },
     ];
   }
 
@@ -286,6 +289,7 @@ export struct HealthOverview {
     }
   }
 
+  // 更新血糖信息
   private async updateBloodSugar(data: BloodSugarData) {
     this.nBloodSugar = data.value
     if (!this.bloodSugarVM) {
@@ -354,9 +358,12 @@ export struct HealthOverview {
 
         Blank()
 
-        HealthStatusIndicator({
-          status: cardData.status,
-          showText: true,
+        MStatusLable({
+          title: {
+            text: getHealthStatusText(cardData.status),
+            color: getHealthStatusColor(cardData.status)
+          },
+          status: true,
         })
       }
       .width('100%')
@@ -366,8 +373,22 @@ export struct HealthOverview {
       if (cardData.type === HealthCardDataType.WeightInfo || cardData.type === HealthCardDataType.BloodSugarInfo ||
         cardData.type === HealthCardDataType.UricAcidInfo) {
         // 单值圆形仪表
-        HealthValueDashBoard({
-          data: cardData
+        MDashBoard({
+          value: Number(cardData.value),
+          colors: getHealthStatusColors(cardData.type),
+          range: getHealthStatusRang(cardData.type),
+          title: {
+            text: cardData.value,
+            color: getHealthStatusColor(cardData.status)
+          },
+          subTitle: {
+            text: cardData.unit,
+            color: getHealthStatusColor(cardData.status)
+          },
+          note: {
+            text: TypeUtils.isEmptyString(cardData.other) ? getHealthStatusText(cardData.status) : cardData.other,
+            color: getHealthStatusColor(cardData.status)
+          },
         })
       } else if (cardData.type === HealthCardDataType.BloodPressureInfo ||
         cardData.type === HealthCardDataType.BloodLipidInfo) {
