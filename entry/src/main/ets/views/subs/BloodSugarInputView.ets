@@ -29,7 +29,7 @@ export struct BloodSugarInputView {
   }
 
   private async saveData() {
-    const value = parseInt(this.bloodSugarText)
+    const value = parseFloat(this.bloodSugarText)
     if (isNaN(value) || value <= 0 ) {
       return
     }

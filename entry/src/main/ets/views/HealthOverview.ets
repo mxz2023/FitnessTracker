@@ -109,7 +109,7 @@ export struct HealthOverview {
         value: this.weightDataVM.value,
         unit: 'kg',
         status: this.weightDataVM.getHealthStatus(),
-        date: this.weightDataVM.dataStr,
+        date: this.weightDataVM.dateStr,
         // other: this.weightDataVM.getHealthAdvice()
       },
       {
@@ -118,7 +118,7 @@ export struct HealthOverview {
         value: this.bloodSugarVM.value,
         unit: 'mmol/L',
         status: this.bloodSugarVM.getHealthStatus(),
-        date: this.bloodSugarVM.dataStr,
+        date: this.bloodSugarVM.dateStr,
         // other: this.bloodSugarVM.getHealthAdvice()
       },
       {
@@ -127,7 +127,7 @@ export struct HealthOverview {
         value: this.uricAcidVM.value,
         unit: 'μmol/L',
         status: this.uricAcidVM.getHealthStatus(),
-        date: this.uricAcidVM.dataStr,
+        date: this.uricAcidVM.dateStr,
         // other: this.uricAcidVM.getHealthAdvice()
       },
     ];
@@ -162,6 +162,11 @@ export struct HealthOverview {
     this.userInfoVM.saveUserData().then((isOK: boolean) => {
       if (isOK) {
         this.showType = HealthCardDataType.Unknown
+
+        // 用户信息更新后，更新一下体重VM中的身高
+        if (this.weightDataVM && this.userInfoVM) {
+          this.weightDataVM.height = this.userInfoVM.heightCm
+        }
         showToast(this.getUIContext(), "保存数据成功")
       } else {
         showToast(this.getUIContext(), "保存数据失败")
@@ -251,7 +256,7 @@ export struct HealthOverview {
     }
   }
 
-  getTextByType(type:HealthCardDataType) {
+  getTextByType(type: HealthCardDataType) {
     switch (type) {
       case HealthCardDataType.WeightInfo: {
         return "weight"
@@ -268,7 +273,7 @@ export struct HealthOverview {
       case HealthCardDataType.BloodLipidInfo: {
         return "bloodLipid"
       }
-      default:{
+      default: {
         return ""
       }
     }
@@ -299,14 +304,24 @@ export struct HealthOverview {
                     HealthInfoCard({
                       data: cardData,
                       handleClick: (type) => {
-                        this.showType = type
+                        const res = this.userInfoVM?.validateUserData()
+                        if (res?.isValid) {
+                          this.showType = type
+                        } else {
+                          showToast(this.getUIContext(), "请先输入用户信息")
+                        }
                       }
                     })
-                  }.onClick(()=>{
-                    const data: Record<string, string> = {
-                      "data": this.getTextByType(cardData.type)
+                  }.onClick(() => {
+                    const res = this.userInfoVM?.validateUserData()
+                    if (res?.isValid) {
+                      const data: Record<string, string> = {
+                        "data": this.getTextByType(cardData.type)
+                      }
+                      getAppPathStack().pushPathByName("history", data)
+                    } else {
+                      showToast(this.getUIContext(), "请先输入用户信息")
                     }
-                    getAppPathStack().pushPathByName("history", data)
                   })
                 })
               }

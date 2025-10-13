@@ -134,8 +134,9 @@ export class UricAcidViewModel extends BaseHealthViewModel {
     }
 
     const uaData = new UricAcidData();
-    uaData.id = this.dataId;
-    uaData.timestamp = this.timestamp;
+    const now = Date.now();
+    uaData.timestamp = now;
+    uaData.id = `uricAcid_${now}`;
     uaData.note = this._note;
     uaData.value = this._value;
     uaData.gender = this._gender;
@@ -150,10 +151,10 @@ export class UricAcidViewModel extends BaseHealthViewModel {
   protected fromHealthData(data: HealthData): void {
     if (data instanceof UricAcidData) {
       this.dataId = data.id;
-      this.timestamp = data.timestamp;
       this.note = data.note;
       this.value = data.value;
       this.gender = data.gender;
+      this.updateTime(data.timestamp)
     } else {
       logger.error(TAG, '数据类型不匹配，期望 UricAcidData 类型');
     }

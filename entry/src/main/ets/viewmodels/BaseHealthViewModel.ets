@@ -15,11 +15,12 @@ const TAG = 'BaseHealthViewModel';
  * 健康评估基础ViewModel
  * 提供通用的状态颜色和文本获取方法以及数据持久化功能
  */
+@ObservedV2
 export abstract class BaseHealthViewModel extends HealthViewModel {
   protected dataService?: HealthDataServiceImpl;
   protected context?: Context;
-  protected dataId: string = '';
-  protected timestamp: number = Date.now();
+  protected dataId: string = "";
+  @Trace protected _dateStr: string = "N/A";
 
   /**
    * 将当前ViewModel数据转换为HealthData对象
@@ -36,24 +37,26 @@ export abstract class BaseHealthViewModel extends HealthViewModel {
   protected abstract fromHealthData(data: HealthData): void;
 
   /**
+   * 更新当前数据时间戳
+   * @param timestamp
+   */
+  protected updateTime(timestamp:number) {
+    const date = new Date(timestamp)
+    this._dateStr = `${date.getMonth() + 1}/${date.getDate()}`
+  }
+
+  get dateStr() {
+    return this._dateStr
+  }
+
+  /**
    * 初始化数据服务
    * @param context 应用上下文
    */
   public async initDataService(context: Context): Promise<void> {
     this.context = context;
-    this.timestamp = Date.now();
-    this.dataId = `weight_${this.timestamp}`;
     this.dataService = new HealthDataServiceImpl(context);
     await this.dataService.initDataStore()
-  }
-
-  /**
-   * 日期
-   * @returns
-   */
-  get dataStr() {
-    const date = new Date(this.timestamp)
-    return `${date.getMonth() + 1}/${date.getDate()}`
   }
 
   /**
@@ -132,6 +135,7 @@ export abstract class BaseHealthViewModel extends HealthViewModel {
     try {
       const success = await this.dataService.saveData(data);
       if (success) {
+        this.updateTime(Date.now())
         logger.info(TAG, `健康数据保存成功: ${data.id}`);
       } else {
         logger.error(TAG, `健康数据保存失败: ${data.id}`);
@@ -266,4 +270,6 @@ export abstract class BaseHealthViewModel extends HealthViewModel {
       return false;
     }
   }
+
+
 }

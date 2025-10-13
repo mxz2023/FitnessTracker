@@ -28,7 +28,11 @@ export struct WeightInputView {
   }
 
   private async saveData() {
-    // 构造体重数据并通过事件提交，持久化由主页面处理
+    const value = parseFloat(this.weightInputText)
+    if (isNaN(value) || value <= 0 ) {
+      return
+    }
+
     const now = Date.now();
     const record = new WeightData();
     record.id = `weight_${now}`;

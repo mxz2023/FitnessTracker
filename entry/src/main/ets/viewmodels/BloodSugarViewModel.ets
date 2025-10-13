@@ -164,8 +164,9 @@ export class BloodSugarViewModel extends BaseHealthViewModel {
     }
 
     const bsData = new BloodSugarData();
-    bsData.id = this.dataId;
-    bsData.timestamp = this.timestamp;
+    const now = Date.now();
+    bsData.timestamp = now;
+    bsData.id = `bloodSugar_${now}`;
     bsData.note = this._note;
     bsData.value = this._value;
     bsData.measurementType = this._measurementType;
@@ -180,10 +181,10 @@ export class BloodSugarViewModel extends BaseHealthViewModel {
   protected fromHealthData(data: HealthData): void {
     if (data instanceof BloodSugarData) {
       this.dataId = data.id;
-      this.timestamp = data.timestamp;
       this.note = data.note;
       this.value = data.value;
       this.measurementType = data.measurementType;
+      this.updateTime(data.timestamp)
     } else {
       logger.error(TAG, '数据类型不匹配，期望 BloodSugarData 类型');
     }

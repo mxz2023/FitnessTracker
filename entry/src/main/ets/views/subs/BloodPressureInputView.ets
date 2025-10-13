@@ -30,8 +30,8 @@ export struct BloodPressureInputView {
   }
 
   private async saveData() {
-    const systolicValue = parseInt(this.systolicText)
-    const diastolicValue = parseInt(this.diastolicText)
+    const systolicValue = parseFloat(this.systolicText)
+    const diastolicValue = parseFloat(this.diastolicText)
     if (isNaN(systolicValue) || systolicValue <= 0 || isNaN(diastolicValue) || diastolicValue <= 0) {
       return
     }

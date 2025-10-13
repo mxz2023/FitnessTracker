@@ -137,8 +137,9 @@ export class BloodPressureViewModel extends BaseHealthViewModel {
     }
 
     const bpData = new BloodPressureData();
-    bpData.id = this.dataId;
-    bpData.timestamp = this.timestamp;
+    const now = Date.now();
+    bpData.timestamp = now;
+    bpData.id = `bloodPressure_${now}`;
     bpData.note = this._note;
     bpData.systolic = this._systolic;
     bpData.diastolic = this._diastolic;
@@ -153,10 +154,10 @@ export class BloodPressureViewModel extends BaseHealthViewModel {
   protected fromHealthData(data: HealthData): void {
     if (data instanceof BloodPressureData) {
       this.dataId = data.id;
-      this.timestamp = data.timestamp;
       this.note = data.note;
       this.systolic = data.systolic;
       this.diastolic = data.diastolic;
+      this.updateTime(data.timestamp)
     } else {
       logger.error(TAG, '数据类型不匹配，期望 BloodPressureData 类型');
     }

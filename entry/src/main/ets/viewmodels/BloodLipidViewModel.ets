@@ -158,8 +158,9 @@ export class BloodLipidViewModel extends BaseHealthViewModel {
     }
 
     const blData = new BloodLipidData();
-    blData.id = this.dataId;
-    blData.timestamp = this.timestamp;
+    const now = Date.now();
+    blData.timestamp = now;
+    blData.id = `bloodLipid_${now}`;
     blData.note = this._note;
     blData.totalCholesterol = this._totalCholesterol;
     blData.triglycerides = this._triglycerides;
@@ -176,12 +177,12 @@ export class BloodLipidViewModel extends BaseHealthViewModel {
   protected fromHealthData(data: HealthData): void {
     if (data instanceof BloodLipidData) {
       this.dataId = data.id;
-      this.timestamp = data.timestamp;
       this.note = data.note;
       this.totalCholesterol = data.totalCholesterol;
       this.triglycerides = data.triglycerides;
       this.hdlCholesterol = data.hdlCholesterol;
       this.ldlCholesterol = data.ldlCholesterol;
+      this.updateTime(data.timestamp)
     } else {
       logger.error(TAG, '数据类型不匹配，期望 BloodLipidData 类型');
     }

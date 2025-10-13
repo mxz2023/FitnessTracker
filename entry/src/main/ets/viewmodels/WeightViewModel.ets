@@ -117,8 +117,9 @@ export class WeightViewModel extends BaseHealthViewModel {
     }
 
     const weightData = new WeightData();
-    weightData.id = this.dataId;
-    weightData.timestamp = this.timestamp;
+    const now = Date.now();
+    weightData.timestamp = now;
+    weightData.id = `weight_${now}`;
     weightData.note = this._note;
     weightData.value = this._weightKg;
 
@@ -132,9 +133,9 @@ export class WeightViewModel extends BaseHealthViewModel {
   protected fromHealthData(data: HealthData): void {
     if (data instanceof WeightData) {
       this.dataId = data.id;
-      this.timestamp = data.timestamp;
       this.note = data.note;
       this.value = data.value;
+      this.updateTime(data.timestamp)
     } else {
       logger.error(TAG, '数据类型不匹配，期望 WeightData 类型');
     }

@@ -19,7 +19,7 @@ struct Index {
     Navigation(this.pathStack) {
       HealthOverview()
     }
-    .title('健康监测')
+    .title($r('app.string.app_name'))
     .titleMode(NavigationTitleMode.Mini)
     .mode(NavigationMode.Stack)
     .hideBackButton(true)

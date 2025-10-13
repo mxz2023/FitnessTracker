@@ -30,7 +30,7 @@ export struct UricAcidInputView {
   }
 
   async saveData() {
-    const value = parseInt(this.inputText)
+    const value = parseFloat(this.inputText)
     if (isNaN(value) || value <= 0) {
       return
     }
