@@ -82,29 +82,38 @@ export function getHealthStatusColors(type: HealthCardDataType): Array<[Resource
   switch (type) {
     case HealthCardDataType.WeightInfo: {
       colors = [
-        [new LinearGradient([{ color: "#54baea", offset: 0 }, { color: "#dbefa5", offset: 1 }]), 0.5],
-        [new LinearGradient([{ color: "#dbefa5", offset: 0 }, { color: "#65b50e", offset: 1 }]), 1],
-        [new LinearGradient([{ color: "#65b50e", offset: 0 }, { color: "#f1e707", offset: 1 }]), 1],
-        [new LinearGradient([{ color: "#f1e707", offset: 0 }, { color: "#e64566", offset: 1 }]), 1],
+        [new LinearGradient([
+          { color: "#54baea", offset: 0 },
+          { color: "#dbefa5", offset: 0.2 },
+          { color: "#65b50e", offset: 0.5 },
+          { color: "#f1e707", offset: 0.8 },
+          { color: "#e64566", offset: 1 },
+        ]), 1],
       ]
       break;
     }
 
     case HealthCardDataType.BloodSugarInfo: {
       colors = [
-        [new LinearGradient([{ color: "#54baea", offset: 0 }, { color: "#dbefa5", offset: 1 }]), 0.5],
-        [new LinearGradient([{ color: "#dbefa5", offset: 0 }, { color: "#65b50e", offset: 1 }]), 1],
-        [new LinearGradient([{ color: "#65b50e", offset: 0 }, { color: "#f1e707", offset: 1 }]), 1],
-        [new LinearGradient([{ color: "#f1e707", offset: 0 }, { color: "#e64566", offset: 1 }]), 1],
+        [new LinearGradient([
+          { color: "#54baea", offset: 0 },
+          { color: "#dbefa5", offset: 0.15 },
+          { color: "#65b50e", offset: 0.3 },
+          { color: "#f1e707", offset: 0.5 },
+          { color: "#e64566", offset: 1 },
+        ]), 1],
       ]
       break;
     }
 
     case HealthCardDataType.UricAcidInfo: {
       colors = [
-        [new LinearGradient([{ color: "#dbefa5", offset: 0 }, { color: "#65b50e", offset: 1 }]), 0.5],
-        [new LinearGradient([{ color: "#65b50e", offset: 0 }, { color: "#f1e707", offset: 1 }]), 1],
-        [new LinearGradient([{ color: "#f1e707", offset: 0 }, { color: "#e64566", offset: 1 }]), 1],
+        [new LinearGradient([
+          { color: "#dbefa5", offset: 0 },
+          { color: "#65b50e", offset: 0.5 },
+          { color: "#f1e707", offset: 0.7 },
+          { color: "#e64566", offset: 1 },
+        ]), 1],
       ]
       break;
     }
