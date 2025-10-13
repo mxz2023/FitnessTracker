@@ -34,7 +34,6 @@ struct HealthHistoryPage {
     []
   @Local private isLoading: boolean = true;
   private storageUtils: StorageUtils = StorageUtils.getInstance(this.getUIContext().getHostContext());
-  private pathInfos?: NavPathStack
   @Local options: ChartOptions = {};
 
   aboutToAppear() {
@@ -81,69 +80,65 @@ struct HealthHistoryPage {
   }
 
   /**
-   * 生成图表数据
+   * 生成图表数据（图表用时间升序；列表维持降序）
    */
   generateChartData() {
-    if (this.dataType === 'weight' || this.dataType === 'bloodSugar' || this.dataType === 'uricAcid') {
+    const asc = [...this.historyData].sort((a, b) => a.timestamp - b.timestamp);
+    const x = asc.map(i => formatDate(i.timestamp, 'MM-DD HH:mm'));
+
+    if (this.dataType === 'weight') {
       this.options = {
-        xAxis: {
-          data: ['A', 'B', 'C', 'D', 'E']
-        } as XAxis,
-        yAxis: {} as YAxis,
+        xAxis: { type: 'category', data: x } as XAxis,
+        yAxis: { type: 'value', name: 'kg' } as YAxis,
+        tooltip: { trigger: 'axis' },
+        legend: { data: ['体重'] },
         series: [
-          {
-            data: this.historyData.map(item => (item as WeightData | BloodSugarData | UricAcidData).value),
-            type: 'line',
-            smooth: true
-          }
+          { name: '体重', data: asc.map(i => (i as WeightData).value), type: 'line', smooth: true }
         ]
       };
-    } else if (this.dataType === 'bloodLipid') {
+    } else if (this.dataType === 'bloodSugar') {
       this.options = {
-        xAxis: {
-          data: ['A', 'B', 'C', 'D', 'E']
-        } as XAxis,
-        yAxis: {} as YAxis,
+        xAxis: { type: 'category', data: x } as XAxis,
+        yAxis: { type: 'value', name: 'mmol/L' } as YAxis,
+        tooltip: { trigger: 'axis' },
+        legend: { data: ['血糖'] },
         series: [
-          {
-            data: this.historyData.map(item => (item as BloodLipidData).totalCholesterol),
-            type: 'line',
-            smooth: true,
-            stack: 'x'
-          },
-          {
-            data: this.historyData.map(item => (item as BloodLipidData).hdlCholesterol),
-            type: 'line',
-            smooth: true,
-            stack: 'x'
-          },
-          {
-            data: this.historyData.map(item => (item as BloodLipidData).ldlCholesterol),
-            type: 'line',
-            smooth: true,
-            stack: 'x'
-          }
+          { name: '血糖', data: asc.map(i => (i as BloodSugarData).value), type: 'line', smooth: true }
+        ]
+      };
+    } else if (this.dataType === 'uricAcid') {
+      this.options = {
+        xAxis: { type: 'category', data: x } as XAxis,
+        yAxis: { type: 'value', name: 'μmol/L' } as YAxis,
+        tooltip: { trigger: 'axis' },
+        legend: { data: ['尿酸'] },
+        series: [
+          { name: '尿酸', data: asc.map(i => (i as UricAcidData).value), type: 'line', smooth: true }
         ]
       };
     } else if (this.dataType === 'bloodPressure') {
       this.options = {
-        xAxis: {
-          data: ['A', 'B', 'C', 'D', 'E']
-        } as XAxis,
-        yAxis: {} as YAxis,
+        xAxis: { type: 'category', data: x } as XAxis,
+        yAxis: { type: 'value', name: 'mmHg' } as YAxis,
+        tooltip: { trigger: 'axis' },
+        legend: { data: ['收缩压', '舒张压'] },
         series: [
-          {
-            data: this.historyData.map(item => (item as BloodPressureData).systolic),
-            type: 'line',
-            smooth: true,
-            stack: 'x'
-          },
-          {
-            data: this.historyData.map(item => (item as BloodPressureData).diastolic),
-            type: 'line',
-            smooth: true,
-            stack: 'x'
-          }
+          { name: '收缩压', data: asc.map(i => (i as BloodPressureData).systolic), type: 'line', smooth: true },
+          { name: '舒张压', data: asc.map(i => (i as BloodPressureData).diastolic), type: 'line', smooth: true }
+        ]
+      };
+    } else if (this.dataType === 'bloodLipid') {
+      const d = asc as BloodLipidData[];
+      this.options = {
+        xAxis: { type: 'category', data: x } as XAxis,
+        yAxis: { type: 'value', name: 'mmol/L' } as YAxis,
+        tooltip: { trigger: 'axis' },
+        legend: { data: ['TC', 'HDL', 'LDL', 'TG'] },
+        series: [
+          { name: 'TC', data: d.map(i => i.totalCholesterol), type: 'line', smooth: true },
+          { name: 'HDL', data: d.map(i => i.hdlCholesterol), type: 'line', smooth: true },
+          { name: 'LDL', data: d.map(i => i.ldlCholesterol), type: 'line', smooth: true },
+          { name: 'TG', data: d.map(i => i.triglycerides), type: 'line', smooth: true }
         ]
       };
     }
@@ -359,7 +354,7 @@ struct HealthHistoryPage {
             })
           }
           .width('100%')
-          .height('200')
+          .height(300)
 
           List() {
             ForEach(this.historyData, (item: HealthData) => {
@@ -414,8 +409,7 @@ struct HealthHistoryPage {
     .width('100%')
     .height('100%')
     .onReady((ctx: NavDestinationContext) => {
-      // NavDestinationContext获取当前所在的导航控制器
-      this.pathInfos = ctx.pathStack;
+
     })
   }
 }

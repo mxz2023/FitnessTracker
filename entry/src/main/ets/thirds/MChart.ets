@@ -8,11 +8,6 @@
  * @desc
  */
 
-// system
-
-// module
-
-// inner
 import { HmInitChart } from './EChart/InitChart'
 import { ChartOptions } from './EChart/EChartOption'
 
