@@ -78,6 +78,7 @@ export struct UricAcidInputView {
   build() {
     RelativeContainer() {
       MTitleBar({
+        style: 1,
         title: "尿酸信息",
         handleBack: () => {
           this.onSubmit()
@@ -119,6 +120,9 @@ export struct UricAcidInputView {
     .width('100%')
     .height('100%')
     .padding($r('app.integer.view_padding'))
+    .constraintSize({
+      maxWidth: 500
+    })
     .backgroundColor('view_background_color')
     .borderRadius($r('app.integer.view_radius'))
   }

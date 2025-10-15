@@ -14,26 +14,58 @@ import { MTitle } from "./MLable"
 @ComponentV2
 export struct MTitleBar {
   @Param title: string = ""
+  @Param style: number = 0
   @Event handleBack: () => void
+
+  getJustifyContent() {
+    switch (this.style) {
+      case 0: {
+        return FlexAlign.Start
+      }
+      case 1: {
+        return FlexAlign.SpaceBetween
+      }
+      default: {
+        return FlexAlign.Start
+      }
+    }
+  }
 
   build() {
     Row() {
-      MIcon({
-        iconName: "back"
-      }).onClick(() => {
-        this.handleBack()
-      })
+      if (this.style == 0) {
+        MIcon({
+          iconName: "back"
+        }).onClick(() => {
+          this.handleBack()
+        })
 
-      MTitle({
-        data: {
-          text: this.title,
-          size: 20
-        }
-      }).margin({
-        left: $r('app.integer.view_space')
-      })
+        MTitle({
+          data: {
+            text: this.title,
+            size: 20
+          }
+        }).margin({
+          left: $r('app.integer.view_space')
+        })
+      } else if (this.style == 1) {
+        MTitle({
+          data: {
+            text: this.title,
+            size: 20
+          }
+        })
+
+        MIcon({
+          iconName: "close",
+          iconSize: 24
+        }).onClick(() => {
+          this.handleBack()
+        })
+      }
     }
     .width('100%')
     .height($r('app.integer.nav_bar_height'))
+    .justifyContent(this.getJustifyContent())
   }
 }

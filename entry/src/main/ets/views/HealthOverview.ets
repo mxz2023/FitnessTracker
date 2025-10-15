@@ -40,6 +40,7 @@ import { getAppPathStack } from '../utils/PathStackUtils';
 export struct HealthOverview {
   @Local private showType: HealthCardDataType = HealthCardDataType.Unknown;
   @Local private isLoading: boolean = true
+  @Local private columnsTemplate: string = '1fr 1fr'
   private userInfoVM?: UserViewModel
   private weightDataVM?: WeightViewModel
   private bloodSugarVM?: BloodSugarViewModel
@@ -327,10 +328,28 @@ export struct HealthOverview {
               }
               .width('100%')
               .layoutWeight(1)
-              .columnsTemplate('1fr 1fr')
+              .columnsTemplate(this.columnsTemplate)
               .rowsGap($r('app.integer.view_space'))
               .columnsGap($r('app.integer.view_space'))
               .scrollBar(BarState.Off)
+              .onSizeChange((_: SizeOptions, newValue: SizeOptions) => {
+                const curWidth = newValue.width
+                if (curWidth == undefined) {
+                  return
+                }
+                // https://developer.huawei.com/consumer/cn/doc/design-guides/design-layout-basics-0000001795579413#section6149141345712
+                // P60: 374x826
+                // X5: 346x802 / 712x798
+                // PuraX: 326x326 / 440x706
+                // MatePad: 1280x800
+                if (curWidth > 1000) {
+                  this.columnsTemplate = '1fr 1fr 1fr 1fr'
+                } else if (curWidth > 600) {
+                  this.columnsTemplate = '1fr 1fr 1fr'
+                } else {
+                  this.columnsTemplate = '1fr 1fr'
+                }
+              })
             }
           }
           .height('100%')

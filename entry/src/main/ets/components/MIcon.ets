@@ -48,6 +48,8 @@ export struct MIcon {
       "hand": $r('sys.symbol.hand_thumbsup_fill'), // 点赞
       "hear": $r('sys.symbol.heart_fill'), // 收藏(心形样式)
       "star": $r('sys.symbol.star_fill'), // 收藏(星星样式)
+
+      "close": $r('sys.symbol.xmark')
     }
 
     this.symbolName = mapData[this.iconName]

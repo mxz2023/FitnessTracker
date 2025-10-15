@@ -161,6 +161,9 @@ export struct BloodLipidInputView {
     }
     .width('100%')
     .height('100%')
+    .constraintSize({
+      maxWidth: 500
+    })
     .padding($r('app.integer.view_padding'))
     .backgroundColor('view_background_color')
     .borderRadius($r('app.integer.view_radius'))

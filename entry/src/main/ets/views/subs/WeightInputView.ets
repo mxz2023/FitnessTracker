@@ -74,6 +74,7 @@ export struct WeightInputView {
   build() {
     RelativeContainer() {
       MTitleBar({
+        style: 1,
         title: "体重信息",
         handleBack: () => {
           this.onSubmit()
@@ -114,6 +115,9 @@ export struct WeightInputView {
     }
     .width('100%')
     .height('100%')
+    .constraintSize({
+      maxWidth: 500
+    })
     .padding($r('app.integer.view_padding'))
     .backgroundColor('view_background_color')
     .borderRadius($r('app.integer.view_radius'))
