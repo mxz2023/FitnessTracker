@@ -107,7 +107,6 @@ export struct HealthInfoCard {
       .justifyContent(FlexAlign.SpaceBetween)
     }
     .width('100%')
-    .height(230)
     .padding($r('app.integer.view_padding'))
     .alignItems(HorizontalAlign.Start)
     .justifyContent(FlexAlign.SpaceBetween)

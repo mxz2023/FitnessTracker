@@ -7,6 +7,8 @@
  * @crateTime 2024-12-28
  * @desc
  */
+import { ColorConstants } from "../common/CommonDefine";
+import { MIcon } from "./MIcon";
 
 @ComponentV2
 export struct MButton {
@@ -33,5 +35,42 @@ export struct MButton {
 
         this.onClickBlock();
       })
+  }
+}
+
+
+@ComponentV2
+export struct MIconButton {
+  @Param @Require iconName: string;
+  @Param srcName: ResourceStr = "";
+  @Param iconColor: string = ColorConstants.Red;
+  @Event handleClick: () => void;
+
+  build() {
+    Column() {
+      if (this.srcName) {
+        Column() {
+          Image(this.srcName)
+        }
+        .padding(8)
+        .height(48)
+        .width(48)
+        .borderRadius(24)
+        .clip(true)
+        .backgroundColor(ColorConstants.Red)
+
+      } else {
+        MIcon({
+          iconName: this.iconName,
+          iconSize: 48,
+          iconColor: [this.iconColor]
+        })
+          .height(48)
+          .width(48)
+          .onClick(() => {
+            this.handleClick()
+          })
+      }
+    }
   }
 }

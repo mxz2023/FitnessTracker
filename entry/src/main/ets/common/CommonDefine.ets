@@ -22,7 +22,7 @@ const TAG = 'CommonDefine.ets'
  */
 export class ColorConstants {
   static readonly White = "#ffffff";
-  static readonly Black = "#3E4248";
+  static readonly Black = "#898989";
   static readonly Blue = "#618dff";
   static readonly Red = "#f6685d";
   static readonly Orange = "#e37318";

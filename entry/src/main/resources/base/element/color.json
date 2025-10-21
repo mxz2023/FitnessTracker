@@ -10,23 +10,27 @@
     },
     {
       "name": "black",
-      "value": "#3E4248"
-    },
-    {
-      "name": "blue",
-      "value": "#618dff"
+      "value": "#898989"
     },
     {
       "name": "red",
       "value": "#f6685d"
     },
     {
-      "name": "orange",
-      "value": "#e37318"
+      "name": "yellow",
+      "value": "#f5ba18"
+    },
+    {
+      "name": "blue",
+      "value": "#618dff"
     },
     {
       "name": "green",
       "value": "#2ba471"
+    },
+    {
+      "name": "orange",
+      "value": "#e37318"
     },
     {
       "name": "cyan",
@@ -35,10 +39,6 @@
     {
       "name": "purple",
       "value": "#c69cff"
-    },
-    {
-      "name": "yellow",
-      "value": "#f5ba18"
     },
     {
       "name": "pink",

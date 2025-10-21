@@ -397,7 +397,8 @@ struct HealthHistoryPage {
     .title({
       builder: NavigationTitleBuilder(getAppPathStack(), {
         title: {
-          text: "历史记录"
+          text: "历史记录",
+          fontColor: "#000000"
         },
         subTitle: {
           text: this.getTitle()

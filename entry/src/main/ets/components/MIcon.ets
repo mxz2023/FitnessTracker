@@ -15,14 +15,14 @@ export struct MIcon {
   @Param iconSize: Length = 32
   @Param iconColor: ResourceColor[] = [$r('app.color.black')]
   @Param renderingStrategy: SymbolRenderingStrategy = SymbolRenderingStrategy.SINGLE
+  @Local private symbolName?: Resource
 
-  private symbolName?: Resource
-
-  aboutToAppear(): void {
+  @Monitor('iconName')
+  onChange() {
     let mapData: Record<string, Resource> = {
       "home": $r('sys.symbol.house_fill'), // 首页
       "plaza": $r('sys.symbol.square_fill_grid_2x2'), // 成长
-      "record":$r('sys.symbol.square_stack_3d_fill'), // 成长
+      "record": $r('sys.symbol.square_stack_3d_fill'), // 成长
       "mine": $r('sys.symbol.person_fill'), // 我的
 
       "smile": $r('sys.symbol.face_smiling_fill'), // 情绪快捷
@@ -30,7 +30,7 @@ export struct MIcon {
       "run": $r('sys.symbol.figure_running'), // 运动快捷
       "account": $r('sys.symbol.bookmark_notepad_fill'), // 记账快捷
       "book": $r('sys.symbol.book_pages_fill'), // 书库快捷
-      "leaf":$r('sys.symbol.mapleleave_fill'), // 叶子
+      "leaf": $r('sys.symbol.mapleleave_fill'), // 叶子
 
       'setting': $r('sys.symbol.gearshape'), // 设置
       'agreement': $r('sys.symbol.doc_text'), // 协议
@@ -49,16 +49,25 @@ export struct MIcon {
       "hear": $r('sys.symbol.heart_fill'), // 收藏(心形样式)
       "star": $r('sys.symbol.star_fill'), // 收藏(星星样式)
 
-      "close": $r('sys.symbol.xmark')
+      "close": $r('sys.symbol.xmark'), // 关闭x(线型)
+      "+": $r('sys.symbol.plus_circle_fill'), // 填充加号(圆形)
+      "-": $r('sys.symbol.minus_circle_fill'), // 填充减号(圆形)
+      "x": $r('sys.symbol.xmark_circle_fill'), // 填充乘号(圆形)
     }
 
     this.symbolName = mapData[this.iconName]
   }
 
+  aboutToAppear(): void {
+    this.onChange()
+  }
+
   build() {
-    SymbolGlyph(this.symbolName)
-      .fontSize(this.iconSize)
-      .fontColor(this.iconColor)
-      .renderingStrategy(this.renderingStrategy)
+    if (this.symbolName) {
+      SymbolGlyph(this.symbolName)
+        .fontSize(this.iconSize)
+        .fontColor(this.iconColor)
+        .renderingStrategy(this.renderingStrategy)
+    }
   }
 }
