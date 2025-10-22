@@ -67,10 +67,9 @@ export struct MIconButton {
         })
           .height(48)
           .width(48)
-          .onClick(() => {
-            this.handleClick()
-          })
       }
-    }
+    }.onClick(() => {
+      this.handleClick()
+    })
   }
 }

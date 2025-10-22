@@ -14,6 +14,7 @@ import { MTextInput } from "../../components/MTextInput"
 import { MTitleBar } from "../../components/MTitleBar"
 import { UricAcidData } from "../../models/HealthDataModel"
 import { Gender } from "../../models/UserDataModel"
+import { UnitConstants } from '../../common/HealthTypeDefine';
 
 
 @ComponentV2
@@ -58,7 +59,7 @@ export struct UricAcidInputView {
           }
         }).layoutWeight(1)
 
-        MLable({ lable: "μmol/L" })
+        MLable({ lable: UnitConstants.URIC_ACID_UNIT })
       }
 
       Row({ space: $r('app.integer.view_content_space') }) {

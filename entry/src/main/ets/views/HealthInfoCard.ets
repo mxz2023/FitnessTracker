@@ -8,7 +8,7 @@
  * @desc
  */
 
-import { MDashBoard } from "../components/MDashBoard"
+import { MDashBoard, MDashBoardV2 } from "../components/MDashBoard"
 import { MStatusLable } from "../components/MLable"
 import { HealthCardData, HealthCardDataType } from "../models/HealthDataModel"
 import {
@@ -70,6 +70,7 @@ export struct HealthInfoCard {
       } else if (this.data.type === HealthCardDataType.BloodPressureInfo ||
         this.data.type === HealthCardDataType.BloodLipidInfo) {
         // 多值线条仪表
+        MDashBoardV2()
       } else {
         // 默认仪表
       }

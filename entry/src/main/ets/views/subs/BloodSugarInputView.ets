@@ -12,6 +12,8 @@ import { MButton } from "../../components/MButton";
 import { MTextInput } from "../../components/MTextInput";
 import { MTitleBar } from "../../components/MTitleBar";
 import { BloodSugarData, MeasurementType } from "../../models/HealthDataModel";
+import { UnitConstants } from '../../common/HealthTypeDefine';
+import { MLable } from "../../components/MLable";
 
 
 @ComponentV2
@@ -49,10 +51,8 @@ export struct BloodSugarInputView {
   contentBuilder() {
     Column() {
       Row({ space: $r('app.integer.view_content_space') }) {
-        Text('血糖')
-          .fontSize(14)
-          .fontColor('#666666')
-          .maxLines(1)
+        MLable({ lable: "血糖:" })
+
         MTextInput({
           type: InputType.NUMBER_DECIMAL,
           text: this.bloodSugarText,
@@ -61,14 +61,12 @@ export struct BloodSugarInputView {
           }
         }).layoutWeight(1)
 
-        Text('mmol/L').fontSize(14).fontColor('#666666')
+        MLable({ lable: UnitConstants.BLOOD_SUGAR_UNIT })
       }
 
       Row({ space: $r('app.integer.view_content_space') }) {
-        Text('测量类型')
-          .fontSize(14)
-          .fontColor('#666666')
-          .maxLines(1)
+        MLable({ lable: "测量类型:" })
+
         Row({ space: 8 }) {
           Radio({ value: 'FASTING', group: 'bsType' })
             .checked(this.measurementText === MeasurementType.FASTING)

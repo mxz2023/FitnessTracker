@@ -36,6 +36,7 @@ import { showToast } from '../utils/ToastUtils';
 import { getAppPathStack } from '../utils/PathStackUtils';
 
 import { AppConstants, ColorConstants } from '../common/CommonDefine';
+import { UnitConstants } from '../common/HealthTypeDefine';
 
 
 const TAG = "HealthOverview"
@@ -55,7 +56,7 @@ export struct HealthOverview {
   @Local private isLoading: boolean = true
   @Local private columnsTemplate: string = '1fr 1fr'
   @Local private showQuick: boolean = true // 显示快速入口
-  @Local private showExpandedButtons: boolean = false
+  @Local private showExpandedButtons: boolean = false // 是否展开了
   @Local private buttonScale: number = 0
   @Local private buttonOpacity: number = 0
   private userInfoVM?: UserViewModel
@@ -66,6 +67,18 @@ export struct HealthOverview {
   private bloodLipidVM?: BloodLipidViewModel
   private quickTools: Array<ToolItem> = []
 
+  @Monitor('showType')
+  onShowTypeChange(monitor: IMonitor) {
+    // console.info(`path: ${monitor.value()?.path} change from ${monitor.value()?.before} to ${monitor.value()?.now}`);
+    const value = monitor.value()?.now as HealthCardDataType
+    if (value == HealthCardDataType.Unknown) {
+      this.showQuick = true
+    } else {
+      this.showQuick = false
+      this.hideExpandedButtons()
+    }
+  }
+
   async aboutToAppear(): Promise<void> {
     this.getUIContext().setKeyboardAvoidMode(KeyboardAvoidMode.RESIZE);
     this.quickTools = [
@@ -74,7 +87,7 @@ export struct HealthOverview {
         x: 0,
         y: -200,
         handleClick: () => {
-
+          this.showType = HealthCardDataType.WeightInfo
         }
       },
       {
@@ -82,7 +95,7 @@ export struct HealthOverview {
         x: -140,
         y: -140,
         handleClick: () => {
-
+          this.showType = HealthCardDataType.BloodSugarInfo
         }
       },
       {
@@ -90,26 +103,26 @@ export struct HealthOverview {
         x: -200,
         y: 0,
         handleClick: () => {
-
+          this.showType = HealthCardDataType.UricAcidInfo
         }
       },
-      // {
-      //   name: "blood_pressure",
-      //   x: -160,
-      //   y: 160,
-      //   handleClick: () => {
-      //
-      //   }
-      // },
-      // {
-      //   name: "blood_lipid",
-      //   x: 0,
-      //   y: 200,
-      //   handleClick: () => {
-      //
-      //   }
-      // }
-      ]
+      {
+        name: $r('app.media.blood_pressure'),
+        x: -140,
+        y: 140,
+        handleClick: () => {
+          this.showType = HealthCardDataType.BloodPressureInfo
+        }
+      },
+      {
+        name: $r('app.media.blood_lipid'),
+        x: 0,
+        y: 200,
+        handleClick: () => {
+          this.showType = HealthCardDataType.BloodLipidInfo
+        }
+      }
+    ]
 
     await this.loadLastData()
   }
@@ -168,7 +181,7 @@ export struct HealthOverview {
         title: '体重',
         type: HealthCardDataType.WeightInfo,
         value: this.weightDataVM.value,
-        unit: 'kg',
+        unit: UnitConstants.WEIGHT_UNIT,
         status: this.weightDataVM.getHealthStatus(),
         date: this.weightDataVM.dateStr,
         // other: this.weightDataVM.getHealthAdvice()
@@ -177,7 +190,7 @@ export struct HealthOverview {
         title: '血糖',
         type: HealthCardDataType.BloodSugarInfo,
         value: this.bloodSugarVM.value,
-        unit: 'mmol/L',
+        unit: UnitConstants.BLOOD_SUGAR_UNIT,
         status: this.bloodSugarVM.getHealthStatus(),
         date: this.bloodSugarVM.dateStr,
         // other: this.bloodSugarVM.getHealthAdvice()
@@ -186,7 +199,26 @@ export struct HealthOverview {
         title: '尿酸',
         type: HealthCardDataType.UricAcidInfo,
         value: this.uricAcidVM.value,
-        unit: 'μmol/L',
+        unit: UnitConstants.URIC_ACID_UNIT,
+        status: this.uricAcidVM.getHealthStatus(),
+        date: this.uricAcidVM.dateStr,
+        // other: this.uricAcidVM.getHealthAdvice()
+      },
+      {
+        title: '血压',
+        type: HealthCardDataType.BloodPressureInfo,
+        value: this.bloodPressVM.systolic,
+        value2: this.bloodPressVM.diastolic,
+        unit: UnitConstants.BLOOD_PRESSURE_UNIT,
+        status: this.uricAcidVM.getHealthStatus(),
+        date: this.uricAcidVM.dateStr,
+        // other: this.uricAcidVM.getHealthAdvice()
+      },
+      {
+        title: '血脂',
+        type: HealthCardDataType.BloodLipidInfo,
+        value: this.uricAcidVM.value,
+        unit: UnitConstants.CHOLESTEROL_UNIT,
         status: this.uricAcidVM.getHealthStatus(),
         date: this.uricAcidVM.dateStr,
         // other: this.uricAcidVM.getHealthAdvice()
@@ -251,22 +283,6 @@ export struct HealthOverview {
     }
   }
 
-  // 更新血压信息
-  private async updateBloodPressure(data: BloodPressureData) {
-    if (!this.bloodPressVM) {
-      return
-    }
-    this.bloodPressVM.systolic = data.systolic
-    this.bloodPressVM.diastolic = data.diastolic
-    const res = await this.bloodPressVM.saveData()
-    if (res) {
-      this.showType = HealthCardDataType.Unknown
-      showToast(this.getUIContext(), "保存数据成功")
-    } else {
-      showToast(this.getUIContext(), "保存数据失败")
-    }
-  }
-
   // 更新血糖信息
   private async updateBloodSugar(data: BloodSugarData) {
     if (!this.bloodSugarVM) {
@@ -291,6 +307,22 @@ export struct HealthOverview {
     this.uricAcidVM.value = data.value
     this.uricAcidVM.gender = data.gender
     const res = await this.uricAcidVM.saveData()
+    if (res) {
+      this.showType = HealthCardDataType.Unknown
+      showToast(this.getUIContext(), "保存数据成功")
+    } else {
+      showToast(this.getUIContext(), "保存数据失败")
+    }
+  }
+
+  // 更新血压信息
+  private async updateBloodPressure(data: BloodPressureData) {
+    if (!this.bloodPressVM) {
+      return
+    }
+    this.bloodPressVM.systolic = data.systolic
+    this.bloodPressVM.diastolic = data.diastolic
+    const res = await this.bloodPressVM.saveData()
     if (res) {
       this.showType = HealthCardDataType.Unknown
       showToast(this.getUIContext(), "保存数据成功")
@@ -344,9 +376,7 @@ export struct HealthOverview {
   private hideExpandedButtons() {
     this.buttonScale = 0
     this.buttonOpacity = 0
-    setTimeout(() => {
-      this.showExpandedButtons = false
-    }, 200)
+    this.showExpandedButtons = false
   }
 
   build() {
@@ -399,6 +429,7 @@ export struct HealthOverview {
             .columnsTemplate(this.columnsTemplate)
             .rowsGap($r('app.integer.view_space'))
             .columnsGap($r('app.integer.view_space'))
+            .edgeEffect(EdgeEffect.Spring)
             .scrollBar(BarState.Off)
             .onSizeChange((_: SizeOptions, newValue: SizeOptions) => {
               const curWidth = newValue.width
@@ -463,18 +494,6 @@ export struct HealthOverview {
                 }
               }
             }).height(250)
-          } else if (this.bloodPressVM && this.showType === HealthCardDataType.BloodPressureInfo) {
-            BloodPressureInputView({
-              systolicValue: this.bloodPressVM.systolic,
-              diastolicValue: this.bloodPressVM.diastolic,
-              onSubmit: (data?: BloodPressureData) => {
-                if (data) {
-                  this.updateBloodPressure(data)
-                } else {
-                  this.showType = HealthCardDataType.Unknown
-                }
-              }
-            }).height(300)
           } else if (this.bloodSugarVM && this.showType === HealthCardDataType.BloodSugarInfo) {
             BloodSugarInputView({
               bloodSugarValue: this.bloodSugarVM.value,
@@ -499,6 +518,18 @@ export struct HealthOverview {
                 }
               }
             }).height(300)
+          } else if (this.bloodPressVM && this.showType === HealthCardDataType.BloodPressureInfo) {
+            BloodPressureInputView({
+              systolicValue: this.bloodPressVM.systolic,
+              diastolicValue: this.bloodPressVM.diastolic,
+              onSubmit: (data?: BloodPressureData) => {
+                if (data) {
+                  this.updateBloodPressure(data)
+                } else {
+                  this.showType = HealthCardDataType.Unknown
+                }
+              }
+            }).height(300)
           } else if (this.bloodLipidVM && this.showType === HealthCardDataType.BloodLipidInfo) {
             BloodLipidInputView({
               totalCholesterol: this.bloodLipidVM.totalCholesterol,
@@ -508,6 +539,8 @@ export struct HealthOverview {
               onSubmit: (data?: BloodLipidData) => {
                 if (data) {
                   this.updateBloodLipid(data)
+                } else {
+                  this.showType = HealthCardDataType.Unknown
                 }
               }
             }).height(400)
@@ -529,7 +562,7 @@ export struct HealthOverview {
       // 发布按钮
       MIconButton({
         iconName: this.showExpandedButtons ? "x" : "+",
-        iconColor: ColorConstants.Red,
+        iconColor: this.showExpandedButtons ? ColorConstants.Blue : ColorConstants.Red,
         handleClick: () => {
           if (this.showExpandedButtons) {
             // 关闭扩展按钮
@@ -548,9 +581,10 @@ export struct HealthOverview {
           }
         }
       })
+        .visibility(this.showQuick ? Visibility.Visible : Visibility.Hidden)
         .margin({
           right: AppConstants.VIEW_PADDING,
-          bottom: AppConstants.VIEW_PADDING
+          bottom: 200
         })
         .id("__add_btn__")
         .alignRules({

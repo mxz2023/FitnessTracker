@@ -13,6 +13,7 @@ import { MLable } from "../../components/MLable";
 import { MTextInput } from "../../components/MTextInput"
 import { MTitleBar } from "../../components/MTitleBar";
 import { WeightData } from "../../models/HealthDataModel";
+import { UnitConstants } from '../../common/HealthTypeDefine';
 
 
 @ComponentV2
@@ -66,7 +67,7 @@ export struct WeightInputView {
           }
         }).layoutWeight(1)
 
-        MLable({ lable: "kg" })
+        MLable({ lable: UnitConstants.WEIGHT_UNIT })
       }
     }
   }

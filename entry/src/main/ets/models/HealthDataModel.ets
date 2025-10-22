@@ -12,6 +12,7 @@ export interface HealthCardData {
   title: string;
   type: HealthCardDataType;
   value: number;
+  value2?: number;
   unit?: string;
   status: HealthStatus;
   date?: string;
@@ -23,9 +24,9 @@ export enum HealthCardDataType {
   Unknown,
   BaseInfo, // 基本信息
   WeightInfo, // 体重
-  BloodPressureInfo, // 血压
   BloodSugarInfo, // 血糖
   UricAcidInfo, // 尿酸
+  BloodPressureInfo, // 血压
   BloodLipidInfo, // 血脂
 }
 

@@ -8,6 +8,7 @@ import { MRadio } from "../../components/MRadio";
 import { MTextInput } from "../../components/MTextInput";
 import { MTitleBar } from "../../components/MTitleBar";
 import { UserDataModel, Gender } from "../../models/UserDataModel";
+import { UnitConstants } from '../../common/HealthTypeDefine';
 
 
 @Preview
@@ -146,7 +147,7 @@ export struct BaseInputView {
           placeholder: '请输入身高（cm）',
         }).layoutWeight(1)
 
-        MLable({ lable: 'cm' })
+        MLable({ lable: UnitConstants.HEIGHT_UNIT })
       }
     }
   }

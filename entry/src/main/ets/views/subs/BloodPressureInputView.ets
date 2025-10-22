@@ -13,6 +13,7 @@ import { MLable } from "../../components/MLable";
 import { MTextInput } from "../../components/MTextInput";
 import { MTitleBar } from "../../components/MTitleBar";
 import { BloodPressureData } from "../../models/HealthDataModel";
+import { UnitConstants } from '../../common/HealthTypeDefine';
 
 
 @ComponentV2
@@ -60,7 +61,7 @@ export struct BloodPressureInputView {
           }
         }).layoutWeight(1)
 
-        MLable({ lable: "mmHg:" })
+        MLable({ lable: UnitConstants.BLOOD_PRESSURE_UNIT })
       }
 
       Row({ space: $r('app.integer.view_content_space') }) {
@@ -74,7 +75,7 @@ export struct BloodPressureInputView {
           }
         }).layoutWeight(1)
 
-        MLable({ lable: "mmHg" })
+        MLable({ lable: UnitConstants.BLOOD_PRESSURE_UNIT })
       }
     }
   }

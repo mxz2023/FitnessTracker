@@ -67,6 +67,7 @@ export struct MDashBoard {
       .height('100%')
     }
     .width('100%')
+    .aspectRatio(1)
     .strokeWidth(18)
     .trackShadow({
       radius: 7,
@@ -78,5 +79,19 @@ export struct MDashBoard {
     .endAngle(120)
     .colors(this.colors)
     .description(this.descriptionBuilder(this.note))
+  }
+}
+
+
+
+@ComponentV2
+export struct MDashBoardV2 {
+
+  build() {
+    Column(){
+
+    }
+    .width('100%')
+    .aspectRatio(1)
   }
 }

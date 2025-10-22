@@ -13,6 +13,7 @@ import { MLable } from "../../components/MLable"
 import { MTextInput } from "../../components/MTextInput"
 import { MTitleBar } from "../../components/MTitleBar";
 import { BloodLipidData } from "../../models/HealthDataModel"
+import { UnitConstants } from '../../common/HealthTypeDefine';
 
 
 @ComponentV2
@@ -61,7 +62,7 @@ export struct BloodLipidInputView {
   contentBuilder() {
     Column({ space: $r('app.integer.view_content_space') }) {
       Row({ space: $r('app.integer.view_content_space') }) {
-        MLable({ lable: "TC:" })
+        MLable({ lable: "总胆固醇:" })
 
         MTextInput({
           type: InputType.NUMBER_DECIMAL,
@@ -71,11 +72,11 @@ export struct BloodLipidInputView {
           }
         }).layoutWeight(1)
 
-        MLable({ lable: "mmol/L" })
+        MLable({ lable: UnitConstants.CHOLESTEROL_UNIT })
       }
 
       Row({ space: $r('app.integer.view_content_space') }) {
-        MLable({ lable: "TG:" })
+        MLable({ lable: "甘油三酯:" })
 
         MTextInput({
           type: InputType.NUMBER_DECIMAL,
@@ -85,11 +86,11 @@ export struct BloodLipidInputView {
           }
         }).layoutWeight(1)
 
-        MLable({ lable: "mmol/L" })
+        MLable({ lable: UnitConstants.CHOLESTEROL_UNIT })
       }
 
       Row({ space: $r('app.integer.view_content_space') }) {
-        MLable({ lable: "HDL-C:" })
+        MLable({ lable: "高密度脂蛋白:" })
 
         MTextInput({
           text: this.hdlCholesterolText,
@@ -99,11 +100,11 @@ export struct BloodLipidInputView {
           }
         }).layoutWeight(1)
 
-        MLable({ lable: "mmol/L" })
+        MLable({ lable: UnitConstants.CHOLESTEROL_UNIT })
       }
 
       Row({ space: $r('app.integer.view_content_space') }) {
-        MLable({ lable: "LDL-C:" })
+        MLable({ lable: "低密度脂蛋白:" })
 
         MTextInput({
           type: InputType.NUMBER_DECIMAL,
@@ -113,7 +114,7 @@ export struct BloodLipidInputView {
           }
         }).layoutWeight(1)
 
-        MLable({ lable: "mmol/L" })
+        MLable({ lable: UnitConstants.CHOLESTEROL_UNIT })
       }
     }
   }
@@ -121,6 +122,7 @@ export struct BloodLipidInputView {
   build() {
     RelativeContainer() {
       MTitleBar({
+        style:1,
         title: "血脂信息",
         handleBack: () => {
           this.onSubmit()
