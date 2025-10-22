@@ -74,7 +74,7 @@ export function NavigationTitleBuilder(nav: NavPathStack, opt?: NavOption) {
       }
     }
     .padding({
-      left: opt?.canBack ? 8 : $r('app.integer.view_padding'),
+      left: opt?.canBack ? 4 : $r('app.integer.view_padding'),
       right: $r('app.integer.view_padding')
     })
     .width('100%')

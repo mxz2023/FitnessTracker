@@ -2,14 +2,15 @@
  * 通用健康历史记录页面
  */
 
-import { MNavigationTitle, NavigationTitleBuilder } from '../components/MNavigationTitle';
+import { MButton, MIconButton } from '../components/MButton';
+import { NavigationTitleBuilder } from '../components/MNavigationTitle';
 import {
   WeightData,
   BloodLipidData,
   BloodSugarData,
   UricAcidData,
   HealthData,
-  BloodPressureData
+  BloodPressureData,
 } from '../models/HealthDataModel';
 import { ChartOptions, XAxis, YAxis } from '../thirds/EChart/EChartOption';
 import { MChart } from '../thirds/MChart';
@@ -33,8 +34,8 @@ struct HealthHistoryPage {
   @Local private historyData: Array<WeightData | BloodLipidData | BloodSugarData | UricAcidData | BloodPressureData> =
     []
   @Local private isLoading: boolean = true;
-  private storageUtils: StorageUtils = StorageUtils.getInstance(this.getUIContext().getHostContext());
   @Local options: ChartOptions = {};
+  private storageUtils: StorageUtils = StorageUtils.getInstance(this.getUIContext().getHostContext());
 
   aboutToAppear() {
     this.loadHistoryData();
@@ -93,7 +94,12 @@ struct HealthHistoryPage {
         tooltip: { trigger: 'axis' },
         legend: { data: ['体重'] },
         series: [
-          { name: '体重', data: asc.map(i => (i as WeightData).value), type: 'line', smooth: true }
+          {
+            name: '体重',
+            data: asc.map(i => (i as WeightData).value),
+            type: 'line',
+            smooth: true
+          }
         ]
       };
     } else if (this.dataType === 'bloodSugar') {
@@ -103,7 +109,12 @@ struct HealthHistoryPage {
         tooltip: { trigger: 'axis' },
         legend: { data: ['血糖'] },
         series: [
-          { name: '血糖', data: asc.map(i => (i as BloodSugarData).value), type: 'line', smooth: true }
+          {
+            name: '血糖',
+            data: asc.map(i => (i as BloodSugarData).value),
+            type: 'line',
+            smooth: true
+          }
         ]
       };
     } else if (this.dataType === 'uricAcid') {
@@ -113,7 +124,12 @@ struct HealthHistoryPage {
         tooltip: { trigger: 'axis' },
         legend: { data: ['尿酸'] },
         series: [
-          { name: '尿酸', data: asc.map(i => (i as UricAcidData).value), type: 'line', smooth: true }
+          {
+            name: '尿酸',
+            data: asc.map(i => (i as UricAcidData).value),
+            type: 'line',
+            smooth: true
+          }
         ]
       };
     } else if (this.dataType === 'bloodPressure') {
@@ -123,8 +139,18 @@ struct HealthHistoryPage {
         tooltip: { trigger: 'axis' },
         legend: { data: ['收缩压', '舒张压'] },
         series: [
-          { name: '收缩压', data: asc.map(i => (i as BloodPressureData).systolic), type: 'line', smooth: true },
-          { name: '舒张压', data: asc.map(i => (i as BloodPressureData).diastolic), type: 'line', smooth: true }
+          {
+            name: '收缩压',
+            data: asc.map(i => (i as BloodPressureData).systolic),
+            type: 'line',
+            smooth: true
+          },
+          {
+            name: '舒张压',
+            data: asc.map(i => (i as BloodPressureData).diastolic),
+            type: 'line',
+            smooth: true
+          }
         ]
       };
     } else if (this.dataType === 'bloodLipid') {
@@ -135,10 +161,30 @@ struct HealthHistoryPage {
         tooltip: { trigger: 'axis' },
         legend: { data: ['TC', 'HDL', 'LDL', 'TG'] },
         series: [
-          { name: 'TC', data: d.map(i => i.totalCholesterol), type: 'line', smooth: true },
-          { name: 'HDL', data: d.map(i => i.hdlCholesterol), type: 'line', smooth: true },
-          { name: 'LDL', data: d.map(i => i.ldlCholesterol), type: 'line', smooth: true },
-          { name: 'TG', data: d.map(i => i.triglycerides), type: 'line', smooth: true }
+          {
+            name: 'TC',
+            data: d.map(i => i.totalCholesterol),
+            type: 'line',
+            smooth: true
+          },
+          {
+            name: 'HDL',
+            data: d.map(i => i.hdlCholesterol),
+            type: 'line',
+            smooth: true
+          },
+          {
+            name: 'LDL',
+            data: d.map(i => i.ldlCholesterol),
+            type: 'line',
+            smooth: true
+          },
+          {
+            name: 'TG',
+            data: d.map(i => i.triglycerides),
+            type: 'line',
+            smooth: true
+          }
         ]
       };
     }
@@ -327,7 +373,7 @@ struct HealthHistoryPage {
 
   build() {
     NavDestination() {
-      Column() {
+      RelativeContainer() {
         if (this.isLoading) {
           Column() {
             LoadingProgress()
@@ -335,17 +381,34 @@ struct HealthHistoryPage {
               .height(50)
               .color('#2196F3')
           }
-          .width('100%')
-          .height('100%')
+          .alignRules({
+            top: { anchor: '__container__', align: VerticalAlign.Top },
+            bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
+            left: { anchor: '__container__', align: HorizontalAlign.Start },
+            right: { anchor: '__container__', align: HorizontalAlign.End }
+          })
           .justifyContent(FlexAlign.Center)
         } else if (this.historyData.length === 0) {
           Column() {
-            Text(`暂无${this.getTitle()}历史记录`)
-              .fontSize(16)
-              .fontColor('#999999')
+            Image($r('app.media.no_data'))
+              .width('80%')
+              .constraintSize({
+                maxWidth: 300
+              })
+              .aspectRatio(1)
+            MButton({
+              text: "返回首页添加一条记录",
+              onClickBlock: () => {
+                getAppPathStack().pop(this.dataType, true)
+              }
+            }).width('50%')
           }
-          .width('100%')
-          .height('100%')
+          .alignRules({
+            top: { anchor: '__container__', align: VerticalAlign.Top },
+            bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
+            left: { anchor: '__container__', align: HorizontalAlign.Start },
+            right: { anchor: '__container__', align: HorizontalAlign.End }
+          })
           .justifyContent(FlexAlign.Center)
         } else {
           Column() {
@@ -353,8 +416,13 @@ struct HealthHistoryPage {
               options: this.options
             })
           }
-          .width('100%')
           .height(300)
+          .id("__Chart__")
+          .alignRules({
+            top: { anchor: '__container__', align: VerticalAlign.Top },
+            left: { anchor: '__container__', align: HorizontalAlign.Start },
+            right: { anchor: '__container__', align: HorizontalAlign.End }
+          })
 
           List() {
             ForEach(this.historyData, (item: HealthData) => {
@@ -376,8 +444,13 @@ struct HealthHistoryPage {
               .margin({ bottom: 8 })
             })
           }
-          .width('100%')
-          .layoutWeight(1)
+          .id("__List__")
+          .alignRules({
+            top: { anchor: '__Chart__', align: VerticalAlign.Bottom },
+            bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
+            left: { anchor: '__container__', align: HorizontalAlign.Start },
+            right: { anchor: '__container__', align: HorizontalAlign.End }
+          })
           .padding({
             left: 16,
             right: 16,
@@ -390,10 +463,6 @@ struct HealthHistoryPage {
       .height('100%')
       .backgroundColor('#F5F5F5')
     }
-    // .title({
-    //   main: "历史记录",
-    //   sub: this.getTitle()
-    // })
     .title({
       builder: NavigationTitleBuilder(getAppPathStack(), {
         title: {

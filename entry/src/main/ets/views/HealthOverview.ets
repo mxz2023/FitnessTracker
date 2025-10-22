@@ -417,7 +417,34 @@ export struct HealthOverview {
                     const data: Record<string, string> = {
                       "data": this.getTextByType(cardData.type)
                     }
-                    getAppPathStack().pushPathByName("history", data)
+                    getAppPathStack().pushPathByName("history", data, (res) => {
+                      switch (res.result) {
+                        case 'weight': {
+                          this.showType = HealthCardDataType.WeightInfo;
+                          break;
+                        }
+                        case 'bloodSugar': {
+                          this.showType = HealthCardDataType.BloodSugarInfo;
+                          break;
+                        }
+                        case 'uricAcid': {
+                          this.showType = HealthCardDataType.UricAcidInfo;
+                          break;
+                        }
+                        case 'bloodPressure': {
+                          this.showType = HealthCardDataType.BloodPressureInfo;
+                          break;
+                        }
+                        case 'bloodLipid': {
+                          this.showType = HealthCardDataType.BloodLipidInfo;
+                          break;
+                        }
+                        default: {
+                          this.showType = HealthCardDataType.Unknown;
+                          break;
+                        }
+                      }
+                    })
                   } else {
                     showToast(this.getUIContext(), "请先输入用户信息")
                   }
@@ -559,6 +586,20 @@ export struct HealthOverview {
         right: { anchor: '__container__', align: HorizontalAlign.End }
       })
 
+      // 遮罩背景半透明
+      Column()
+        .visibility(this.showExpandedButtons ? Visibility.Visible : Visibility.Hidden)
+        .backgroundColor($r('app.color.view_mask'))
+        .alignRules({
+          top: { anchor: '__container__', align: VerticalAlign.Top },
+          bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
+          left: { anchor: '__container__', align: HorizontalAlign.Start },
+          right: { anchor: '__container__', align: HorizontalAlign.End }
+        })
+        .onClick(() => {
+          this.hideExpandedButtons()
+        })
+
       // 发布按钮
       MIconButton({
         iconName: this.showExpandedButtons ? "x" : "+",
@@ -584,7 +625,7 @@ export struct HealthOverview {
         .visibility(this.showQuick ? Visibility.Visible : Visibility.Hidden)
         .margin({
           right: AppConstants.VIEW_PADDING,
-          bottom: 200
+          bottom: 120
         })
         .id("__add_btn__")
         .alignRules({
@@ -611,6 +652,7 @@ export struct HealthOverview {
           })
           .scale({ x: this.buttonScale, y: this.buttonScale })
           .opacity(this.buttonOpacity)
+          .visibility(this.showExpandedButtons ? Visibility.Visible : Visibility.Hidden)
           .animation({
             duration: 300,
             curve: Curve.EaseOut
