@@ -53,6 +53,7 @@ export struct MIcon {
       "+": $r('sys.symbol.plus_circle_fill'), // 填充加号(圆形)
       "-": $r('sys.symbol.minus_circle_fill'), // 填充减号(圆形)
       "x": $r('sys.symbol.xmark_circle_fill'), // 填充乘号(圆形)
+      ">": $r('sys.symbol.play_fill') // 填充乘号(右箭头)
     }
 
     this.symbolName = mapData[this.iconName]

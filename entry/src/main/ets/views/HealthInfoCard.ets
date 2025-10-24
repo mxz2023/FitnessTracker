@@ -8,14 +8,15 @@
  * @desc
  */
 
-import { MDashBoard, MDashBoardV2 } from "../components/MDashBoard"
+import { ColorConstants, FontSizeConstants } from "../common/CommonDefine"
+import { MDashBoardV1, MDashBoardV2, MDashBoardV3 } from "../components/MDashBoard"
 import { MStatusLable } from "../components/MLable"
 import { HealthCardData, HealthCardDataType } from "../models/HealthDataModel"
 import {
   getHealthStatusColor,
-  getHealthStatusColors,
   getHealthStatusRang,
-  getHealthStatusText
+  getHealthStatusText,
+  getHealthColors,
 } from "../utils/HealthUtils"
 import { TypeUtils } from "../utils/TypeUtils"
 
@@ -50,27 +51,133 @@ export struct HealthInfoCard {
       if (this.data.type === HealthCardDataType.WeightInfo || this.data.type === HealthCardDataType.BloodSugarInfo ||
         this.data.type === HealthCardDataType.UricAcidInfo) {
         // 单值圆形仪表
-        MDashBoard({
-          value: Number(this.data.value),
-          colors: getHealthStatusColors(this.data.type),
-          range: getHealthStatusRang(this.data.type),
-          title: {
-            text: `${this.data.value}`,
-            color: getHealthStatusColor(this.data.status)
-          },
-          subTitle: {
-            text: this.data.unit,
-            color: getHealthStatusColor(this.data.status)
-          },
-          note: {
-            text: TypeUtils.isEmptyString(this.data.other) ? getHealthStatusText(this.data.status) : this.data.other,
-            color: getHealthStatusColor(this.data.status)
-          },
+        MDashBoardV1({
+          data: {
+            value: Number(this.data.value),
+            colors: getHealthColors(this.data.type),
+            range: getHealthStatusRang(this.data.type),
+            title: {
+              text: `${this.data.value}`,
+              color: getHealthStatusColor(this.data.status)
+            },
+            subTitle: {
+              text: this.data.unit,
+              color: getHealthStatusColor(this.data.status)
+            },
+            note: {
+              text: TypeUtils.isEmptyString(this.data.other) ? getHealthStatusText(this.data.status) : this.data.other,
+              color: getHealthStatusColor(this.data.status)
+            },
+          }
         })
-      } else if (this.data.type === HealthCardDataType.BloodPressureInfo ||
-        this.data.type === HealthCardDataType.BloodLipidInfo) {
+      } else if (this.data.type === HealthCardDataType.BloodPressureInfo) {
         // 多值线条仪表
-        MDashBoardV2()
+        MDashBoardV2({
+          dataList: [
+            {
+              value: Number(this.data.value),
+              colors: getHealthColors(this.data.type),
+              range: getHealthStatusRang(this.data.type),
+              title: {
+                text: `${this.data.value}`,
+                color: ColorConstants.Black,
+                size: FontSizeConstants.Normal
+              },
+              subTitle: {
+                text: this.data.unit,
+                color: ColorConstants.Gray,
+                size: FontSizeConstants.Small
+              },
+              note: {
+                text: "收缩压",
+                color: ColorConstants.Gray,
+                size: FontSizeConstants.Small
+              },
+            },
+            {
+              value: Number(this.data.value),
+              colors: getHealthColors(this.data.type),
+              range: getHealthStatusRang(this.data.type),
+              title: {
+                text: `${this.data.value}`,
+                color: ColorConstants.Black,
+                size: FontSizeConstants.Normal
+              },
+              subTitle: {
+                text: this.data.unit,
+                color: ColorConstants.Gray,
+                size: FontSizeConstants.Small
+              },
+              note: {
+                text: "舒张压",
+                color: ColorConstants.Gray,
+                size: FontSizeConstants.Small
+              },
+            }
+          ],
+        })
+      } else if (this.data.type === HealthCardDataType.BloodLipidInfo) {
+        // 多值圆形仪表
+        MDashBoardV3(
+          {
+            dataList: [
+              {
+                value: Number(this.data.value),
+                colors: getHealthColors(this.data.type),
+                range: getHealthStatusRang(this.data.type),
+                title: {
+                  text: `${this.data.value}`,
+                  color: getHealthStatusColor(this.data.status)
+                },
+                note: {
+                  text: TypeUtils.isEmptyString(this.data.other) ? getHealthStatusText(this.data.status) :
+                    this.data.other,
+                  color: getHealthStatusColor(this.data.status)
+                },
+              },
+              {
+                value: Number(this.data.value),
+                colors: getHealthColors(this.data.type),
+                range: getHealthStatusRang(this.data.type),
+                title: {
+                  text: `${this.data.value}`,
+                  color: getHealthStatusColor(this.data.status)
+                },
+                note: {
+                  text: TypeUtils.isEmptyString(this.data.other) ? getHealthStatusText(this.data.status) :
+                    this.data.other,
+                  color: getHealthStatusColor(this.data.status)
+                },
+              },
+              {
+                value: Number(this.data.value),
+                colors: getHealthColors(this.data.type),
+                range: getHealthStatusRang(this.data.type),
+                title: {
+                  text: `${this.data.value}`,
+                  color: getHealthStatusColor(this.data.status)
+                },
+                note: {
+                  text: TypeUtils.isEmptyString(this.data.other) ? getHealthStatusText(this.data.status) :
+                    this.data.other,
+                  color: getHealthStatusColor(this.data.status)
+                },
+              },
+              {
+                value: Number(this.data.value),
+                colors: getHealthColors(this.data.type),
+                range: getHealthStatusRang(this.data.type),
+                title: {
+                  text: `${this.data.value}`,
+                  color: getHealthStatusColor(this.data.status)
+                },
+                note: {
+                  text: TypeUtils.isEmptyString(this.data.other) ? getHealthStatusText(this.data.status) :
+                    this.data.other,
+                  color: getHealthStatusColor(this.data.status)
+                },
+              }]
+          })
       } else {
         // 默认仪表
       }

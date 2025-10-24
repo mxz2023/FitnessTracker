@@ -51,25 +51,21 @@ export struct MIconButton {
       if (this.srcName) {
         Column() {
           Image(this.srcName)
-        }
-        .padding(8)
-        .height(48)
-        .width(48)
-        .borderRadius(24)
-        .clip(true)
-        .backgroundColor(ColorConstants.Red)
-
+        }.padding(8).backgroundColor(ColorConstants.Red)
       } else {
         MIcon({
           iconName: this.iconName,
           iconSize: 48,
           iconColor: [this.iconColor]
-        })
-          .height(48)
-          .width(48)
+        }).backgroundColor(ColorConstants.White)
       }
-    }.onClick(() => {
+    }
+    .onClick(() => {
       this.handleClick()
     })
+    .height(48)
+    .width(48)
+    .borderRadius(24)
+    .clip(true)
   }
 }

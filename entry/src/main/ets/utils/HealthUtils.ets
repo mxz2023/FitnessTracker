@@ -3,9 +3,7 @@
  */
 
 import {
-  HealthStatus,
-  HealthCardDataType,
-  Range
+  HealthStatus, HealthCardDataType, Range
 } from '../models/HealthDataModel';
 
 /**
@@ -77,8 +75,9 @@ export function getHealthStatusText(status: HealthStatus): string {
  * @param type
  * @returns
  */
-export function getHealthStatusColors(type: HealthCardDataType): Array<[ResourceColor | LinearGradient, number]> {
-  let colors: Array<[ResourceColor | LinearGradient, number]> = []
+export function getHealthGaugeColors(type: HealthCardDataType): Array<[LinearGradient, number]> {
+  let colors: Array<[LinearGradient, number]> = []
+
   switch (type) {
     case HealthCardDataType.WeightInfo: {
       colors = [
@@ -126,12 +125,58 @@ export function getHealthStatusColors(type: HealthCardDataType): Array<[Resource
   return colors
 }
 
+export function getHealthColors(type: HealthCardDataType): Array<[ResourceColor, number]> {
+  let colors: Array<[ResourceColor, number]> = []
+
+  switch (type) {
+    case HealthCardDataType.WeightInfo:
+    case HealthCardDataType.BloodSugarInfo:
+    case HealthCardDataType.BloodPressureInfo:
+    {
+      colors = [
+        [0x54baea, 0.0],
+        [0xdbefa5, 0.2],
+        [0x65b50e, 0.5],
+        [0xf1e707, 0.8],
+        [0xe64566, 1.0]
+      ]
+      break;
+    }
+
+    case HealthCardDataType.UricAcidInfo: {
+      colors = [
+        [0xdbefa5, 0.0],
+        [0x65b50e, 0.5],
+        [0xf1e707, 0.7],
+        [0xe64566, 1.0]
+      ]
+      break;
+    }
+
+    case HealthCardDataType.BloodLipidInfo: {
+      colors = [
+        [0xdbefa5, 0.0],
+        [0x65b50e, 0.5],
+        [0xf1e707, 0.7],
+        [0xe64566, 1.0]
+      ]
+      break;
+    }
+
+    default: {
+      break;
+    }
+  }
+
+  return colors
+}
+
 /**
  * 获取指标的有效范围
  * @param type
  */
-export function getHealthStatusRang(type: HealthCardDataType):Range {
-  const res:Range = new Range()
+export function getHealthStatusRang(type: HealthCardDataType): Range {
+  const res: Range = new Range()
   switch (type) {
     case HealthCardDataType.WeightInfo: {
       res.min = 50
@@ -147,6 +192,10 @@ export function getHealthStatusRang(type: HealthCardDataType):Range {
       res.min = 100
       res.max = 600
       break;
+    }
+    case HealthCardDataType.BloodPressureInfo:{
+      res.min = 50
+      res.max = 350
     }
   }
   return res
