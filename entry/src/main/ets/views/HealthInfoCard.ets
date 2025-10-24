@@ -81,7 +81,7 @@ export struct HealthInfoCard {
               title: {
                 text: `${this.data.value}`,
                 color: ColorConstants.Black,
-                size: FontSizeConstants.Normal
+                size: FontSizeConstants.NavTitle
               },
               subTitle: {
                 text: this.data.unit,
@@ -101,7 +101,7 @@ export struct HealthInfoCard {
               title: {
                 text: `${this.data.value2}`,
                 color: ColorConstants.Black,
-                size: FontSizeConstants.Normal
+                size: FontSizeConstants.NavTitle
               },
               subTitle: {
                 text: this.data.unit,

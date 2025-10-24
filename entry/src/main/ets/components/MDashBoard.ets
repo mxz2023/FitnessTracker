@@ -12,7 +12,7 @@ import { TitleData } from "./MLable"
 import { TypeUtils } from "../utils/TypeUtils"
 import { Range } from "../models/HealthDataModel"
 import { MIcon } from "./MIcon"
-import { ColorConstants } from "../common/CommonDefine"
+import { AppConstants, ColorConstants } from "../common/CommonDefine"
 
 interface MDashBoardData {
   title: TitleData
@@ -120,59 +120,68 @@ export struct MDashBoardV2 {
   }
 
   build() {
-    Row() {
+    Column({ space: $r('app.integer.view_space') }) {
       ForEach(this.dataList, (item: MDashBoardData, index: number) => {
         RelativeContainer() {
-          Column() {
-            Text(item.title.text)
-              .fontColor(item.title.color)
-              .fontSize(item.title.size)
-              .fontWeight(FontWeight.Bold)
-              .maxLines(1)
-
-            if (item.subTitle && !TypeUtils.isEmptyString(item.subTitle.text)) {
-              Text(item.subTitle.text)
-                .fontColor(item.subTitle.color)
-                .fontSize(item.subTitle.size)
+          Row() {
+            Row() {
+              Text(item.title.text)
+                .fontColor(item.title.color)
+                .fontSize(item.title.size)
+                .fontWeight(FontWeight.Bold)
                 .maxLines(1)
+              if (item.subTitle && !TypeUtils.isEmptyString(item.subTitle.text)) {
+                Text(item.subTitle.text)
+                  .fontColor(item.subTitle.color)
+                  .fontSize(item.subTitle.size)
+                  .maxLines(1)
+                  .margin({
+                    left: 2
+                  })
+              }
             }
 
+            if (item.note && !TypeUtils.isEmptyString(item.note.text)) {
+              Text(item.note.text)
+                .fontColor(item.note.color)
+                .fontSize(item.note.size)
+                .fontWeight(FontWeight.Bold)
+                .maxLines(1)
+            }
           }.alignRules({
             left: { anchor: '__container__', align: HorizontalAlign.Start },
             right: { anchor: '__container__', align: HorizontalAlign.End },
             top: { anchor: '__container__', align: VerticalAlign.Top },
-          }).id("__title__")
+          }).id("__title__").justifyContent(FlexAlign.SpaceBetween)
 
-          Column() {
+          Row() {
             MIcon({
-              iconName: ">",
+              iconName: "^",
               iconColor: [ColorConstants.Black],
               iconSize: 16
-            }).alignRules({
-              middle: {
-                anchor: '__container__', align: HorizontalAlign.Center
-              },
-              center: {
-                anchor: '__container__', align: VerticalAlign.Center
-              }
-            }).margin({
-              left: -35,
-              top: this.pos[index]
             })
+              .width(18)
+              .height(18)
+              .margin({
+                left: this.pos[index],
+                top: 15 + kStrokeWidth
+              })
           }
+          .justifyContent(FlexAlign.Start)
           .onAreaChange((oldValue: Area, newValue: Area) => {
-            const a = this.dataList[index].value - this.dataList[index].range.min
+            const a = Math.max(this.dataList[index].value - this.dataList[index].range.min, 1)
             const b = this.dataList[index].range.max - this.dataList[index].range.min
-            this.pos[index] = Number(newValue.height) - Number(newValue.height) / b * a
+            this.pos[index] = Number(newValue.width) / b * a
           })
-          .width(kStrokeWidth)
+          .width('100%')
+          .height(kStrokeWidth)
           .margin({
             top: 4,
             bottom: 4
           })
           .borderRadius(10)
           .linearGradient({
-            direction: GradientDirection.Top,
+            direction: GradientDirection.Right,
             colors: item.colors
           })
           .alignRules({
@@ -180,22 +189,7 @@ export struct MDashBoardV2 {
             bottom: { anchor: '__note__', align: VerticalAlign.Top },
             middle: { anchor: '__note__', align: HorizontalAlign.Center }
           })
-
-          if (item.note && !TypeUtils.isEmptyString(item.note.text)) {
-            Column() {
-              Text(item.note.text)
-                .fontColor(item.note.color)
-                .fontSize(item.note.size)
-                .maxLines(1)
-
-            }.alignRules({
-              left: { anchor: '__container__', align: HorizontalAlign.Start },
-              right: { anchor: '__container__', align: HorizontalAlign.End },
-              bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
-            }).id("__note__")
-          }
-        }
-        .layoutWeight(1)
+        }.layoutWeight(1)
       })
     }
     .padding({

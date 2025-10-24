@@ -84,45 +84,90 @@ export struct HealthOverview {
     this.quickTools = [
       {
         name: $r('app.media.weight'),
-        x: 0,
-        y: -200,
+        x: -200,
+        y: 0,
         handleClick: () => {
           this.showType = HealthCardDataType.WeightInfo
         }
       },
       {
         name: $r('app.media.blood_sugar'),
-        x: -140,
-        y: -140,
+        x: -130,
+        y: -130,
         handleClick: () => {
           this.showType = HealthCardDataType.BloodSugarInfo
         }
       },
       {
         name: $r('app.media.uric_acid'),
-        x: -200,
-        y: 0,
+        x: 0,
+        y: -200,
+
         handleClick: () => {
           this.showType = HealthCardDataType.UricAcidInfo
         }
       },
       {
         name: $r('app.media.blood_pressure'),
-        x: -140,
-        y: 140,
+        x: 130,
+        y: -130,
         handleClick: () => {
           this.showType = HealthCardDataType.BloodPressureInfo
         }
       },
       {
         name: $r('app.media.blood_lipid'),
-        x: 0,
-        y: 200,
+        x: 200,
+        y: 0,
         handleClick: () => {
           this.showType = HealthCardDataType.BloodLipidInfo
         }
       }
     ]
+
+    // 左半圆
+    // this.quickTools = [
+    //   {
+    //     name: $r('app.media.weight'),
+    //     x: 0,
+    //     y: -200,
+    //     handleClick: () => {
+    //       this.showType = HealthCardDataType.WeightInfo
+    //     }
+    //   },
+    //   {
+    //     name: $r('app.media.blood_sugar'),
+    //     x: -140,
+    //     y: -140,
+    //     handleClick: () => {
+    //       this.showType = HealthCardDataType.BloodSugarInfo
+    //     }
+    //   },
+    //   {
+    //     name: $r('app.media.uric_acid'),
+    //     x: -200,
+    //     y: 0,
+    //     handleClick: () => {
+    //       this.showType = HealthCardDataType.UricAcidInfo
+    //     }
+    //   },
+    //   {
+    //     name: $r('app.media.blood_pressure'),
+    //     x: -140,
+    //     y: 140,
+    //     handleClick: () => {
+    //       this.showType = HealthCardDataType.BloodPressureInfo
+    //     }
+    //   },
+    //   {
+    //     name: $r('app.media.blood_lipid'),
+    //     x: 0,
+    //     y: 200,
+    //     handleClick: () => {
+    //       this.showType = HealthCardDataType.BloodLipidInfo
+    //     }
+    //   }
+    // ]
 
     await this.loadLastData()
   }
@@ -214,15 +259,15 @@ export struct HealthOverview {
         date: this.uricAcidVM.dateStr,
         // other: this.uricAcidVM.getHealthAdvice()
       },
-      {
-        title: '血脂',
-        type: HealthCardDataType.BloodLipidInfo,
-        value: this.uricAcidVM.value,
-        unit: UnitConstants.CHOLESTEROL_UNIT,
-        status: this.uricAcidVM.getHealthStatus(),
-        date: this.uricAcidVM.dateStr,
-        // other: this.uricAcidVM.getHealthAdvice()
-      },
+      // {
+      //   title: '血脂',
+      //   type: HealthCardDataType.BloodLipidInfo,
+      //   value: this.uricAcidVM.value,
+      //   unit: UnitConstants.CHOLESTEROL_UNIT,
+      //   status: this.uricAcidVM.getHealthStatus(),
+      //   date: this.uricAcidVM.dateStr,
+      //   // other: this.uricAcidVM.getHealthAdvice()
+      // },
     ];
   }
 
@@ -475,7 +520,7 @@ export struct HealthOverview {
               } else if (curWidth > 350) {
                 this.columnsTemplate = '1fr 1fr'
               } else {
-                this.columnsTemplate = '1fr'
+                this.columnsTemplate = '1fr 1fr'
               }
             })
           }
@@ -625,14 +670,14 @@ export struct HealthOverview {
         }
       })
         .visibility(this.showQuick ? Visibility.Visible : Visibility.Hidden)
-        .margin({
-          right: AppConstants.VIEW_PADDING,
-          bottom: 120
-        })
+        // .margin({
+        //   right: AppConstants.VIEW_PADDING,
+        //   bottom: 60
+        // })
         .id("__add_btn__")
         .alignRules({
           bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
-          right: { anchor: '__container__', align: HorizontalAlign.End }
+          middle: { anchor: '__container__', align: HorizontalAlign.Center }
         })
 
       ForEach(this.quickTools, (item: ToolItem, index) => {

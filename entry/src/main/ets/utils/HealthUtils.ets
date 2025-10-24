@@ -203,8 +203,8 @@ export function getHealthStatusRang(type: HealthCardDataType): Range {
       break;
     }
     case HealthCardDataType.BloodPressureInfo:{
-      res.min = 0
-      res.max = 300
+      res.min = 50
+      res.max = 350
       break;
     }
     case HealthCardDataType.BloodLipidInfo:{

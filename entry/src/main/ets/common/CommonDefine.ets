@@ -90,6 +90,10 @@ export class AppConstants {
    */
   static readonly VIEW_MARGIN: number = 12
   /**
+   * 页面的间距
+   */
+  static readonly VIEW_SPACE: number = 8
+  /**
    * 页面的圆角
    */
   static readonly VIEW_RADIUS: number = 8
