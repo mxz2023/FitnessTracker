@@ -472,8 +472,10 @@ export struct HealthOverview {
                 this.columnsTemplate = '1fr 1fr 1fr 1fr'
               } else if (curWidth > 600) {
                 this.columnsTemplate = '1fr 1fr 1fr'
-              } else {
+              } else if (curWidth > 350) {
                 this.columnsTemplate = '1fr 1fr'
+              } else {
+                this.columnsTemplate = '1fr'
               }
             })
           }

@@ -127,11 +127,9 @@ export function getHealthGaugeColors(type: HealthCardDataType): Array<[LinearGra
 
 export function getHealthColors(type: HealthCardDataType): Array<[ResourceColor, number]> {
   let colors: Array<[ResourceColor, number]> = []
-
   switch (type) {
     case HealthCardDataType.WeightInfo:
     case HealthCardDataType.BloodSugarInfo:
-    case HealthCardDataType.BloodPressureInfo:
     {
       colors = [
         [0x54baea, 0.0],
@@ -142,6 +140,17 @@ export function getHealthColors(type: HealthCardDataType): Array<[ResourceColor,
       ]
       break;
     }
+
+    case HealthCardDataType.BloodPressureInfo:
+      {
+        colors = [
+          [0x54baea, 0.0],
+          [0xb8ef3b, 0.3],
+          [0xf1e707, 0.7],
+          [0xe64566, 1.0]
+        ]
+        break;
+      }
 
     case HealthCardDataType.UricAcidInfo: {
       colors = [
@@ -194,8 +203,14 @@ export function getHealthStatusRang(type: HealthCardDataType): Range {
       break;
     }
     case HealthCardDataType.BloodPressureInfo:{
-      res.min = 50
-      res.max = 350
+      res.min = 0
+      res.max = 300
+      break;
+    }
+    case HealthCardDataType.BloodLipidInfo:{
+      res.min = 0
+      res.max = 300
+      break;
     }
   }
   return res

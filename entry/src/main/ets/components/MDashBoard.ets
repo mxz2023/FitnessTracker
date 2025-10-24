@@ -23,6 +23,7 @@ interface MDashBoardData {
   value: number
 }
 
+const kStrokeWidth = 15
 
 @ComponentV2
 export struct MDashBoardV1 {
@@ -84,11 +85,14 @@ export struct MDashBoardV1 {
     }
     .width('100%')
     .aspectRatio(1)
-    .strokeWidth(18)
     .trackShadow({
       radius: 7,
       offsetX: 7,
       offsetY: 7
+    })
+    .strokeWidth(kStrokeWidth) // 圆环宽度
+    .indicator({
+      space: kStrokeWidth      // 指示器样式
     })
     .value(this.data.value)
     .startAngle(240)
@@ -102,6 +106,14 @@ export struct MDashBoardV1 {
 @ComponentV2
 export struct MDashBoardV2 {
   @Param @Require dataList: MDashBoardData[]
+  @Local private pos: number[] = []
+
+  aboutToAppear(): void {
+    const len = this.dataList.length
+    for (let i = 0; i < len; i++) {
+      this.pos[i] = 0
+    }
+  }
 
   getTop(value: number, index: number): Percentage {
     return `${(1 - value / (this.dataList[index].range.max - this.dataList[index].range.min)) * 100}%`
@@ -115,6 +127,7 @@ export struct MDashBoardV2 {
             Text(item.title.text)
               .fontColor(item.title.color)
               .fontSize(item.title.size)
+              .fontWeight(FontWeight.Bold)
               .maxLines(1)
 
             if (item.subTitle && !TypeUtils.isEmptyString(item.subTitle.text)) {
@@ -135,12 +148,26 @@ export struct MDashBoardV2 {
               iconName: ">",
               iconColor: [ColorConstants.Black],
               iconSize: 16
-            }).position({ left: -15, top: this.getTop(item.value, index) })
+            }).alignRules({
+              middle: {
+                anchor: '__container__', align: HorizontalAlign.Center
+              },
+              center: {
+                anchor: '__container__', align: VerticalAlign.Center
+              }
+            }).margin({
+              left: -35,
+              top: this.pos[index]
+            })
           }
-          .width(20)
+          .onAreaChange((oldValue: Area, newValue: Area) => {
+            const a = this.dataList[index].value - this.dataList[index].range.min
+            const b = this.dataList[index].range.max - this.dataList[index].range.min
+            this.pos[index] = Number(newValue.height) - Number(newValue.height) / b * a
+          })
+          .width(kStrokeWidth)
           .margin({
             top: 4,
-            left: 20,
             bottom: 4
           })
           .borderRadius(10)
@@ -151,6 +178,7 @@ export struct MDashBoardV2 {
           .alignRules({
             top: { anchor: '__title__', align: VerticalAlign.Bottom },
             bottom: { anchor: '__note__', align: VerticalAlign.Top },
+            middle: { anchor: '__note__', align: HorizontalAlign.Center }
           })
 
           if (item.note && !TypeUtils.isEmptyString(item.note.text)) {
@@ -167,7 +195,6 @@ export struct MDashBoardV2 {
             }).id("__note__")
           }
         }
-        .padding({ left: 15 })
         .layoutWeight(1)
       })
     }

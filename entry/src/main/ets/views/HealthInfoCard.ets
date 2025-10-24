@@ -71,7 +71,7 @@ export struct HealthInfoCard {
           }
         })
       } else if (this.data.type === HealthCardDataType.BloodPressureInfo) {
-        // 多值线条仪表
+        // 双线条仪表
         MDashBoardV2({
           dataList: [
             {
@@ -95,11 +95,11 @@ export struct HealthInfoCard {
               },
             },
             {
-              value: Number(this.data.value),
+              value: Number(this.data.value2),
               colors: getHealthColors(this.data.type),
               range: getHealthStatusRang(this.data.type),
               title: {
-                text: `${this.data.value}`,
+                text: `${this.data.value2}`,
                 color: ColorConstants.Black,
                 size: FontSizeConstants.Normal
               },
