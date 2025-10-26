@@ -2,11 +2,11 @@
   "float": [
     {
       "name": "font_size_small",
-      "value": "14fp"
+      "value": "12fp"
     },
     {
       "name": "font_size_normal",
-      "value": "16fp"
+      "value": "14fp"
     },
     {
       "name": "font_size_medium",

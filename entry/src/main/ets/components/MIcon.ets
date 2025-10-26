@@ -18,7 +18,11 @@ export struct MIcon {
   @Local private symbolName?: Resource
 
   @Monitor('iconName')
-  onChange() {
+  onIconChange(monitor: IMonitor) {
+    this.updateIcon()
+  }
+
+  private updateIcon() {
     let mapData: Record<string, Resource> = {
       "home": $r('sys.symbol.house_fill'), // 首页
       "plaza": $r('sys.symbol.square_fill_grid_2x2'), // 成长
@@ -61,7 +65,7 @@ export struct MIcon {
   }
 
   aboutToAppear(): void {
-    this.onChange()
+    this.updateIcon()
   }
 
   build() {

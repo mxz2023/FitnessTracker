@@ -8,8 +8,8 @@
  * @desc
  */
 
-import { ColorConstants, FontSizeConstants } from "../common/CommonDefine"
-import { MDashBoardV1, MDashBoardV2, MDashBoardV3 } from "../components/MDashBoard"
+import { FontSizeConstants } from "../common/CommonDefine"
+import { MDashBoardStyle, MDashBoardV1, MDashBoardV2, MDashBoardV3 } from "../components/MDashBoard"
 import { MStatusLable } from "../components/MLable"
 import { HealthCardData, HealthCardDataType } from "../models/HealthDataModel"
 import {
@@ -53,20 +53,20 @@ export struct HealthInfoCard {
         // 单值圆形仪表
         MDashBoardV1({
           data: {
-            value: Number(this.data.value),
+            value: Number(this.data.value1),
             colors: getHealthColors(this.data.type),
-            range: getHealthStatusRang(this.data.type),
+            range: getHealthStatusRang(this.data.type)[0],
             title: {
-              text: `${this.data.value}`,
-              color: getHealthStatusColor(this.data.status)
+              text: `${this.data.value1}`,
+              color: $r('app.color.text_333')
             },
             subTitle: {
               text: this.data.unit,
-              color: getHealthStatusColor(this.data.status)
+              color: $r('app.color.text_999')
             },
             note: {
               text: TypeUtils.isEmptyString(this.data.other) ? getHealthStatusText(this.data.status) : this.data.other,
-              color: getHealthStatusColor(this.data.status)
+              color: $r('app.color.text_666')
             },
           }
         })
@@ -75,42 +75,42 @@ export struct HealthInfoCard {
         MDashBoardV2({
           dataList: [
             {
-              value: Number(this.data.value),
+              value: Number(this.data.value1),
               colors: getHealthColors(this.data.type),
-              range: getHealthStatusRang(this.data.type),
+              range: getHealthStatusRang(this.data.type)[0],
               title: {
-                text: `${this.data.value}`,
-                color: ColorConstants.Black,
+                text: `${this.data.value1}`,
+                color: $r('app.color.text_333'),
                 size: FontSizeConstants.NavTitle
               },
               subTitle: {
                 text: this.data.unit,
-                color: ColorConstants.Gray,
+                color: $r('app.color.text_999'),
                 size: FontSizeConstants.Small
               },
               note: {
                 text: "收缩压",
-                color: ColorConstants.Gray,
+                color: $r('app.color.text_666'),
                 size: FontSizeConstants.Small
               },
             },
             {
               value: Number(this.data.value2),
               colors: getHealthColors(this.data.type),
-              range: getHealthStatusRang(this.data.type),
+              range: getHealthStatusRang(this.data.type)[1],
               title: {
                 text: `${this.data.value2}`,
-                color: ColorConstants.Black,
+                color: $r('app.color.text_333'),
                 size: FontSizeConstants.NavTitle
               },
               subTitle: {
                 text: this.data.unit,
-                color: ColorConstants.Gray,
+                color: $r('app.color.text_999'),
                 size: FontSizeConstants.Small
               },
               note: {
                 text: "舒张压",
-                color: ColorConstants.Gray,
+                color: $r('app.color.text_666'),
                 size: FontSizeConstants.Small
               },
             }
@@ -118,66 +118,85 @@ export struct HealthInfoCard {
         })
       } else if (this.data.type === HealthCardDataType.BloodLipidInfo) {
         // 多值圆形仪表
-        MDashBoardV3(
-          {
-            dataList: [
-              {
-                value: Number(this.data.value),
-                colors: getHealthColors(this.data.type),
-                range: getHealthStatusRang(this.data.type),
-                title: {
-                  text: `${this.data.value}`,
-                  color: getHealthStatusColor(this.data.status)
-                },
-                note: {
-                  text: TypeUtils.isEmptyString(this.data.other) ? getHealthStatusText(this.data.status) :
-                    this.data.other,
-                  color: getHealthStatusColor(this.data.status)
-                },
+        MDashBoardV3({
+          dataList: [
+            {
+              value: Number(this.data.value1),
+              colors: getHealthColors(this.data.type),
+              range: getHealthStatusRang(this.data.type)[0],
+              title: {
+                text: `${this.data.value1}`,
+                color: $r('app.color.text_333')
               },
-              {
-                value: Number(this.data.value),
-                colors: getHealthColors(this.data.type),
-                range: getHealthStatusRang(this.data.type),
-                title: {
-                  text: `${this.data.value}`,
-                  color: getHealthStatusColor(this.data.status)
-                },
-                note: {
-                  text: TypeUtils.isEmptyString(this.data.other) ? getHealthStatusText(this.data.status) :
-                    this.data.other,
-                  color: getHealthStatusColor(this.data.status)
-                },
+              subTitle: {
+                text: this.data.unit,
+                color: $r('app.color.text_999'),
+                size: FontSizeConstants.Small
               },
-              {
-                value: Number(this.data.value),
-                colors: getHealthColors(this.data.type),
-                range: getHealthStatusRang(this.data.type),
-                title: {
-                  text: `${this.data.value}`,
-                  color: getHealthStatusColor(this.data.status)
-                },
-                note: {
-                  text: TypeUtils.isEmptyString(this.data.other) ? getHealthStatusText(this.data.status) :
-                    this.data.other,
-                  color: getHealthStatusColor(this.data.status)
-                },
+              note: {
+                text: TypeUtils.isEmptyString(this.data.other) ? getHealthStatusText(this.data.status) :
+                  this.data.other,
+                color: $r('app.color.text_666')
               },
-              {
-                value: Number(this.data.value),
-                colors: getHealthColors(this.data.type),
-                range: getHealthStatusRang(this.data.type),
-                title: {
-                  text: `${this.data.value}`,
-                  color: getHealthStatusColor(this.data.status)
-                },
-                note: {
-                  text: TypeUtils.isEmptyString(this.data.other) ? getHealthStatusText(this.data.status) :
-                    this.data.other,
-                  color: getHealthStatusColor(this.data.status)
-                },
-              }]
-          })
+            },
+            {
+              value: Number(this.data.value2),
+              colors: getHealthColors(this.data.type),
+              range: getHealthStatusRang(this.data.type)[1],
+              title: {
+                text: `${this.data.value2}`,
+                color: $r('app.color.text_333')
+              },
+              subTitle: {
+                text: this.data.unit,
+                color: $r('app.color.text_999'),
+                size: FontSizeConstants.Small
+              },
+              note: {
+                text: TypeUtils.isEmptyString(this.data.other) ? getHealthStatusText(this.data.status) :
+                  this.data.other,
+                color: $r('app.color.text_666')
+              },
+            },
+            {
+              value: Number(this.data.value3),
+              colors: getHealthColors(this.data.type),
+              range: getHealthStatusRang(this.data.type)[2],
+              title: {
+                text: `${this.data.value3}`,
+                color: $r('app.color.text_333')
+              },
+              subTitle: {
+                text: this.data.unit,
+                color: $r('app.color.text_999'),
+                size: FontSizeConstants.Small
+              },
+              note: {
+                text: TypeUtils.isEmptyString(this.data.other) ? getHealthStatusText(this.data.status) :
+                  this.data.other,
+                color: $r('app.color.text_666')
+              },
+            },
+            {
+              value: Number(this.data.value4),
+              colors: getHealthColors(this.data.type),
+              range: getHealthStatusRang(this.data.type)[3],
+              title: {
+                text: `${this.data.value4}`,
+                color: $r('app.color.text_333')
+              },
+              subTitle: {
+                text: this.data.unit,
+                color: $r('app.color.text_999'),
+                size: FontSizeConstants.Small
+              },
+              note: {
+                text: TypeUtils.isEmptyString(this.data.other) ? getHealthStatusText(this.data.status) :
+                  this.data.other,
+                color: $r('app.color.text_666')
+              },
+            }]
+        })
       } else {
         // 默认仪表
       }

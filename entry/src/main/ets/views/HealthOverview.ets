@@ -37,6 +37,7 @@ import { getAppPathStack } from '../utils/PathStackUtils';
 
 import { AppConstants, ColorConstants } from '../common/CommonDefine';
 import { UnitConstants } from '../common/HealthTypeDefine';
+import { MDashBoardStyle } from '../components/MDashBoard';
 
 
 const TAG = "HealthOverview"
@@ -59,6 +60,7 @@ export struct HealthOverview {
   @Local private showExpandedButtons: boolean = false // 是否展开了
   @Local private buttonScale: number = 0
   @Local private buttonOpacity: number = 0
+  @Provider("DashBoardStyle") dashBoardStyle: MDashBoardStyle = MDashBoardStyle.DashBoardNormal
   private userInfoVM?: UserViewModel
   private weightDataVM?: WeightViewModel
   private bloodSugarVM?: BloodSugarViewModel
@@ -225,7 +227,7 @@ export struct HealthOverview {
       {
         title: '体重',
         type: HealthCardDataType.WeightInfo,
-        value: this.weightDataVM.value,
+        value1: this.weightDataVM.value,
         unit: UnitConstants.WEIGHT_UNIT,
         status: this.weightDataVM.getHealthStatus(),
         date: this.weightDataVM.dateStr,
@@ -234,7 +236,7 @@ export struct HealthOverview {
       {
         title: '血糖',
         type: HealthCardDataType.BloodSugarInfo,
-        value: this.bloodSugarVM.value,
+        value1: this.bloodSugarVM.value,
         unit: UnitConstants.BLOOD_SUGAR_UNIT,
         status: this.bloodSugarVM.getHealthStatus(),
         date: this.bloodSugarVM.dateStr,
@@ -243,7 +245,7 @@ export struct HealthOverview {
       {
         title: '尿酸',
         type: HealthCardDataType.UricAcidInfo,
-        value: this.uricAcidVM.value,
+        value1: this.uricAcidVM.value,
         unit: UnitConstants.URIC_ACID_UNIT,
         status: this.uricAcidVM.getHealthStatus(),
         date: this.uricAcidVM.dateStr,
@@ -252,22 +254,25 @@ export struct HealthOverview {
       {
         title: '血压',
         type: HealthCardDataType.BloodPressureInfo,
-        value: this.bloodPressVM.systolic,
+        value1: this.bloodPressVM.systolic,
         value2: this.bloodPressVM.diastolic,
         unit: UnitConstants.BLOOD_PRESSURE_UNIT,
         status: this.uricAcidVM.getHealthStatus(),
         date: this.uricAcidVM.dateStr,
         // other: this.uricAcidVM.getHealthAdvice()
       },
-      // {
-      //   title: '血脂',
-      //   type: HealthCardDataType.BloodLipidInfo,
-      //   value: this.uricAcidVM.value,
-      //   unit: UnitConstants.CHOLESTEROL_UNIT,
-      //   status: this.uricAcidVM.getHealthStatus(),
-      //   date: this.uricAcidVM.dateStr,
-      //   // other: this.uricAcidVM.getHealthAdvice()
-      // },
+      {
+        title: '血脂',
+        type: HealthCardDataType.BloodLipidInfo,
+        value1: this.bloodLipidVM.totalCholesterol,
+        value2: this.bloodLipidVM.triglycerides,
+        value3: this.bloodLipidVM.hdlCholesterol,
+        value4: this.bloodLipidVM.ldlCholesterol,
+        unit: UnitConstants.CHOLESTEROL_UNIT,
+        status: this.bloodLipidVM.getHealthStatus(),
+        date: this.bloodLipidVM.dateStr,
+        // other: this.uricAcidVM.getHealthAdvice()
+      },
     ];
   }
 
@@ -515,12 +520,16 @@ export struct HealthOverview {
               // MatePad: 1280x800
               if (curWidth > 1000) {
                 this.columnsTemplate = '1fr 1fr 1fr 1fr'
+                this.dashBoardStyle = MDashBoardStyle.DashBoardBig
               } else if (curWidth > 600) {
                 this.columnsTemplate = '1fr 1fr 1fr'
+                this.dashBoardStyle = MDashBoardStyle.DashBoardBig
               } else if (curWidth > 350) {
                 this.columnsTemplate = '1fr 1fr'
+                this.dashBoardStyle = MDashBoardStyle.DashBoardNormal
               } else {
                 this.columnsTemplate = '1fr 1fr'
+                this.dashBoardStyle = MDashBoardStyle.DashBoardSmall
               }
             })
           }

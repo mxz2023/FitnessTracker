@@ -22,7 +22,7 @@ export struct MLable {
 /******************************* MTitle Begin *********************************/
 export interface TitleData {
   text?: string
-  color?: string
+  color?: ResourceColor
   size?: number
 }
 

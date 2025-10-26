@@ -8,15 +8,6 @@
  * @desc
  */
 
-// system
-
-// module
-
-// inner
-
-const TAG = 'CommonDefine.ets'
-
-
 /**
  * 默认颜色常量
  */
@@ -52,8 +43,8 @@ export class ColorConstants {
  * 默认字体大小常量
  */
 export class FontSizeConstants {
-  static readonly Small = 14;
-  static readonly Normal = 16;
+  static readonly Small = 12;
+  static readonly Normal = 14;
   static readonly Medium = 18;
   static readonly Large = 20;
   static readonly NavTitle = 22;

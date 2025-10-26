@@ -11,8 +11,10 @@ import { Gender } from "./UserDataModel";
 export interface HealthCardData {
   title: string;
   type: HealthCardDataType;
-  value: number;
+  value1: number;
   value2?: number;
+  value3?: number;
+  value4?: number;
   unit?: string;
   status: HealthStatus;
   date?: string;

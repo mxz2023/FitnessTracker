@@ -75,62 +75,11 @@ export function getHealthStatusText(status: HealthStatus): string {
  * @param type
  * @returns
  */
-export function getHealthGaugeColors(type: HealthCardDataType): Array<[LinearGradient, number]> {
-  let colors: Array<[LinearGradient, number]> = []
-
-  switch (type) {
-    case HealthCardDataType.WeightInfo: {
-      colors = [
-        [new LinearGradient([
-          { color: "#54baea", offset: 0 },
-          { color: "#dbefa5", offset: 0.2 },
-          { color: "#65b50e", offset: 0.5 },
-          { color: "#f1e707", offset: 0.8 },
-          { color: "#e64566", offset: 1 },
-        ]), 1],
-      ]
-      break;
-    }
-
-    case HealthCardDataType.BloodSugarInfo: {
-      colors = [
-        [new LinearGradient([
-          { color: "#54baea", offset: 0 },
-          { color: "#dbefa5", offset: 0.15 },
-          { color: "#65b50e", offset: 0.3 },
-          { color: "#f1e707", offset: 0.5 },
-          { color: "#e64566", offset: 1 },
-        ]), 1],
-      ]
-      break;
-    }
-
-    case HealthCardDataType.UricAcidInfo: {
-      colors = [
-        [new LinearGradient([
-          { color: "#dbefa5", offset: 0 },
-          { color: "#65b50e", offset: 0.5 },
-          { color: "#f1e707", offset: 0.7 },
-          { color: "#e64566", offset: 1 },
-        ]), 1],
-      ]
-      break;
-    }
-
-    default: {
-      break;
-    }
-  }
-
-  return colors
-}
-
 export function getHealthColors(type: HealthCardDataType): Array<[ResourceColor, number]> {
   let colors: Array<[ResourceColor, number]> = []
   switch (type) {
     case HealthCardDataType.WeightInfo:
-    case HealthCardDataType.BloodSugarInfo:
-    {
+    case HealthCardDataType.BloodSugarInfo: {
       colors = [
         [0x54baea, 0.0],
         [0xdbefa5, 0.2],
@@ -141,16 +90,15 @@ export function getHealthColors(type: HealthCardDataType): Array<[ResourceColor,
       break;
     }
 
-    case HealthCardDataType.BloodPressureInfo:
-      {
-        colors = [
-          [0x54baea, 0.0],
-          [0xb8ef3b, 0.3],
-          [0xf1e707, 0.7],
-          [0xe64566, 1.0]
-        ]
-        break;
-      }
+    case HealthCardDataType.BloodPressureInfo: {
+      colors = [
+        [0x54baea, 0.0],
+        [0xb8ef3b, 0.3],
+        [0xf1e707, 0.7],
+        [0xe64566, 1.0]
+      ]
+      break;
+    }
 
     case HealthCardDataType.UricAcidInfo: {
       colors = [
@@ -164,10 +112,9 @@ export function getHealthColors(type: HealthCardDataType): Array<[ResourceColor,
 
     case HealthCardDataType.BloodLipidInfo: {
       colors = [
-        [0xdbefa5, 0.0],
-        [0x65b50e, 0.5],
-        [0xf1e707, 0.7],
-        [0xe64566, 1.0]
+        [0xe64566, 0.0],
+        [0xf1e707, 0.5],
+        [0x65b50e, 1.0],
       ]
       break;
     }
@@ -184,34 +131,28 @@ export function getHealthColors(type: HealthCardDataType): Array<[ResourceColor,
  * 获取指标的有效范围
  * @param type
  */
-export function getHealthStatusRang(type: HealthCardDataType): Range {
-  const res: Range = new Range()
-  switch (type) {
-    case HealthCardDataType.WeightInfo: {
-      res.min = 50
-      res.max = 120
-      break;
-    }
-    case HealthCardDataType.BloodSugarInfo: {
-      res.min = 3.0
-      res.max = 15.0
-      break;
-    }
-    case HealthCardDataType.UricAcidInfo: {
-      res.min = 100
-      res.max = 600
-      break;
-    }
-    case HealthCardDataType.BloodPressureInfo:{
-      res.min = 50
-      res.max = 350
-      break;
-    }
-    case HealthCardDataType.BloodLipidInfo:{
-      res.min = 0
-      res.max = 300
-      break;
-    }
+export function getHealthStatusRang(type: HealthCardDataType): Range[] {
+  if (type == HealthCardDataType.WeightInfo) {
+    const item1 = new Range(50, 120);
+    return [item1]
+  } else if (type == HealthCardDataType.BloodSugarInfo) {
+    const item1 = new Range(3, 15);
+    return [item1]
+  } else if (type == HealthCardDataType.UricAcidInfo) {
+    const item1 = new Range(100, 600);
+    return [item1]
+  } else if (type == HealthCardDataType.BloodPressureInfo) {
+    const item1 = new Range(50, 300);
+    const item2 = new Range(50, 350);
+    return [item1, item2]
+  } else if (type == HealthCardDataType.BloodLipidInfo) {
+    const item1 = new Range(0, 8);
+    const item2 = new Range(0, 3);
+    const item3 = new Range(0, 3);
+    const item4 = new Range(0, 3);
+    return [item1, item2, item3, item4]
+  } else {
+    const item1 = new Range(1, 100);
+    return [item1]
   }
-  return res
 }
