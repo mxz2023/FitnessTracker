@@ -29,6 +29,10 @@ export struct MButton {
       .borderRadius($r('app.integer.view_radius')) // 设置圆角为3
       .backgroundColor(this.bgColor)
       .fontColor(this.textColor)
+      .clickEffect({
+        level: ClickEffectLevel.HEAVY,
+        scale: 0.8
+      })
       .onClick(() => {
         // 收起键盘
         this.getUIContext().getFocusController().clearFocus();
@@ -60,6 +64,10 @@ export struct MIconButton {
         }).backgroundColor(ColorConstants.White)
       }
     }
+    .clickEffect({
+      level: ClickEffectLevel.HEAVY,
+      scale: 0.8
+    })
     .onClick(() => {
       this.handleClick()
     })

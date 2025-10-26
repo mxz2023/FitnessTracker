@@ -461,7 +461,12 @@ export struct HealthOverview {
                       }
                     }
                   })
-                }.onClick(() => {
+                }
+                .clickEffect({
+                  level: ClickEffectLevel.HEAVY,
+                  scale: 0.8
+                })
+                .onClick(() => {
                   const res = this.userInfoVM?.validateUserData()
                   if (res?.isValid) {
                     const data: Record<string, string> = {
@@ -652,6 +657,10 @@ export struct HealthOverview {
           left: { anchor: '__container__', align: HorizontalAlign.Start },
           right: { anchor: '__container__', align: HorizontalAlign.End }
         })
+        .clickEffect({
+          level: ClickEffectLevel.HEAVY,
+          scale: 0.8
+        })
         .onClick(() => {
           this.hideExpandedButtons()
         })
@@ -679,10 +688,6 @@ export struct HealthOverview {
         }
       })
         .visibility(this.showQuick ? Visibility.Visible : Visibility.Hidden)
-        // .margin({
-        //   right: AppConstants.VIEW_PADDING,
-        //   bottom: 60
-        // })
         .id("__add_btn__")
         .alignRules({
           bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
