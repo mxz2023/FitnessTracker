@@ -1,5 +1,5 @@
 import { MDBaseController } from '../controller/BaseController';
-import { WebDialogController } from '../controller/WebDialogController';
+// import { WebDialogController } from '../controller/WebDialogController';
 import { BaseNode, FootnoteRefNode, TextNode, TreeNode } from '../model/TreeNode';
 
 export namespace TextImpl {
@@ -9,9 +9,9 @@ export namespace TextImpl {
       return MDBaseController.getMarkdownController(markdownUnion).getInlineCodeColor()
     }
     // 超链接
-    if ((data as TreeNode)?.type == "link") {
-      return MDBaseController.getMarkdownController(markdownUnion).getHyperlinkTextColor()
-    }
+    // if ((data as TreeNode)?.type == "link") {
+    //   return MDBaseController.getMarkdownController(markdownUnion).getHyperlinkTextColor()
+    // }
     // 超链接
     if ((data as TreeNode)?.type == "heading") {
       return MDBaseController.getMarkdownController(markdownUnion).getTitleColor()
@@ -143,13 +143,13 @@ export namespace TextImpl {
   }
 
   export function handleClick(markdownUnion: string, data: ESObject) {
-    if (data && data.type == "link") {
-      let title: string = data?.text || ""
-      let url: string = data?.url || ""
-      let h = MDBaseController.getMarkdownController(markdownUnion).getHyperlinkClickListener()
-      if (!h(title, url)) {
-        WebDialogController.getInstance().openBindSheet(title, url)
-      }
-    }
+    // if (data && data.type == "link") {
+    //   let title: string = data?.text || ""
+    //   let url: string = data?.url || ""
+    //   let h = MDBaseController.getMarkdownController(markdownUnion).getHyperlinkClickListener()
+    //   if (!h(title, url)) {
+    //     WebDialogController.getInstance().openBindSheet(title, url)
+    //   }
+    // }
   }
 }

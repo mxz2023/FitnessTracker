@@ -1,26 +1,14 @@
-// import webView from '@ohos.web.webview'
 import { LvLink, lvLink } from '../domain/LvLink'
 
 @CustomDialog
 export struct WebControl {
   controller: CustomDialogController
-  // webController: webView.WebviewController = new webView.WebviewController()
   @State mode: MixedMode = MixedMode.All;
   @State loading: boolean = true
   @State nLink: LvLink = lvLink
 
   build() {
     Stack({ alignContent: Alignment.Center }) {
-      // Web({ src: this.nLink.getLinkUrl(), controller: this.webController })
-      //   .mixedMode(this.mode)
-      //   .domStorageAccess(true)
-      //   .javaScriptAccess(true)
-      //   .overviewModeAccess(false)
-      //   .width("100%")
-      //   .onPageEnd((e) => {
-      //     this.loading = false
-      //   })
-
       if (this.loading) {
         Column() {
           LoadingProgress().width(50).height(50).color("#333333")
