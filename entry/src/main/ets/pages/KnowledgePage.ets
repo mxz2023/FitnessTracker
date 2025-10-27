@@ -7,7 +7,7 @@
  * @crateTime 2025-10-27
  * @desc
  */
-import { Markdown } from '@luvi/lv-markdown-in'
+import { Markdown } from '../thirds/MMarkdown/enhance/index'
 
 import { AppConstants, HealthDataType } from '../common/CommonDefine'
 import { NavigationTitleBuilder } from '../components/MNavigationTitle'
