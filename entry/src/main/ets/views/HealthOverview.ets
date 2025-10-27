@@ -35,7 +35,7 @@ import { UserInfoCard } from './UserInfoCard';
 import { showToast } from '../utils/ToastUtils';
 import { getAppPathStack } from '../utils/PathStackUtils';
 
-import { AppConstants, ColorConstants } from '../common/CommonDefine';
+import { ColorConstants } from '../common/CommonDefine';
 import { UnitConstants } from '../common/HealthTypeDefine';
 import { MDashBoardStyle } from '../components/MDashBoard';
 
@@ -126,50 +126,6 @@ export struct HealthOverview {
         }
       }
     ]
-
-    // 左半圆
-    // this.quickTools = [
-    //   {
-    //     name: $r('app.media.weight'),
-    //     x: 0,
-    //     y: -200,
-    //     handleClick: () => {
-    //       this.showType = HealthCardDataType.WeightInfo
-    //     }
-    //   },
-    //   {
-    //     name: $r('app.media.blood_sugar'),
-    //     x: -140,
-    //     y: -140,
-    //     handleClick: () => {
-    //       this.showType = HealthCardDataType.BloodSugarInfo
-    //     }
-    //   },
-    //   {
-    //     name: $r('app.media.uric_acid'),
-    //     x: -200,
-    //     y: 0,
-    //     handleClick: () => {
-    //       this.showType = HealthCardDataType.UricAcidInfo
-    //     }
-    //   },
-    //   {
-    //     name: $r('app.media.blood_pressure'),
-    //     x: -140,
-    //     y: 140,
-    //     handleClick: () => {
-    //       this.showType = HealthCardDataType.BloodPressureInfo
-    //     }
-    //   },
-    //   {
-    //     name: $r('app.media.blood_lipid'),
-    //     x: 0,
-    //     y: 200,
-    //     handleClick: () => {
-    //       this.showType = HealthCardDataType.BloodLipidInfo
-    //     }
-    //   }
-    // ]
 
     await this.loadLastData()
   }
@@ -507,11 +463,14 @@ export struct HealthOverview {
               })
             }
             .width('100%')
-            .layoutWeight(1)
+            .height('100%')
+            .nestedScroll({
+              scrollForward:NestedScrollMode.PARENT_FIRST,
+              scrollBackward: NestedScrollMode.SELF_FIRST
+            })
             .columnsTemplate(this.columnsTemplate)
             .rowsGap($r('app.integer.view_space'))
             .columnsGap($r('app.integer.view_space'))
-            .edgeEffect(EdgeEffect.Spring)
             .scrollBar(BarState.Off)
             .onSizeChange((_: SizeOptions, newValue: SizeOptions) => {
               const curWidth = newValue.width
@@ -539,11 +498,11 @@ export struct HealthOverview {
             })
           }
         }
-        .height('100%')
         .padding($r('app.integer.view_padding'))
       }
       .backgroundColor($r('app.color.view_background_color'))
       .scrollBar(BarState.Off)
+      .edgeEffect(EdgeEffect.Spring)
       .alignRules({
         top: { anchor: '__container__', align: VerticalAlign.Top },
         bottom: { anchor: '__container__', align: VerticalAlign.Bottom },

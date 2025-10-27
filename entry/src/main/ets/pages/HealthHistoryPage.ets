@@ -2,7 +2,9 @@
  * 通用健康历史记录页面
  */
 
-import { MButton, MIconButton } from '../components/MButton';
+import { AppConstants, HealthDataType } from '../common/CommonDefine';
+import { MButton } from '../components/MButton';
+import { MIcon } from '../components/MIcon';
 import { NavigationTitleBuilder } from '../components/MNavigationTitle';
 import {
   WeightData,
@@ -24,9 +26,6 @@ interface ChartDataItem {
   y2?: number;
   y3?: number;
 }
-
-type HealthDataType = 'weight' | 'bloodPressure' | 'bloodLipid' | 'bloodSugar' | 'uricAcid';
-
 
 @ComponentV2
 struct HealthHistoryPage {
@@ -382,7 +381,7 @@ struct HealthHistoryPage {
               .color('#2196F3')
           }
           .alignRules({
-            top: { anchor: '__container__', align: VerticalAlign.Top },
+            top: { anchor: '__container__', align: VerticalAlign.Bottom },
             bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
             left: { anchor: '__container__', align: HorizontalAlign.Start },
             right: { anchor: '__container__', align: HorizontalAlign.End }
@@ -411,6 +410,31 @@ struct HealthHistoryPage {
           })
           .justifyContent(FlexAlign.Center)
         } else {
+          Row() {
+            Text("常识").onClick(() => {
+              const data: Record<string, string> = {
+                "data": this.dataType
+              }
+              getAppPathStack().pushPathByName("knowledge", data, () => {
+
+              })
+            })
+            MIcon({
+              iconName:"about",
+              iconSize: 16
+            }).margin({
+              left: 4
+            })
+          }
+          .padding(AppConstants.VIEW_PADDING)
+          .id("__top__")
+          .alignRules({
+            top: { anchor: '__container__', align: VerticalAlign.Top },
+            left: { anchor: '__container__', align: HorizontalAlign.Start },
+            right: { anchor: '__container__', align: HorizontalAlign.End }
+          })
+          .justifyContent(FlexAlign.End)
+
           Column() {
             MChart({
               options: this.options
@@ -419,7 +443,7 @@ struct HealthHistoryPage {
           .height(300)
           .id("__Chart__")
           .alignRules({
-            top: { anchor: '__container__', align: VerticalAlign.Top },
+            top: { anchor: '__top__', align: VerticalAlign.Bottom },
             left: { anchor: '__container__', align: HorizontalAlign.Start },
             right: { anchor: '__container__', align: HorizontalAlign.End }
           })

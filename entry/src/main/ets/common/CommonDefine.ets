@@ -142,3 +142,5 @@ export class UserConstants {
    */
   static readonly DEFAULT_HEIGHT_CM: number = 170;
 }
+
+export type HealthDataType = 'weight' | 'bloodPressure' | 'bloodLipid' | 'bloodSugar' | 'uricAcid';
