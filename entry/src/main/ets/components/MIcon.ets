@@ -53,6 +53,8 @@ export struct MIcon {
       "hear": $r('sys.symbol.heart_fill'), // 收藏(心形样式)
       "star": $r('sys.symbol.star_fill'), // 收藏(星星样式)
 
+      'edit': $r('sys.symbol.highlighter_line'), // 编辑（笔)）
+
       "close": $r('sys.symbol.xmark'), // 关闭x(线型)
       "+": $r('sys.symbol.plus_circle_fill'), // 填充加号(圆形)
       "-": $r('sys.symbol.minus_circle_fill'), // 填充减号(圆形)

@@ -2,7 +2,8 @@
  * 通用健康历史记录页面
  */
 
-import { AppConstants, HealthDataType } from '../common/CommonDefine';
+import { it } from '@ohos/hypium';
+import { AppConstants, ColorConstants, HealthDataType } from '../common/CommonDefine';
 import { MButton } from '../components/MButton';
 import { MIcon } from '../components/MIcon';
 import { NavigationTitleBuilder } from '../components/MNavigationTitle';
@@ -16,7 +17,7 @@ import {
 } from '../models/HealthDataModel';
 import { ChartOptions, XAxis, YAxis } from '../thirds/EChart/EChartOption';
 import { MChart } from '../thirds/MChart';
-import { formatDate } from '../utils/HealthUtils';
+import { formatDate, getHealthStatusColor } from '../utils/HealthUtils';
 import { getAppPathStack } from '../utils/PathStackUtils';
 import { StorageUtils } from '../utils/StorageUtils';
 
@@ -396,7 +397,7 @@ struct HealthHistoryPage {
               })
               .aspectRatio(1)
             MButton({
-              text: "返回首页添加一条记录",
+              text: "去添加一条记录",
               onClickBlock: () => {
                 getAppPathStack().pop(this.dataType, true)
               }
@@ -420,7 +421,7 @@ struct HealthHistoryPage {
               })
             })
             MIcon({
-              iconName:"about",
+              iconName: "about",
               iconSize: 16
             }).margin({
               left: 4
@@ -451,17 +452,24 @@ struct HealthHistoryPage {
           List() {
             ForEach(this.historyData, (item: HealthData) => {
               ListItem() {
-                if (this.dataType === 'weight') {
-                  this.renderWeightItem(item as WeightData);
-                } else if (this.dataType === 'bloodLipid') {
-                  this.renderBloodLipidItem(item as BloodLipidData);
-                } else if (this.dataType === 'bloodSugar') {
-                  this.renderBloodSugarItem(item as BloodSugarData);
-                } else if (this.dataType === 'uricAcid') {
-                  this.renderUricAcidItem(item as UricAcidData);
-                } else if (this.dataType === 'bloodPressure') {
-                  this.renderBloodPressureItem(item as BloodPressureData);
-                }
+                Row() {
+                  Image($r('app.media.bgImg')).margin({
+                    right: 8
+                  }).width(48).height(48)
+                  if (this.dataType === 'weight') {
+                    this.renderWeightItem(item as WeightData);
+                  } else if (this.dataType === 'bloodLipid') {
+                    this.renderBloodLipidItem(item as BloodLipidData);
+                  } else if (this.dataType === 'bloodSugar') {
+                    this.renderBloodSugarItem(item as BloodSugarData);
+                  } else if (this.dataType === 'uricAcid') {
+                    this.renderUricAcidItem(item as UricAcidData);
+                  } else if (this.dataType === 'bloodPressure') {
+                    this.renderBloodPressureItem(item as BloodPressureData);
+                  }
+                }.padding({
+                  left: 16,
+                })
               }
               .borderRadius(4)
               .backgroundColor('#FFFFFF')
@@ -481,6 +489,21 @@ struct HealthHistoryPage {
             top: 8,
             bottom: 8
           })
+
+          MButton({
+            text: "去添加一条记录",
+            onClickBlock: () => {
+              getAppPathStack().pop(this.dataType, true)
+            }
+          })
+            .margin({
+              bottom: 16
+            })
+            .width('50%')
+            .alignRules({
+              bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
+              middle: { anchor: '__container__', align: HorizontalAlign.Center }
+            })
         }
       }
       .width('100%')

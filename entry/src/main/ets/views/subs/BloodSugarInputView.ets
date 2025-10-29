@@ -132,10 +132,9 @@ export struct BloodSugarInputView {
           onClickBlock: () => {
             this.saveData()
           }
-        }).layoutWeight(1)
+        })
       }
-      .width('100%')
-      .justifyContent(FlexAlign.SpaceBetween)
+      .width('50%')
       .alignRules({
         bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
         left: { anchor: '__container__', align: HorizontalAlign.Start },

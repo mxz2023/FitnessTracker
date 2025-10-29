@@ -12,6 +12,10 @@ import { MIcon } from "./MIcon";
 
 @ComponentV2
 export struct MButton {
+  @Param leftIcon: string = "";
+  @Param rightIcon: string = "";
+  @Param iconColor: string = ColorConstants.Red;
+  @Param iconSize: number = 32;
   @Param text: string = '';
   @Param type: ButtonType = ButtonType.Normal;
   @Param enable: boolean = true;
@@ -20,25 +24,58 @@ export struct MButton {
   @Event onClickBlock: () => void
 
   build() {
-    Button(this.text, {
-      type: ButtonType.Normal
-    })
-      .enabled(this.enable)
-      .width('100%')
-      .height($r('app.integer.view_row_height'))
-      .borderRadius($r('app.integer.view_radius')) // 设置圆角为3
-      .backgroundColor(this.bgColor)
-      .fontColor(this.textColor)
-      .clickEffect({
-        level: ClickEffectLevel.HEAVY,
-        scale: 0.8
-      })
-      .onClick(() => {
-        // 收起键盘
-        this.getUIContext().getFocusController().clearFocus();
+    Row() {
+      if (this.leftIcon) {
+        MIconButton({
+          iconName: this.leftIcon,
+          iconSize: this.iconSize,
+          iconColor: this.iconColor,
+        }).margin({
+          top: 4,
+          bottom: 4,
+          left: 8,
+        })
+      }
 
-        this.onClickBlock();
-      })
+      Text(this.text)
+        .fontColor(this.textColor)
+        .textAlign(TextAlign.Center)
+        .fontWeight(FontWeight.Medium)
+        .margin({
+          top: 4,
+          bottom: 4,
+          left: this.leftIcon ? 4:8,
+          right: this.rightIcon ? 4:8,
+        })
+        .layoutWeight(1)
+
+      if (this.rightIcon) {
+        MIconButton({
+          iconName: this.rightIcon,
+          iconSize: this.iconSize,
+          iconColor: this.iconColor
+        }).margin({
+          top: 4,
+          bottom: 4,
+          right: 8
+        })
+      }
+    }
+    .enabled(this.enable)
+    .height($r('app.integer.view_row_height'))
+    .width('100%')
+    .borderRadius($r('app.integer.view_radius')) // 设置圆角为3
+    .backgroundColor(this.bgColor)
+    .clickEffect({
+      level: ClickEffectLevel.HEAVY,
+      scale: 0.8
+    })
+    .onClick(() => {
+      // 收起键盘
+      this.getUIContext().getFocusController().clearFocus();
+
+      this.onClickBlock();
+    })
   }
 }
 
@@ -47,6 +84,7 @@ export struct MButton {
 export struct MIconButton {
   @Param @Require iconName: string;
   @Param srcName: ResourceStr = "";
+  @Param iconSize: number = 48;
   @Param iconColor: string = ColorConstants.Red;
   @Event handleClick: () => void;
 
@@ -59,7 +97,7 @@ export struct MIconButton {
       } else {
         MIcon({
           iconName: this.iconName,
-          iconSize: 48,
+          iconSize: this.iconSize,
           iconColor: [this.iconColor]
         }).backgroundColor(ColorConstants.White)
       }
@@ -71,9 +109,9 @@ export struct MIconButton {
     .onClick(() => {
       this.handleClick()
     })
-    .height(48)
-    .width(48)
-    .borderRadius(24)
+    .height(this.iconSize)
+    .width(this.iconSize)
+    .borderRadius(this.iconSize / 2.0)
     .clip(true)
   }
 }

@@ -33,7 +33,7 @@ export struct BaseInputView {
   }
 
   private buildYears(): string[] {
-    const startYear: number = 1983;
+    const startYear: number = 1900;
     const currentYear: number = new Date().getFullYear();
     const years: string[] = [];
     for (let y: number = startYear; y <= currentYear; y++) {
@@ -97,8 +97,9 @@ export struct BaseInputView {
         // 显示日期选择器设置日期
         this.getUIContext().showTextPickerDialog({
           range: this.buildYears(),
-          selected: this.buildYears().length,
+          selected: this.buildYears().length - 1,
           defaultPickerItemHeight: 40,
+          canLoop: false,
           onAccept: (value: TextPickerResult) => {
             this.year = Number(value.value.slice(0, -1));
           },
@@ -189,10 +190,9 @@ export struct BaseInputView {
               heightCm: Number(this.heightCm) || 0
             });
           }
-        }).layoutWeight(1)
+        })
       }
-      .width('100%')
-      .justifyContent(FlexAlign.SpaceBetween)
+      .width('50%')
       .alignRules({
         bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
         left: { anchor: '__container__', align: HorizontalAlign.Start },

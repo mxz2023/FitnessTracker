@@ -390,18 +390,17 @@ export struct HealthOverview {
       // 滚动容器
       Scroll() {
         Column({ space: $r('app.integer.view_space') }) {
-          // 基本信息卡片
-          UserInfoCard({
-            nickName: this.userInfoVM?.nickname,
-            nAge: this.userInfoVM?.age,
-            nGender: this.userInfoVM?.gender,
-            nHeight: this.userInfoVM?.heightCm,
-            handleClick: (type: HealthCardDataType) => {
-              this.showType = type
-            }
-          })
-
           if (!this.isLoading) {
+            // 基本信息卡片
+            UserInfoCard({
+              nickName: this.userInfoVM?.nickname,
+              nAge: this.userInfoVM?.age,
+              nGender: this.userInfoVM?.gender,
+              nHeight: this.userInfoVM?.heightCm,
+              handleClick: (type: HealthCardDataType) => {
+                this.showType = type
+              }
+            })
             // 健康指标网格
             Grid() {
               ForEach(this.getHealthCardData(), (cardData: HealthCardData, index: number) => {
@@ -465,8 +464,11 @@ export struct HealthOverview {
             .width('100%')
             .height('100%')
             .nestedScroll({
-              scrollForward:NestedScrollMode.PARENT_FIRST,
+              scrollForward: NestedScrollMode.PARENT_FIRST,
               scrollBackward: NestedScrollMode.SELF_FIRST
+            })
+            .padding({
+              bottom: 24
             })
             .columnsTemplate(this.columnsTemplate)
             .rowsGap($r('app.integer.view_space'))
@@ -499,6 +501,7 @@ export struct HealthOverview {
           }
         }
         .padding($r('app.integer.view_padding'))
+        .justifyContent(FlexAlign.Start)
       }
       .backgroundColor($r('app.color.view_background_color'))
       .scrollBar(BarState.Off)
