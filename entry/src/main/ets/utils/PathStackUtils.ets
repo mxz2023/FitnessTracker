@@ -10,8 +10,6 @@
 
 import { CommonDefine } from "../common/CommonDefine";
 
-const TAG = 'PathStackUtils.ets'
-
 export function getAppPathStack() {
     return AppStorage.get(CommonDefine.globalPathStackName) as NavPathStack;
 }

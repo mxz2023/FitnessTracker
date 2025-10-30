@@ -17,7 +17,7 @@ import {
   getHealthStatusRang,
   getHealthStatusText,
   getHealthColors,
-} from "../utils/HealthUtils"
+} from "../func/HealthUtils"
 import { TypeUtils } from "../utils/TypeUtils"
 
 @ComponentV2

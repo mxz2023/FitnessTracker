@@ -9,12 +9,6 @@
  */
 import { logger } from "./Logger"
 
-// system
-
-// module
-
-// inner
-
 const TAG = 'ToastUtils.ets'
 
 export function showToast(uiContext: UIContext, message: string) {

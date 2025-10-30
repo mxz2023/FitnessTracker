@@ -17,9 +17,9 @@ import {
 } from '../models/HealthDataModel';
 import { ChartOptions, XAxis, YAxis } from '../thirds/EChart/EChartOption';
 import { MChart } from '../thirds/MChart';
-import { formatDate, getHealthStatusColor } from '../utils/HealthUtils';
+import { formatDate, getHealthStatusColor } from '../func/HealthUtils';
 import { getAppPathStack } from '../utils/PathStackUtils';
-import { StorageUtils } from '../utils/StorageUtils';
+import { StorageUtils } from '../func/StorageUtils';
 
 interface ChartDataItem {
   x: string;

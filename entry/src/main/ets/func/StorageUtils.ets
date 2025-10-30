@@ -18,7 +18,6 @@ import {
   UricAcidData,
   BloodLipidData,
   MeasurementType,
-  HealthStatus
 } from '../models/HealthDataModel';
 import { HealthDataServiceImpl } from '../models/HealthDataServiceImpl';
 import { Gender } from '../models/UserDataModel';
