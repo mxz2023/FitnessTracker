@@ -79,6 +79,10 @@
     {
       "name": "text_999",
       "value": "#999999"
+    },
+    {
+      "name": "item_title_font",
+      "value": "#E6000000"
     }
   ]
 }

@@ -83,6 +83,22 @@
     {
       "name": "unit_cholesterol",
       "value": "mmol/L"
+    },
+    {
+      "name": "EntryFormAbility_desc",
+      "value": "form_description"
+    },
+    {
+      "name": "EntryFormAbility_label",
+      "value": "form_label"
+    },
+    {
+      "name": "widget1_desc",
+      "value": "健康需要去关注."
+    },
+    {
+      "name": "widget1_display_name",
+      "value": "坚持记录"
     }
   ]
 }
