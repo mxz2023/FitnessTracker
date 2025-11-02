@@ -18,13 +18,13 @@
         "name": "prod",
         "type": "HarmonyOS",
         "material": {
-          "storeFile": "/Users/gemini/Documents/开发者/鸿蒙开发者证书/叶记时光/timeimprint.p12",
-          "storePassword": "000000188716312E49FA96799A799984145022E23DB8765CA2D4DF5E851247199B95BAB55C0B4886",
+          "storeFile": "/Users/gemini/Documents/开发者/鸿蒙开发者证书/密钥及证书/密钥.p12",
+          "storePassword": "00000018D8D2C67FAB755348B5037186A889E79914C792DA76737FEB9004A013D2A5B8B38B26BBDC",
           "keyAlias": "timeimprint",
-          "keyPassword": "00000018B5FB1037B65A31E6993FE23035B7A88AED09CDB7291B2ADE281566EBD32522D7B0545C2E",
+          "keyPassword": "000000181A3CD3FEB94A33262FE6BA12804CFBD2920A880D6F4AB6BFD8E041907F4FFB1ED5CC4BB8",
           "signAlg": "SHA256withECDSA",
-          "profile": "/Users/gemini/Documents/开发者/鸿蒙开发者证书/叶记时光/release_ato_fitness_tracker.p7b",
-          "certpath": "/Users/gemini/Documents/开发者/鸿蒙开发者证书/叶记时光/prod.cer"
+          "profile": "/Users/gemini/Documents/开发者/鸿蒙开发者证书/叶记健康元服务Release.p7b",
+          "certpath": "/Users/gemini/Documents/开发者/鸿蒙开发者证书/密钥及证书/发布证书.cer"
         }
       }
     ],
